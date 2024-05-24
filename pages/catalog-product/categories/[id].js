@@ -26,7 +26,7 @@ const CategoryFilter = () => {
       const fetchCategory = async () => {
         setIsLoading(true);
         try {
-          const response = await axios.get(`/api/categories/${cleanId}`);
+          const response = await axios.get(`http://localhost:4000/api/categories/${cleanId}`);
           
           if (response.data && response.data.data && Array.isArray(response.data.data)) {
             // Assuming each item in the array has a `namaVarian` field that needs cleaning
@@ -60,7 +60,7 @@ const CategoryFilter = () => {
 
   const handlePaginationClick = async (url) => {
     try {
-      const response = await axios.get(`/api/proxy?url=${url}`);
+      const response = await axios.get(`http://localhost:4000/api/proxy?url=${url}`);
       setCategory(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {

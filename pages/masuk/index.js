@@ -35,7 +35,7 @@ const LoginForm = ({ onClose }) => {
     e.preventDefault();
     setButtonText('Tunggu sebentar...');
     try {
-      const response = await axios.post('/api/login', formData);
+      const response = await axios.post('http://localhost:4000/api/login', formData);
       const data = response.data;
 
       if (data.status === 200) {

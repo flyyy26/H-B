@@ -20,7 +20,7 @@ const ProductFilterPage = () => {
   const fetchProducts = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`/api/filter/${id}`);
+      const response = await axios.get(`http://localhost:4000/api/filter/${id}`);
       console.log('Data from API:', response.data);
       if (response.data && response.data.data && Array.isArray(response.data.data)) {
         const cleanedProducts = response.data.data.map(product => {

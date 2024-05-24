@@ -32,7 +32,7 @@ export const CartProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post('/api/addToCart', {
+      const response = await axios.post('http://localhost:4000/api/addToCart', {
         posUser_id: user.posLoginId,
         posVarian_id: posVarianId,
         posQty: quantity 

@@ -9,7 +9,7 @@ export default function Post({ limit }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/article');
+        const response = await fetch('http://localhost:4000/api/article');
         const data = await response.json();
         if (data && data.data) { // Pastikan data dan data.data ada
           setArticles(data.data); // Setel data objek banner

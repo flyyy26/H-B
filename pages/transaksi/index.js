@@ -96,7 +96,7 @@ export default function Transaksi(){
     // Fungsi untuk mengambil daftar provinsi dari API
     const fetchProvinces = async () => {
         try {
-            const response = await fetch('/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch('http://localhost:4000/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setProvinces(data);
         } catch (error) {
@@ -107,7 +107,7 @@ export default function Transaksi(){
     // Fungsi untuk mengambil daftar kota dari API berdasarkan provinsi yang dipilih
     const fetchCities = async (provinceId) => {
         try {
-            const response = await fetch(`/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch(`http://localhost:4000/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setCities(data);
         } catch (error) {
@@ -117,7 +117,7 @@ export default function Transaksi(){
 
     const fetchSubdistrict = async (cityId) => {
         try {
-            const response = await fetch(`/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch(`http://localhost:4000/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setSubdistrict(data);
         } catch (error) {
@@ -138,7 +138,7 @@ export default function Transaksi(){
             console.log('Alamat Asal:', originCityId, originCityName, originProvinceName);
             
             if (destinationSubdistrictId && originCityId) {
-                const response = await fetch('/api/cost', {
+                const response = await fetch('http://localhost:4000/api/cost', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -290,7 +290,7 @@ export default function Transaksi(){
         if (isFormSaved) {
             const fetchHalloExpressAvailability = async () => {
                 try {
-                    const response = await axios.get(`/api/hallo-express/`);
+                    const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
                     setShowHalloExpress(response.status === 200);
                     console.log('Fetching Hallo Express availability...');
                 } catch (error) {
@@ -313,7 +313,7 @@ export default function Transaksi(){
     
     const fetchDataProduct = async () => {
         try {
-            const response = await fetch(`/api/transactionProduct/${user.posLoginId}/true`);
+            const response = await fetch(`http://localhost:4000/api/transactionProduct/${user.posLoginId}/true`);
             const data = await response.json();
             
             // Mengonversi nilai-nilai tertentu menjadi integer
@@ -345,7 +345,7 @@ export default function Transaksi(){
             const userId = user.posLoginId;
             const cartStatus = 'true';
 
-            const response = await axios.get(`/api/cartTotalPrice/${userId}/${cartStatus}`);
+            const response = await axios.get(`http://localhost:4000/api/cartTotalPrice/${userId}/${cartStatus}`);
             const data = response.data;
 
             // Mengambil nilai count dari respons API dan menyimpannya di state
@@ -397,7 +397,7 @@ export default function Transaksi(){
               posLongitude: selectedCoordinates.lng // Ganti dengan nilai longitude yang dipilih
             });
       
-            const response = await axios.post('/api/shipping', formDataParams, {
+            const response = await axios.post('http://localhost:4000/api/shipping', formDataParams, {
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
               }
@@ -435,7 +435,7 @@ export default function Transaksi(){
                 posDiskon_voucher: 0
               });
       
-              const transaksiResponse = await axios.post('/api/postTransaksi', formDataParamsTransaksi, {
+              const transaksiResponse = await axios.post('http://localhost:4000/api/postTransaksi', formDataParamsTransaksi, {
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -455,7 +455,7 @@ export default function Transaksi(){
                     posDiskonPersen: 0
                   });
       
-                  const detailTransaksiResponse = await axios.post('/api/detailTransaksi', detailTransaksiData, {
+                  const detailTransaksiResponse = await axios.post('http://localhost:4000/api/detailTransaksi', detailTransaksiData, {
                     headers: {
                       'Content-Type': 'application/x-www-form-urlencoded'
                     }
@@ -475,7 +475,7 @@ export default function Transaksi(){
                   console.log('Data voucher yang dikirim:', formDataVoucher);
       
                   try {
-                    const voucherPostResponse = await axios.post('/api/voucherPost', formDataVoucher, {
+                    const voucherPostResponse = await axios.post('http://localhost:4000/api/voucherPost', formDataVoucher, {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       }
@@ -504,7 +504,7 @@ export default function Transaksi(){
                   };
       
                   try {
-                    const midtransResponse = await axios.post('/api/midtrans', midtransTransactionParams);
+                    const midtransResponse = await axios.post('http://localhost:4000/api/midtrans', midtransTransactionParams);
       
                     if (midtransResponse.status === 200) {
                       // Membuat pembayaran menggunakan Snap.js
@@ -587,7 +587,7 @@ export default function Transaksi(){
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await fetch('/api/voucher');
+                const response = await fetch('http://localhost:4000/api/voucher');
                 const data = await response.json();
                 const today = new Date();
                 const filteredVouchers = data.data.filter(voucher => {

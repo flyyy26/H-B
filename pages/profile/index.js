@@ -29,7 +29,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await fetch('/api/voucher');
+                const response = await fetch('http://localhost:4000/api/voucher');
                 const data = await response.json();
                 const today = new Date();
                 const filteredVouchers = data.data.filter(voucher => {

@@ -14,7 +14,7 @@ const LayoutFilter = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/category');
+        const response = await fetch('http://localhost:4000/api/category');
         const data = await response.json();
 
         const cleanedCategories = data.data.map(category => ({
@@ -33,7 +33,7 @@ const LayoutFilter = () => {
 
   const fetchBrands = async (categoryId) => {
     try {
-      const response = await fetch(`/api/example/${categoryId}`);
+      const response = await fetch(`http://localhost:4000/api/example/${categoryId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

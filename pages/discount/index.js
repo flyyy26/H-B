@@ -17,7 +17,7 @@ function Discount({ limit }) {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('/api/discount');
+        const response = await fetch('http://localhost:4000/api/discount');
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {

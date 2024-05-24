@@ -19,7 +19,7 @@ const ProductSearch = () => {
   useEffect(() => {
     if (productSearch) {
       setIsLoading(true);
-      fetch(`/api/search?searchQuery=${encodeURIComponent(productSearch)}`)
+      fetch(`http://localhost:4000/api/search?searchQuery=${encodeURIComponent(productSearch)}`)
         .then(response => response.json())
         .then(data => {
           if (data.data && Array.isArray(data.data)) {

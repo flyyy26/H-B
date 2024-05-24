@@ -25,7 +25,7 @@ const Pesanan = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await axios.get('/api/listTransaksi');
+        const response = await axios.get('http://localhost:4000/api/listTransaksi');
         const data = response.data;
         const filteredTransactions = data.data.filter(transaction => transaction.customerId === customerId);
         setTransactions(filteredTransactions);
@@ -46,7 +46,7 @@ const Pesanan = () => {
 
   const fetchTransactionDetails = async (posTransaksiId) => {
     try {
-      const response = await axios.get(`/api/transaksiDetail/${posTransaksiId}`);
+      const response = await axios.get(`http://localhost:4000/api/transaksiDetail/${posTransaksiId}`);
       if (response.status === 200) {
         const details = response.data.data;
 
@@ -67,7 +67,7 @@ const Pesanan = () => {
 
   const fetchProductDetails = async (varianiId) => {
     try {
-      const response = await axios.get(`/api/productId/${varianiId}`);
+      const response = await axios.get(`http://localhost:4000/api/productId/${varianiId}`);
       if (response.status === 200) {
         const productData = response.data.data[0]; // Assuming data is in the first element of the array
         setProductDetails(prevDetails => ({
@@ -83,7 +83,7 @@ const Pesanan = () => {
   const handleDeleteTransaction = async (posTransaksiId) => {
     try {
       // Delete the transaction
-      const responseTransaction = await axios.delete(`/api/deleteTransaction/${posTransaksiId}`);
+      const responseTransaction = await axios.delete(`http://localhost:4000/api/deleteTransaction/${posTransaksiId}`);
       if (responseTransaction.status === 200) {
         // Remove the deleted transaction from state
         setTransactions(prevTransactions => (
@@ -93,7 +93,7 @@ const Pesanan = () => {
         // Also delete all transaction details for this transaction
         const transactionDetailsToDelete = transactionDetails[posTransaksiId] || [];
         for (let detail of transactionDetailsToDelete) {
-          await axios.delete(`/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
+          await axios.delete(`http://localhost:4000/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
         }
 
         // Remove transaction details from state
@@ -128,7 +128,7 @@ const Pesanan = () => {
   }
 
   const handleRetryPayment = async (transaction) => {
-    const response = await fetch('/api/retry-payment', {
+    const response = await fetch('http://localhost:4000/api/retry-payment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

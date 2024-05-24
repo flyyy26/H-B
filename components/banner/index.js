@@ -43,7 +43,7 @@ const BannerPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/banner');
+        const response = await fetch('http://localhost:4000/api/banner');
         const data = await response.json();
         if (data && data.data) { // Pastikan data dan data.data ada
           setBanners(data.data); // Setel data objek banner

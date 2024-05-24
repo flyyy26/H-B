@@ -30,7 +30,7 @@ const ProductDetails = () => {
                 const userId = user.posLoginId;
                 const cartStatus = 1;
 
-                const response = await axios.get(`/api/cartTotal/${userId}/${cartStatus}`);
+                const response = await axios.get(`http://localhost:4000/api/cartTotal/${userId}/${cartStatus}`);
                 const data = response.data;
 
                 if (data && data.data && data.data.count) {
@@ -50,7 +50,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchDetailsProduct = async () => {
       try {
-        const response = await fetch(`/api/productId/${router.query.id}`);
+        const response = await fetch(`http://localhost:4000/api/productId/${router.query.id}`);
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];

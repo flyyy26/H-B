@@ -34,7 +34,7 @@ const CartComponent = ({ id, status }) => {
   const fetchData = async () => {
     if (id && status) {
       try {
-        const response = await axios.get(`/api/cart/${id}/${status}`);
+        const response = await axios.get(`http://localhost:4000/api/cart/${id}/${status}`);
         if (response.status === 200) {
           const modifiedData = response.data.data.map(item => ({
             ...item,
@@ -66,7 +66,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDeleteItem = async (csoId) => {
     try {
-      const response = await axios.delete(`/api/deleteCart`, {
+      const response = await axios.delete(`http://localhost:4000/api/deleteCart`, {
         data: { csoId }
       });
   
@@ -88,7 +88,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleIncreaseQuantity = async (csoId) => {
     try {
-      const response = await axios.get(`/api/plusQuantity/${csoId}`);
+      const response = await axios.get(`http://localhost:4000/api/plusQuantity/${csoId}`);
       if (response.status === 201) {
         fetchData();
         fetchDataCartTotalPrice();
@@ -102,7 +102,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDecreaseQuantity = async (csoId) => {
     try {
-      const response = await axios.get(`/api/minQuantity/${csoId}`);
+      const response = await axios.get(`http://localhost:4000/api/minQuantity/${csoId}`);
       if (response.status === 201) {
         fetchData();
         fetchDataCartTotalPrice();
@@ -116,7 +116,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDeleteAllCartItems = async () => {
     try {
-      const response = await axios.delete(`/api/deleteAll/${user.posLoginId}/1`);
+      const response = await axios.delete(`http://localhost:4000/api/deleteAll/${user.posLoginId}/1`);
       if (response.status === 200) {
         if (response.data && response.data.messages && response.data.messages.success) {
           showModal(response.data.messages.success);
@@ -151,7 +151,7 @@ const CartComponent = ({ id, status }) => {
       const userId = user.posLoginId;
       const cartStatus = 'true';
 
-      const response = await axios.get(`/api/cartTotalPrice/${userId}/${cartStatus}`);
+      const response = await axios.get(`http://localhost:4000/api/cartTotalPrice/${userId}/${cartStatus}`);
       const data = response.data;
 
       if (data && data.data && data.data.grand_total_asli) {
@@ -174,7 +174,7 @@ const CartComponent = ({ id, status }) => {
   async function handleCheckboxChange(id_cso, checked) {
     try {
       const status = checked ? 'true' : 'false';
-      const response = await fetch(`/api/checkItem/${id_cso}/${status}`);
+      const response = await fetch(`http://localhost:4000/api/checkItem/${id_cso}/${status}`);
       if (!response.ok) {
         console.error('HTTP error', response.status, await response.text());
         return;
