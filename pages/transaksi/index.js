@@ -653,9 +653,6 @@ export default function Transaksi(){
       // Menghitung total pembayaran
       const totalPembayaran = totalHarga + (selectedShipping ? selectedShipping.value : 0) - (appliedVoucher ? appliedVoucher.min_spend : 0);
 
-        // Menampilkan hasil di console.log
-        console.log("Total Pembayaran:", totalPembayaran);
-
     return(
         <>
         <div className="menu-popup-mobile menu-popup-mobile-template">
@@ -668,8 +665,12 @@ export default function Transaksi(){
                 <div className="border-left-shipping"></div>
                 <div className="border-right-shipping"></div>
                 <div className="shipping-user">
-                    <FaUserCircle />
-                    <h3>{user.nama} ({user.noTelp})</h3>
+                {user && user.nama && (
+                    <>
+                        <FaUserCircle />
+                        <h3>{user.nama} ({user.noTelp})</h3>
+                    </>
+                )}
                 </div>
                 <div className="shipping-alamat">
                     {savedAddress.address && savedAddress.subdistrict && savedAddress.city && savedAddress.province ? (

@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Context } from "@/context";
 import { useContext } from "react";
 import { getListOfCategories } from "@/utils";
-import Post, { getStaticProps } from '@/pages/posts/index';
+import Post from '@/pages/posts/index';
 import gratisOngkir from "@/public/images/gratis-ongkir.png"
 import Image from "next/image";
 import Merk from "@/components/merk";
@@ -21,10 +21,9 @@ import axios from 'axios';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorit } from "@/contexts/FavoritContext";
 
+export { getStaticProps } from '@/pages/posts/index';
 
-export { getStaticProps };
-
-export default function HomePage(props) {
+export default function HomePage({articles}) {
 
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -305,7 +304,7 @@ export default function HomePage(props) {
                 </div>
             </div>
           </div>
-          <Post limit={3}/>
+          <Post articles={articles} limit={3} />
           <Keunggulan/>
       </div>
     </>

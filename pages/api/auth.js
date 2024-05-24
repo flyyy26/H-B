@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { createUser, findUserByEmail } from './db'; // Anda perlu mengganti ini dengan logika akses ke database Anda
 
 export default function handler(req, res) {
   if (req.method === 'POST') {
