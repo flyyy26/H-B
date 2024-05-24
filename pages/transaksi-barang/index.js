@@ -95,7 +95,7 @@ useEffect(() => {
 // Fungsi untuk mengambil daftar provinsi dari API
 const fetchProvinces = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch('/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setProvinces(data);
     } catch (error) {
@@ -106,7 +106,7 @@ const fetchProvinces = async () => {
 // Fungsi untuk mengambil daftar kota dari API berdasarkan provinsi yang dipilih
 const fetchCities = async (provinceId) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch(`/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setCities(data);
     } catch (error) {
@@ -116,7 +116,7 @@ const fetchCities = async (provinceId) => {
 
 const fetchSubdistrict = async (cityId) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch(`/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setSubdistrict(data);
     } catch (error) {
@@ -137,7 +137,7 @@ const fetchShippingOptions = async () => {
         console.log('Alamat Asal:', originCityId, originCityName, originProvinceName);
         
         if (destinationSubdistrictId && originCityId) {
-            const response = await fetch('http://localhost:3000/api/cost', {
+            const response = await fetch('/api/cost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

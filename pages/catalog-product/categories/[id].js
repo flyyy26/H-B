@@ -26,7 +26,7 @@ const CategoryFilter = () => {
       const fetchCategory = async () => {
         setIsLoading(true);
         try {
-          const response = await axios.get(`http://localhost:3000/api/categories/${cleanId}`);
+          const response = await axios.get(`/api/categories/${cleanId}`);
           
           if (response.data && response.data.data && Array.isArray(response.data.data)) {
             // Assuming each item in the array has a `namaVarian` field that needs cleaning

@@ -39,7 +39,7 @@ export default function Header(){
     useEffect(() => {
         const fetchLogo = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/logo');
+                const response = await axios.get('/api/logo');
                 const logoPath = response.data.data.image;
                 setImageUrl(`https://prahwa.net/storage/${logoPath}`); 
             } catch (error) {
@@ -313,7 +313,7 @@ export default function Header(){
                             <div className="profil-edit-mobile">
                                 <Link href='/profile' onClick={toggleMenuMobile}><FaRegEdit /></Link>
                             </div>
-                        </div>
+                        </div> 
                     ) : (
                         <div className="login-signup-mobile">
                             <button onClick={openLogin}>Masuk</button>

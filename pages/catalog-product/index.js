@@ -20,7 +20,7 @@ const BrandsCatalog = ({ isLoading }) => {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/AllProduct?page=${currentPage}`);
+        const response = await fetch(`/api/AllProduct?page=${currentPage}`);
         const data = await response.json();
   
         // Check if data exists and has items

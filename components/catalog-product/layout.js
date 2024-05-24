@@ -14,7 +14,7 @@ const LayoutFilter = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/category');
+        const response = await fetch('/api/category');
         const data = await response.json();
 
         const cleanedCategories = data.data.map(category => ({

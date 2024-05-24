@@ -50,7 +50,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchDetailsProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/productId/${router.query.id}`);
+        const response = await fetch(`/api/productId/${router.query.id}`);
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];

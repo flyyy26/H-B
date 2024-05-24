@@ -6,7 +6,7 @@ export default function Merk(){
     useEffect(() => {
         const fetchData = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/brands');
+            const response = await fetch('/api/brands');
             const data = await response.json();
             if (data && data.data) { // Pastikan data dan data.data ada
             setBrands(data.data); // Setel data objek banner
@@ -25,7 +25,7 @@ export default function Merk(){
         <div className="merk-layout"> 
             {brands.map(brand => (// perubahan pada penulisan kurung kurawal
                 <div className="merk-box" key={brand.id}>
-                    <a href={`http://localhost:3000/catalog-product/search/${brand.name}`}>
+                    <a href={`/catalog-product/search/${brand.name}`}>
                         <img src={`https://prahwa.net/storage/${brand.logo}`} alt={brand.name}/>
                     </a>
                 </div>

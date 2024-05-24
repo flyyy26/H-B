@@ -17,7 +17,7 @@ const BestSeller = () => {
   useEffect(() => {
     const fetchBestSeller = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/bestSeller');
+        const response = await fetch('/api/bestSeller');
         const data = await response.json();
         setBestSeller(data.data);
       } catch (error) {

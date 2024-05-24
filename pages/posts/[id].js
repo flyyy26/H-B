@@ -8,7 +8,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/article/${router.query.id}`);
+        const response = await fetch(`/api/article/${router.query.id}`);
         const data = await response.json();
         setPost(data.data); // Perhatikan bahwa data yang ingin Anda tampilkan berada di dalam properti "data"
       } catch (error) {

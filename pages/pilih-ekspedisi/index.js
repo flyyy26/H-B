@@ -11,7 +11,7 @@ const PilihEkspedisi = () => {
         // Fetch data ekspedisi dari API RajaOngkir
         const fetchShippingOptions = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/cost', {
+                const response = await fetch('/api/cost', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
