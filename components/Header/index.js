@@ -82,7 +82,7 @@ export default function Header(){
     } else {
         openLogin(); // Log pesan kesalahan jika ID pengguna tidak tersedia
     }
-    };
+    }; 
 
     const goToFavoritPage = () => {
         // Pastikan pengguna telah login dan memiliki ID yang valid
@@ -152,15 +152,12 @@ export default function Header(){
     setIsActive(!isActive);
     };
 
-    // const handleClickLogin = () => {
-    //     openLogin();
-    //     toggleMenuMobile();
-    //   };
-
       const handleClickFavorit = () => {
         goToFavoritPage();
         toggleMenuMobile();
       };
+
+      console.log(router.asPath);
 
     return(
         <>
@@ -212,27 +209,27 @@ export default function Header(){
                     <ul>
                         <li>
                             <Link href="/">
-                                <span className={router.pathname === "/" ? "active" : ""}>Beranda</span>
+                                <span className={router.asPath === "/" ? "active" : ""}>Beranda</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/catalog-product">
-                                <span className={router.pathname === "/catalog-product" ? "active" : ""}>Katalog</span>
+                                <span className={router.asPath === "/catalog-product" ? "active" : ""}>Katalog</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/catalog-product/search/face">
-                                <span className={router.pathname === "/face-care" ? "active" : ""}>Face Care</span>
+                                <span className={router.asPath.startsWith("/catalog-product/search/face") ? "active" : ""}>Face Care</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/catalog-product/search/skin">
-                                <span className={router.pathname === "/skin-care" ? "active" : ""}>Skin Care</span>
+                                <span className={router.asPath.startsWith("/catalog-product/search/skin") ? "active" : ""}>Skin Care</span>
                             </Link>
                         </li>
                         <li>
                             <Link href="/catalog-product/search/body">
-                                <span className={router.pathname === "/body-care" ? "active" : ""}>Body Care</span>
+                                <span className={router.asPath.startsWith("/catalog-product/search/body") ? "active" : ""}>Body Care</span>
                             </Link>
                         </li>
                     </ul>
@@ -261,7 +258,6 @@ export default function Header(){
                 </div>
                 <button className="hamburger-menu" onClick={toggleMenuMobile}><IoMenuOutline/></button>
             </div>
-
             <div className="menu-mobile">
                 <div className="menu-mobile-layout">
                     <ul>
@@ -286,7 +282,7 @@ export default function Header(){
                             </Link>
                         </li>
                         <li>
-                            <Link href="/profil">
+                            <Link href="/profile">
                                 <span className={router.pathname === "/profil" ? "active" : ""}><PiUserCircleLight />Profil</span>
                             </Link>
                         </li>

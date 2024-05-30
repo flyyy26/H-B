@@ -19,6 +19,10 @@ const CartComponent = ({ id, status }) => {
   const router = useRouter();
 
   const handleCheckout = () => {
+    if (checkedItems.length === 0) {
+      showModalChooseProduct();
+      return;
+    }
     router.push({
       pathname: '/transaksi'
     });
@@ -26,6 +30,7 @@ const CartComponent = ({ id, status }) => {
 
   const { handleAddToFavorit } = useFavorit();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalChooseProductIsOpen, setModalChooseProductIsOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
   const [cartItems, setCartItems] = useState([]);
@@ -44,6 +49,7 @@ const CartComponent = ({ id, status }) => {
           setCartItems(modifiedData);
           setIsLoading(false);
           fetchDataCartTotalPrice();
+          console.log(modifiedData)
         } else {
           console.error('Failed to fetch data:', response.statusText);
           setIsLoading(false);
@@ -142,6 +148,18 @@ const CartComponent = ({ id, status }) => {
 
   function closeModal() {
     setModalIsOpen(false);
+  }
+
+  function showModalChooseProduct() {
+    setModalChooseProductIsOpen(true);
+
+    setTimeout(() => {
+      closeModalChooseProduct();
+    }, 1080);
+  }
+
+  function closeModalChooseProduct() {
+    setModalChooseProductIsOpen(false);
   }
 
   const [totalHarga, setTotalHarga] = useState(null);
@@ -322,6 +340,10 @@ const CartComponent = ({ id, status }) => {
         <Modal isOpen={modalIsOpen} onClose={closeModal}>
           <BsBagCheckFill className="check-cart" />
           <p className="check-notif-cart">{modalMessage}</p>
+        </Modal>
+        <Modal isOpen={modalChooseProductIsOpen} onClose={closeModalChooseProduct}>
+          <BsBagCheckFill className="check-cart" />
+          <p className="check-notif-cart">Pilih dulu produk nya yuk!</p>
         </Modal>
         <RandomProduct limit={8} />
         <div className="cart-btn-checkout">

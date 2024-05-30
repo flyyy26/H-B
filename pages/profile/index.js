@@ -10,7 +10,7 @@ import { BiSolidDiscount } from "react-icons/bi";
 
 const ProfilePage = () => {
   const { user, logout } = useAuth();
-  const router = useRouter;
+  const router = useRouter();
   console.log(user)
 
   if (!user) {

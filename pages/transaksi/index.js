@@ -16,6 +16,9 @@ import { HiOutlineArrowLeft } from "react-icons/hi2";
 import { RiHeartsFill } from "react-icons/ri";
 import { GoChevronRight } from "react-icons/go";
 import { Link } from "react-router-dom";
+import Modal from "@/components/modal";
+import { FaMapLocationDot } from "react-icons/fa6";
+
 
 
 const MapComponent = dynamic(() => import('@/components/maps'), {
@@ -46,12 +49,52 @@ export default function Transaksi(){
     const [isModalOpen, setModalOpen] = useState(false);
     const [isModalVoucherOpen, setModalVoucherOpen] = useState(false);
     const [isModalAddressOpen, setModalAddressOpen] = useState(false);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
     const handleOpenModal = () => setModalOpen(true);
     const handleCloseModal = () => setModalOpen(false);
 
-    const handleOpenModalAddress = () => setModalAddressOpen(true);
-    const handleCloseModalAddress = () => setModalAddressOpen(false);
+    const handleOpenModalAddress = () => {
+        // Tampilkan dialog konfirmasi
+        setConfirmDialogOpen(true);
+    };
+
+    const handleConfirmChangeAddress = () => {
+        localStorage.removeItem('savedAddress');
+        localStorage.removeItem('savedCoordinates');
+
+        setFormData({
+            namaLengkap: '',
+            email: '',
+            nomorTelepon: '',
+            address: '',
+            subdistrict: { id: '', name: '' },
+            city: { id: '', name: '' },
+            province: { id: '', name: '' },
+            kelurahan: '',
+        });
+        setSavedAddress({});
+        setSelectedCoordinates(null);
+        setModalAddressOpen(true)
+        setConfirmDialogOpen(false);
+    };
+    const handleOpenAddressForm = () => {
+        setModalAddressOpen(true)
+        setFormData({
+            namaLengkap: '',
+            email: '',
+            nomorTelepon: '',
+            address: '',
+            subdistrict: { id: '', name: '' },
+            city: { id: '', name: '' },
+            province: { id: '', name: '' },
+            kelurahan: '',
+        });
+    };
+    const handleCloseModalAddress = () => {
+        setModalAddressOpen(false)
+        setConfirmDialogOpen(false);
+    };
 
     const handleOpenModalVoucher = () => setModalVoucherOpen(true);
     const handleCloseModalVoucher = () => setModalVoucherOpen(false);
@@ -69,7 +112,7 @@ export default function Transaksi(){
         city: { id: '', name: '' },
         province: { id: '', name: '' },
         kelurahan: '',
-    });
+      });
 
     const [isFormValid, setIsFormValid] = useState(false);
 
@@ -210,11 +253,9 @@ export default function Transaksi(){
     };
 
     
-
-    // Fungsi untuk menangani perubahan pada input form
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
+
         if (name === 'province') {
             const selectedProvince = provinces.find(province => province.province_id === value);
             const updatedProvince = { id: value, name: selectedProvince ? selectedProvince.province : '' };
@@ -255,6 +296,16 @@ export default function Transaksi(){
     const [savedAddress, setSavedAddress] = useState({});
 
     useEffect(() => {
+        // Ambil data dari localStorage saat komponen dimuat
+        const storedAddress = JSON.parse(localStorage.getItem('savedAddress'));
+        if (storedAddress) {
+          setFormData(storedAddress);
+          setSavedAddress(storedAddress);
+          console.log(storedAddress)
+        }
+      }, []);
+
+    useEffect(() => {
         // Jika formData.subdistrict.id sudah diisi
         if (formData.subdistrict.id) {
             // Ambil opsi pengiriman
@@ -266,12 +317,8 @@ export default function Transaksi(){
         event.preventDefault();
         // Update state untuk menampilkan alamat yang disimpan
         handleCloseModalAddress()
-        setSavedAddress({
-            address: formData.address,
-            subdistrict: formData.subdistrict.name,
-            city: formData.city.name,
-            province: formData.province.name
-        });
+        localStorage.setItem('savedAddress', JSON.stringify(formData));
+        setSavedAddress(formData);
         setIsFormSaved(true);
     };
 
@@ -287,28 +334,31 @@ export default function Transaksi(){
     const [isFormSaved, setIsFormSaved] = useState(false);
 
     useEffect(() => {
-        if (isFormSaved) {
-            const fetchHalloExpressAvailability = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
-                    setShowHalloExpress(response.status === 200);
-                    console.log('Fetching Hallo Express availability...');
-                } catch (error) {
-                    console.error('Error fetching Hallo Express availability:', error);
-                    setShowHalloExpress(false); // Sembunyikan jika error atau tidak ditemukan
-                }
-            };
+        const fetchHalloExpressAvailability = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
+                setShowHalloExpress(response.status === 200);
+                console.log('Fetching Hallo Express availability...');
+            } catch (error) {
+                console.error('Error fetching Hallo Express availability:', error);
+                setShowHalloExpress(false); // Sembunyikan jika error atau tidak ditemukan
+            }
+        };
     
-            // Periksa apakah kota yang dipilih adalah 'Kota Tasikmalaya' atau 'Kabupaten Tasikmalaya'
-            if (formData.city.name === 'Kota Tasikmalaya' || formData.city.name === 'Kabupaten Tasikmalaya') {
+        const checkHalloExpressAvailability = () => {
+            // Periksa dulu di localStorage apakah data kota tersimpan
+            const storedAddress = JSON.parse(localStorage.getItem('savedAddress'));
+            const cityName = (storedAddress && storedAddress.city.name) || formData.city.name;
+    
+            if (cityName === 'Kota Tasikmalaya' || cityName === 'Kabupaten Tasikmalaya') {
                 fetchHalloExpressAvailability();
             } else {
-                setShowHalloExpress(false); // Sembunyikan jika kota bukan Tasikmalaya
+                setShowHalloExpress(false);
             }
-        }
-    }, [isFormSaved, formData.city.name]);
+        };
     
-    
+        checkHalloExpressAvailability();
+    }, [isFormSaved, formData]);
     
     
     const fetchDataProduct = async () => {
@@ -378,7 +428,11 @@ export default function Transaksi(){
               console.error('Tidak ada produk yang dipilih untuk checkout.');
               return;
             }
-      
+            
+            const savedCoordinates = JSON.parse(localStorage.getItem('savedCoordinates'));
+            const posLatitude = savedCoordinates ? savedCoordinates.lat : null;
+            const posLongitude = savedCoordinates ? savedCoordinates.lng : null;
+
             const formDataParams = new URLSearchParams({
               posEmail: user.email,
               posNoHp: user.noTelp,
@@ -393,8 +447,8 @@ export default function Transaksi(){
               posShiping: selectedShipping.service,
               posOngkir: selectedShipping.value,
               posno_resi: '-', // Isian default
-              posLatitude: selectedCoordinates.lat, // Ganti dengan nilai latitude yang dipilih
-              posLongitude: selectedCoordinates.lng // Ganti dengan nilai longitude yang dipilih
+              posLatitude: posLatitude, // Ganti dengan nilai latitude yang dipilih
+              posLongitude: posLongitude // Ganti dengan nilai longitude yang dipilih
             });
       
             const response = await axios.post('http://localhost:4000/api/shipping', formDataParams, {
@@ -420,9 +474,10 @@ export default function Transaksi(){
                 posStatus = 'pending';
               }
       
+              const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.posLoginId}`;
               const formDataParamsTransaksi = new URLSearchParams({
-                posMerchantId: 9,
-                posKodeTransaksi: `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.posLoginId}`,
+                posMerchantId: 1,
+                posKodeTransaksi: posKodeTransaksi,
                 posCustomerId: user.posLoginId,
                 posTanggalTransaksi: getCurrentFormattedDate(),
                 posTipeTransaksi: 3,
@@ -434,6 +489,7 @@ export default function Transaksi(){
                 posShipingId: posShippingId,
                 posDiskon_voucher: 0
               });
+
       
               const transaksiResponse = await axios.post('http://localhost:4000/api/postTransaksi', formDataParamsTransaksi, {
                 headers: {
@@ -496,15 +552,17 @@ export default function Transaksi(){
                 // Display Midtrans payment if posJenisPembayaranOnline is not 'COD'
                 if (posJenisPembayaranOnline !== 'COD') {
                   const midtransTransactionParams = {
-                    order_id: transaksiResponse.data.lastTransaksiId,
+                    order_id: posKodeTransaksi, // Pastikan ini sudah benar
                     gross_amount: totalPembayaran,
-                    first_name: user.name,
+                    first_name: user.nama,
                     email: user.email,
                     phone: user.noTelp
                   };
       
+                  console.log('Data yang dikirim ke Midtrans:', midtransTransactionParams); // Log untuk debugging
+      
                   try {
-                    const midtransResponse = await axios.post('http://localhost:4000/api/midtrans', midtransTransactionParams);
+                    const midtransResponse = await axios.post('/api/midtrans', midtransTransactionParams);
       
                     if (midtransResponse.status === 200) {
                       // Membuat pembayaran menggunakan Snap.js
@@ -551,10 +609,11 @@ export default function Transaksi(){
         }
       };
       
+      
     useEffect(() => {
         const script = document.createElement('script');
-        script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
-        script.setAttribute('data-client-key', 'SB-Mid-client-S6EszAqNswaDdtwr');
+        script.src = 'https://app.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', 'Mid-client-LqB2N4zhOwgOxZn0'); 
         document.body.appendChild(script);
 
         return () => {
@@ -579,7 +638,9 @@ export default function Transaksi(){
     const [selectedCoordinates, setSelectedCoordinates] = useState(null);
 
     const handleCoordinateSelect = (coordinates) => {
+        // Simpan koordinat ke localStorage
         setSelectedCoordinates(coordinates);
+        localStorage.setItem('savedCoordinates', JSON.stringify(coordinates));
       };
 
     const [vouchers, setVouchers] = useState([]);
@@ -650,6 +711,16 @@ export default function Transaksi(){
         setSelectedVoucher(voucher);
       };
 
+      const [modalIsOpen, setModalIsOpen] = useState(false);
+
+      function showModal() {
+        setModalIsOpen(true);
+      }
+    
+      function closeModal() {
+        setModalIsOpen(false);
+      }
+
       // Menghitung total pembayaran
       const totalPembayaran = totalHarga + (selectedShipping ? selectedShipping.value : 0) - (appliedVoucher ? appliedVoucher.min_spend : 0);
 
@@ -665,24 +736,39 @@ export default function Transaksi(){
                 <div className="border-left-shipping"></div>
                 <div className="border-right-shipping"></div>
                 <div className="shipping-user">
-                {user && user.nama && (
+                    {user && user.nama && (
                     <>
                         <FaUserCircle />
                         <h3>{user.nama} ({user.noTelp})</h3>
                     </>
-                )}
+                    )}
                 </div>
+
                 <div className="shipping-alamat">
-                    {savedAddress.address && savedAddress.subdistrict && savedAddress.city && savedAddress.province ? (
-                        <p>{savedAddress.address}, {savedAddress.subdistrict}, {savedAddress.city}, {savedAddress.province}</p>
+                    {savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name ? (
+                        <p>{savedAddress.address}, {savedAddress.subdistrict.name}, {savedAddress.city.name}, {savedAddress.province.name}</p>
                     ) : (
                         <p>Alamat belum diisi.</p>
                     )}
-                    <button onClick={handleOpenModalAddress}>
-                        {savedAddress.address && savedAddress.subdistrict && savedAddress.city && savedAddress.province ? 'Ubah Alamat' : 'Isi Alamat'}
+                    <button onClick={() => {
+                        if (savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name) {
+                            handleOpenModalAddress();
+                        } else {
+                            handleOpenAddressForm();
+                        }
+                    }}>
+                        {savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name ? 'Ubah Alamat' : 'Isi Alamat'}
                     </button>
                 </div>
             </div>
+            <Modal isOpen={confirmDialogOpen} onClose={closeModal}>
+                <FaMapLocationDot className="check-cart"/>
+                <p className="check-notif-cart">Yakin ingin ubah alamat?</p>
+                <div className="confirmation-buttons">
+                    <button onClick={handleCloseModalAddress}>Tidak</button>
+                    <button onClick={handleConfirmChangeAddress}>Lanjut Ubah Alamat</button>
+                </div>
+            </Modal>
             <div className="product-layout-container">
                 <div className="heading-checkout-product-mobile">
                     <h4>Produk yang akan dibeli</h4>
@@ -706,7 +792,9 @@ export default function Transaksi(){
                         <div className="product-checkout-container" key={index}>
                             <div className="list-product-checkout">
                                 <div className="product-details-checkout">
-                                    <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian} />
+                                    <div className="product-details-checkout-image">
+                                        <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian} />
+                                    </div>
                                     <div className="product-details-checkout-name">
                                         <h4>{product.namaProduk}</h4>
                                         <p>{product.namaVarian}</p>
@@ -721,7 +809,7 @@ export default function Transaksi(){
                                 <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.harga_promo)}</span>
                             </div>
                             <div className="product-info-checkout product-info-checkout-body">
-                                <span>{product.qty}</span>
+                                <span>{product.qty}x</span>
                             </div>
                             <div className="product-info-checkout product-info-checkout-body">
                                 <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.subtotal_diskon)}</span>
@@ -735,14 +823,15 @@ export default function Transaksi(){
                         {selectedShipping ? (
                             <React.Fragment>
                                 <h3>
-                                {selectedShipping.service === 'Hallo Express' ? selectedShipping.service : `${selectedCourier} ${selectedShipping.service}`} 
-                                <span> - Estimasi tiba {selectedShipping.etd.includes('-') ? selectedShipping.etd.split('-')[0].trim() : selectedShipping.etd} hari</span>
+                                    {selectedShipping.service === 'Hallo Express' ? selectedShipping.service : `${selectedCourier} ${selectedShipping.service}`} 
+                                    <span> - Estimasi tiba {selectedShipping.etd.includes('-') ? selectedShipping.etd.split('-')[0].trim() : selectedShipping.etd} {selectedShipping.service === 'Hallo Express' ? '' : 'hari'}</span>
                                 </h3>
                                 <button onClick={handleOpenModal}>Ubah</button>
                             </React.Fragment>
                         ) : (
                             <button onClick={handleOpenModal}>Pilih Ekspedisi</button>
                         )}
+
                     </div> 
                     <h2>Rp. {selectedShipping ? selectedShipping.value.toLocaleString() : '0'}</h2>
                 </div>
@@ -838,46 +927,45 @@ export default function Transaksi(){
                         <button className="close-button" onClick={handleCloseModalAddress}><IoClose /></button>
                         <h1>Isi Alamat dulu!</h1>
                         <div className="choose-shipping">
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-second-layout">
-                                    <input type="text" value={user.nama} readOnly/>
-                                    <input type="number" value={user.noTelp} readOnly/>
-                                </div>
-                                <div className="form-second-layout">
-                                    <div className="select-form-layout">
-                                    <select name="province" value={formData.province.id} onChange={handleChange} required>
-                                        <option value="">Pilih Provinsi</option>
-                                        {provinces.map(province => (
-                                            <option key={province.province_id} value={province.province_id}>{province.province}</option>
-                                        ))}
-                                    </select>
-                                        <LuChevronDown />
-                                    </div>
-                                    <div className="select-form-layout">
-                                        <select name="city" value={formData.city.id} onChange={handleChange} required>
-                                            <option value="">Pilih Kota</option>
-                                            {cities.map(city => (
-                                                <option key={city.city_id} value={city.city_id}>{city.type} {city.city_name}</option>
-                                            ))}
-                                        </select>
-                                        <LuChevronDown />
-                                    </div>
-                                </div>
-                                <div className="form-second-layout">
-                                    <div className="select-form-layout">
-                                        <select name="subdistrict" value={formData.subdistrict.id} onChange={handleChange} required>
-                                            <option value="">Pilih Kecamatan</option>
-                                            {subdistrict.map(sd => (
-                                                <option key={sd.subdistrict_id} value={sd.subdistrict_id}>{sd.subdistrict_name}</option>
-                                            ))}
-                                        </select>
-                                        <LuChevronDown />
-                                    </div>
-                                    <input type="text" placeholder="Kelurahan" style={{textTransform: 'capitalize'}} value={formData.kelurahan} onChange={handleKelurahanChange}/>
-                                </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-second-layout">
+                            <input type="text" value={user.nama} readOnly/>
+                            <input type="number" value={user.noTelp} readOnly/>
+                            </div>
+                            <div className="form-second-layout">
+                            <div className="select-form-layout">
+                                <select name="province" value={formData.province.id} onChange={handleChange} required>
+                                <option value="">Pilih Provinsi</option>
+                                {provinces.map(province => (
+                                    <option key={province.province_id} value={province.province_id}>{province.province}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            <div className="select-form-layout">
+                                <select name="city" value={formData.city.id} onChange={handleChange} required>
+                                <option value="">Pilih Kota</option>
+                                {cities.map(city => (
+                                    <option key={city.city_id} value={city.city_id}>{city.type} {city.city_name}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            </div>
+                            <div className="form-second-layout">
+                            <div className="select-form-layout">
+                                <select name="subdistrict" value={formData.subdistrict.id} onChange={handleChange} required>
+                                <option value="">Pilih Kecamatan</option>
+                                {subdistrict.map(sd => (
+                                    <option key={sd.subdistrict_id} value={sd.subdistrict_id}>{sd.subdistrict_name}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            <input type="text" placeholder="Kelurahan" style={{textTransform: 'capitalize'}} value={formData.kelurahan} onChange={handleKelurahanChange}/>
+                            </div>
                                 <textarea placeholder="Alamat Lengkap" className="textarea-shipping" name="address" value={formData.address} onChange={handleChange}></textarea>
                                 <MapComponent kelurahan={formData.kelurahan} city={formData.city} onCoordinateSelect={() => setIsCoordinateSelected(true)} ifCoordinateSelect={handleCoordinateSelect}/>
-                                
                                 <button type="submit" disabled={!isButtonEnabled} className='form-button-style'>Simpan Alamat <FaSave /></button>
                             </form>
                         </div>

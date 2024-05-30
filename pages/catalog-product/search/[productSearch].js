@@ -58,8 +58,15 @@ const ProductSearch = () => {
         <div className='catalog-layout'>
           {products.map((product, index) => (
             <div className="box-product" key={index}>
+              {product.jumlahStok === "0" && (
+                <div className='produk-habis'>
+                  <div className='box-produk-habis'>
+                    <span>Habis</span>
+                  </div>
+                </div>
+              )}
               <div className="image-product">
-                <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
+                <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian} />
               </div>
               <h4 className="box-product-name">{product.namaVarian}</h4>
               <div className="box-product-price">
@@ -67,10 +74,14 @@ const ProductSearch = () => {
               </div>
               <div className="box-product-btn">
                 <button onClick={() => handleBuyNowClick(product.posVarianId)}>Beli Sekarang</button>
-                <button onClick={() => handleAddToCart(product.posVarianId, posQty)} className="btn-home-cart"><div className="box-product-cart"><BsCartPlusFill /></div></button>
+                <button onClick={() => handleAddToCart(product.posVarianId, posQty)} className="btn-home-cart">
+                  <div className="box-product-cart"><BsCartPlusFill /></div>
+                </button>
               </div>
               <div className="box-product-favorite">
-                <button onClick={() => handleAddToFavorit(product.posVarianId)}><IoMdHeartEmpty /> Masukkan ke favorit</button>
+                <button onClick={() => handleAddToFavorit(product.posVarianId)}>
+                  <IoMdHeartEmpty /> Masukkan ke favorit
+                </button>
               </div>
             </div>
           ))}

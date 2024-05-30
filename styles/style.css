@@ -293,14 +293,14 @@ body{
         align-items: center;
         justify-content: flex-start;
         gap: 2.3vw;
-        color: var(--tersier);
+        color: var(--primer);
     }
     .list-menu-popup-mobile ul .menu-popup-mobile-item-link li svg{
-        color: var(--sekunder);
+        color: var(--primer);
     }
     .menu-popup-mobile-item svg{
         font-size: 5.7vw;
-        color: var(--tersier) !important;
+        color: var(--primer) !important;
     }
     .list-menu-popup-mobile ul .menu-popup-mobile-item-link:first-child li{
         border-top: .3vw solid var(--sekunder);
@@ -393,6 +393,7 @@ body{
     .profil-edit-mobile a svg{
         font-size: 4.5vw;
         margin-top: 3vw;
+        color: var(--primer);
     }
 }
 
@@ -1247,6 +1248,10 @@ a{
     grid-template-columns:8% 36% 36% 10% 10%;
     align-items: center;
     background: var(--sekunder);
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 15;
 }
 @media (max-width:768px) {
     .nav-menu{
@@ -1445,7 +1450,7 @@ a{
   }
   
   .modal-content {
-    background: var(--tersier);
+    background: var(--primer);
     padding: 2.5vw;
     border-radius: 1.6vw;
     display: flex;
@@ -1456,7 +1461,8 @@ a{
     position: relative;
     width: 90%;
     max-width: 24vw;
-    animation:factory .4s;
+    animation:factory .5s;
+    border: .3vw solid var(--sekunder);
   }
   @keyframes factory {
     0%{
@@ -1479,11 +1485,11 @@ a{
     cursor: pointer;
   }
   .check-cart{
-    color: var(--primer);
+    color: var(--sekunder);
     font-size: 12vw;
   }
   .check-notif-cart{
-    color: var(--primer);
+    color: var(--sekunder);
     font-size: 1vw;
     font-weight: 500;
   }
@@ -1492,6 +1498,26 @@ a{
     display: block;
     margin: auto;
     margin-top: 3vw;
+  }
+  .confirmation-buttons{
+    display: flex;
+    gap: .7vw;
+  }
+  .confirmation-buttons button{
+    font-size: .9vw;
+    border: none;
+    padding: .6vw 1.6vw;
+    border-radius: 3vw;
+    cursor: pointer;
+    outline: none;
+  }
+  .confirmation-buttons button:first-child{
+    background-color: #D40066;
+    color: var(--sekunder);
+  }
+  .confirmation-buttons button:last-child{
+    background-color: #CCFF00;
+    color: var(--primer);
   }
   @media (max-width:768px) {
     .kosong{
@@ -1503,7 +1529,7 @@ a{
         margin-bottom: 3vw;
     }
     .modal-content {
-        background: var(--tersier);
+        background: var(--primer);
         padding: 4.5vw;
         border-radius: 4vw;
         gap: 1.5vw;
@@ -1512,9 +1538,30 @@ a{
         max-width: 80%;
         animation:factory .4s;
         text-align: center;
+        border: .6vw solid var(--sekunder);
       }
       .check-notif-cart{
         font-size: 4vw;
+      }
+      .confirmation-buttons{
+        gap: 2vw;
+        margin-top: 2vw;
+      }
+      .confirmation-buttons button{
+        font-size: 4vw;
+        border: none;
+        padding: 2vw 4vw;
+        border-radius: 3vw;
+        cursor: pointer;
+        outline: none;
+      }
+      .confirmation-buttons button:first-child{
+        background-color: #D40066;
+        color: var(--sekunder);
+      }
+      .confirmation-buttons button:last-child{
+        background-color: #CCFF00;
+        color: var(--primer);
       }
   }
   
@@ -1789,15 +1836,12 @@ p{
 }
 
 .merk-layout{
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    justify-items: center;
     width: 100%;
-    padding: 0 4vw;
+    padding: 0 6vw;
 }
-.merk-box img{
-    width: 84%;
-    height: 84%;
+
+.merk-box a img{
+    width: 7.5vw;
     object-fit: contain;
     margin: auto;
     display: block;
@@ -1972,6 +2016,52 @@ cursor: pointer;
 .mtop-3{
     margin-top: 3.5vw;
 }
+.box-product{
+    position: relative;
+}
+.produk-habis{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #46435b49;
+    z-index: 2;
+    border-radius: .8vw;
+}
+.box-produk-habis{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 4.7vw;
+    width: 6vw;
+    height: 6vw;
+    background-color: var(--primer);
+    border-radius: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.box-produk-habis span{
+    color: var(--sekunder);
+    font-size: 1.3vw;
+}
+@media (max-width:768px) {
+    .box-product{
+        position: relative;
+    }
+    .produk-habis{
+        border-radius: 1.2vw;
+    }
+    .box-produk-habis{
+        top: 14vw;
+        width: 16vw;
+        height: 16vw;
+    }
+    .box-produk-habis span{
+        font-size: 3vw;
+    }
+}
 .box-product-name{
     font-weight: 400;
     font-size: .9vw;
@@ -1985,11 +2075,23 @@ cursor: pointer;
 }
 .box-product-price{
     margin-bottom: .4vw;
+    display: flex;
+    align-items: flex-end;
+    gap: .4vw;
 }
 .box-product-price h4{
     font-size: .9vw;
     font-weight: 600;
     color: var(--tersier);
+}
+.box-product-price h5{
+    font-weight: 400;
+    font-size: .7vw;
+    margin-bottom: .1vw;
+    text-decoration: line-through;
+    text-decoration-color: var(--primer);
+    color: var(--tersier);
+    text-decoration-thickness: .11vw;
 }
 .box-product-price span{
     font-size: .7vw;
@@ -3318,6 +3420,10 @@ border: .12vw solid #251D1B;
     font-size: .9vw;
     cursor: pointer;
 } */
+.product-price-cart span{
+    font-size: .95vw;
+    color: var(--tersier);
+}
 .product-price-cart-action{
     display: flex;
     gap: .5vw;
@@ -3343,6 +3449,9 @@ border: .12vw solid #251D1B;
     color: var(--sekunder);
     font-size: 1vw;
     transform: translate(-50%, -50%);
+}
+.product-price-cart-action button:nth-child(2){
+    background-color: #e9177c;
 }
 .cart-btn-checkout{
     position: fixed;
@@ -3387,7 +3496,7 @@ border: .12vw solid #251D1B;
     color: var(--primer);
 }
 .trash-cart{
-    background-color: #f08080;
+    background-color: #e9177c;
     color: var(--sekunder);
 }
 .trash-cart svg{
@@ -3410,6 +3519,11 @@ border: .12vw solid #251D1B;
     display: block;
     outline: none;
     border: none;
+}
+.checkout-cart:disabled{
+    cursor: not-allowed;
+    background-color: var(--tersier);
+    opacity: .5;
 }
 .pbottom-2{
     padding-bottom: 3.75vw;
@@ -3526,7 +3640,7 @@ input::-webkit-inner-spin-button {
     }
     .total-mobile{
         font-size: 4.5vw;
-        display: block;
+        display: block !important;
     }
     .quantity-selector-mobile{
         display: flex;
@@ -3541,6 +3655,7 @@ input::-webkit-inner-spin-button {
     .quantity-selector p{
         font-size: 3.4vw;
         width: 6vw;
+        color: var(--sekunder) !important;
     }
     .quantity-selector{
         padding: 1.2vw 2.4vw;
@@ -4534,10 +4649,15 @@ input[type=number] {
 }
 @media (max-width:768px) {
     .form-button-style{
-        font-size: 4.5vw;
+        font-size: 4.2vw;
         gap: 1.8vw;
-        padding: 2.7vw;
+        padding: 3vw;
         border-radius: 4vw;
+        position: absolute;
+        bottom: 3.6vw;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
     }
 }
 
@@ -4605,6 +4725,11 @@ input[type=number] {
 .tabs-container{
     margin-bottom: 2vw;
 }
+@media (max-width:768px) {
+    .tabs-container{
+        margin-bottom: 8vw;
+    }
+}
 .tabs{
     display: flex;
     justify-content: center;
@@ -4653,6 +4778,21 @@ input[type=number] {
 .wait-pay-box-dikemas{
     display: grid;
     grid-template-columns: 47% 26% 27%;
+}
+.wait-pay-box-layout{
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+}
+@media (max-width:768px) {
+    .wait-pay-box-layout{
+        display: flex;
+        flex-direction: column;
+        gap: 1.7vw;
+        background-color: var(--primer);
+        padding: 2vw;
+        border-radius: 4vw;
+    }
 }
 .action-pesanan{
     display: flex;
@@ -4804,7 +4944,7 @@ input[type=number] {
         text-align: center;
         border-radius: 3.3vw 3.3vw 0 0;
         padding-bottom: 4vw;
-        margin-bottom: -2.6vw;
+        margin-bottom: -3.8vw;
     }
     .wait-pay-header span{
         font-size: 3vw;
@@ -4824,8 +4964,8 @@ input[type=number] {
         padding: 0 4vw;
     }
     .wait-pay-box-body{
-        background-color: var(--sekunder);
-        
+        background-color: #f3f1fc;
+        border: .3vw solid var(--primer);
     }
     .wait-pay-box-header{
         display: grid;
@@ -4865,13 +5005,15 @@ input[type=number] {
         display: block;
     }
     .product-desc-cart-pesanan h3{
-        border-bottom: .3vw solid var(--primer);
         overflow: hidden !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 1 !important;
     -webkit-box-orient: vertical !important;
     padding-bottom: 0;
-    margin-bottom: 1vw;
+    margin-bottom: 1.4vw;
+    }
+    .product-desc-cart-pesanan p{
+        margin-bottom: 1vw;
     }
 }
 
@@ -5171,7 +5313,7 @@ input[type=number] {
         justify-content: space-between;
         align-items: flex-start;
         flex-direction: column;
-        margin-top: 2.4vw;
+        margin-top: 3vw;
         gap: 3vw;
         padding-bottom: 0;
     }
@@ -5269,10 +5411,18 @@ input[type=number] {
     text-align: start;
 }
 .product-details-checkout img{
-    max-width: 4.9vw;
-    border: .1vw solid var(--primer);
-    max-height: 4.9vw;
-    border-radius: .3vw;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+.product-details-checkout-image{
+    width: 100%;
+    position: relative;
+    height: 4.8vw;
 }
 .product-details-checkout-name{
     display: flex;
@@ -5356,10 +5506,20 @@ input[type=number] {
         width: 100%;
     }
     .product-details-checkout img{
-        max-width: 17vw;
-        border: .2vw solid var(--primer);
-        max-height: 17vw;
-        border-radius: 3vw;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+    .product-details-checkout-image{
+        width: 21.3vw;
+        position: relative;
+        height: 18vw;
+        border-radius: 2vw;
+        overflow: hidden;
     }
     .product-details-checkout-name{
         display: flex;
@@ -5588,7 +5748,8 @@ input[type=number] {
         border-radius: 4vw;
         margin-top: 1.4vw;
         margin-bottom: .5vw;
-        background-color: #8f82ce54;
+        background-color: #8f82ce23;
+        border: .3vw solid var(--primer);
     }
     .list-menu-popup-transaksi ul li{
         display: flex;
@@ -5777,9 +5938,9 @@ input[type=number] {
         margin-bottom: 3.4vw;
     }
     .form-second-layout input{
-        font-size: 4.5vw;
+        font-size: 4vw;
         border: .3vw solid var(--sekunder);
-        padding: 2.7vw 4.2vw;
+        padding: 2.9vw 4.4vw;
         border-radius: 4vw;
     }
     .form-second-layout input:focus{
@@ -5791,21 +5952,21 @@ input[type=number] {
         border-radius: 4vw;
     }
     .select-form-layout svg{
-        font-size: 5vw;
+        font-size: 4.8vw;
         margin-right: 3.2vw;
         color: var(--tersier);
     }
     .select-form-layout select{
-        padding: 2.7vw 4.2vw;
+        padding: 2.9vw 4.4vw;
         border-radius: .5vw;
-        font-size: 4.5vw;
+        font-size: 4vw;
     }
     .textarea-shipping{
-        padding: 2.7vw 4.2vw;
+        padding: 2.9vw 4.4vw;
         width: 100%;
         border: .3vw solid var(--sekunder);
         border-radius: 4vw;
-        font-size: 4.5vw;
+        font-size: 4vw;
         margin-bottom: 3.2vw;
         height: 25vw;
     }
@@ -5822,7 +5983,7 @@ input[type=number] {
         gap: .4vw;
     }
     .choose-coordinate span{
-        font-size: 4.5vw;
+        font-size: 4vw;
     }
     .maps-shipping{
         border-radius: 3vw;
@@ -6024,7 +6185,7 @@ input[type=number] {
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
-        gap: 4vw;
+        gap: 2.5vw;
     }
     .check-ekspedisi{
         font-size: 5.7vw;
@@ -6036,12 +6197,12 @@ input[type=number] {
         gap: 1.1vw;
     }
     .heading-shipping-method h3{
-        font-size: 4.5vw;
+        font-size: 4vw;
         width: 100%;
-        margin-bottom: 1.2vw;
+        margin-bottom: 1vw;
     }
     .heading-shipping-method p{
-        font-size: 4vw;
+        font-size: 3.6vw;
         font-weight: 400;
     }
     .input-search-voucher{

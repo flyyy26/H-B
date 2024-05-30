@@ -124,6 +124,13 @@ const BrandsCatalog = ({ isLoading }) => {
         ) : (
           allProducts.map((product) => (
             <div className="box-product" key={product.posVarianId}>
+              {product.jumlahStok === "0" && (
+                <div className='produk-habis'>
+                  <div className='box-produk-habis'>
+                    <span>Habis</span>
+                  </div>
+                </div>
+              )}
               <div className="image-product">
                 <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
               </div>

@@ -7,8 +7,6 @@ import { useState, useEffect } from 'react';
 // import { Navigation, Autoplay } from "swiper/modules"
 
 import Slider from "react-slick";
-import Image from 'next/image';
-import Navigation from '@/components/navigation'
 
 // Custom Next Arrow
 function SampleNextArrow(props) {
@@ -75,8 +73,6 @@ const BannerPage = () => {
     prevArrow: <SamplePrevArrow />,
     
   };
-
-  
 
   const settingsSecondSlider = {
     dots: true,

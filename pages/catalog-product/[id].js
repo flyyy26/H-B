@@ -54,7 +54,6 @@ const ProductDetails = () => {
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];
-
           cleanedData.keterangan = cleanHtmlTags(cleanedData.keterangan);
           cleanedData.bahan = cleanHtmlTags(cleanedData.bahan);
 
@@ -115,13 +114,24 @@ const ProductDetails = () => {
     router.push('/transaksi-barang');
   };
 
+  const goToCartPage = () => {
+    // Pastikan pengguna telah login dan memiliki ID yang valid
+    if (user && user.posLoginId) {
+        const userId = user.posLoginId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
+        const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
+        router.push(`/keranjang/${userId}/${cartStatus}`);
+    } else {
+        openLogin(); // Log pesan kesalahan jika ID pengguna tidak tersedia
+    }
+    };
+
   return (
     <div className="homepage-layout">
       <div className="product-details-layout">
         <div className="product-details-image">
           <div className="menu-popup-mobile menu-popup-mobile-template menu-popup-mobile-template-product">
             <span className="close"><HiOutlineArrowLeft onClick={() => router.back()} /></span>
-            <span>
+            <span onClick={goToCartPage}>
               {count !== null && (
                 <div className='amount-product'><p>{count}</p></div>
               )}
@@ -135,7 +145,9 @@ const ProductDetails = () => {
             <div className="product-details-variant">
               <span>{details.namaProduk}</span>
               <h1>{details.namaVarian}</h1>
-              <h2>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(details.hargaJual)} <IoMdHeartEmpty onClick={() => handleAddToFavorit(details.posVarianId)}/></h2>
+              <h2>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(details.hargaJual)} 
+                  <IoMdHeartEmpty onClick={() => handleAddToFavorit(details.posVarianId)}/>
+              </h2>
             </div>
             <div className="product-details-merk">
               <div className="product-details-merk-box">

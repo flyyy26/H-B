@@ -56,6 +56,13 @@ const ProductFilterPage = () => {
       <div className='catalog-layout'>
         {products.map((product, index) => (
             <div className="box-product" key={index}>
+              {product.jumlahStok === "0" && (
+                <div className='produk-habis'>
+                  <div className='box-produk-habis'>
+                    <span>Habis</span>
+                  </div>
+                </div>
+              )}
                 <div className="image-product">
                     <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
                 </div>

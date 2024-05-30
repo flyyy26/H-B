@@ -16,6 +16,8 @@ import { HiOutlineArrowLeft } from "react-icons/hi2";
 import { RiHeartsFill } from "react-icons/ri";
 import { GoChevronRight } from "react-icons/go";
 import { Link } from "react-router-dom";
+import Modal from "@/components/modal";
+import { FaMapLocationDot } from "react-icons/fa6";
 
 const MapComponent = dynamic(() => import('@/components/maps'), {
   ssr: false
@@ -46,17 +48,56 @@ const TransaksiBarang = () => {
 const [isModalOpen, setModalOpen] = useState(false);
 const [isModalVoucherOpen, setModalVoucherOpen] = useState(false);
 const [isModalAddressOpen, setModalAddressOpen] = useState(false);
+const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
 const handleOpenModal = () => setModalOpen(true);
 const handleCloseModal = () => setModalOpen(false);
 
-const handleOpenModalAddress = () => setModalAddressOpen(true);
-const handleCloseModalAddress = () => setModalAddressOpen(false);
+const handleOpenModalAddress = () => {
+    // Tampilkan dialog konfirmasi
+    setConfirmDialogOpen(true);
+};
+
+const handleConfirmChangeAddress = () => {
+    localStorage.removeItem('savedAddress');
+    localStorage.removeItem('savedCoordinates');
+
+    setFormData({
+        namaLengkap: '',
+        email: '',
+        nomorTelepon: '',
+        address: '',
+        subdistrict: { id: '', name: '' },
+        city: { id: '', name: '' },
+        province: { id: '', name: '' },
+        kelurahan: '',
+    });
+    setSavedAddress({});
+    setSelectedCoordinates(null);
+    setModalAddressOpen(true)
+    setConfirmDialogOpen(false);
+};
+
+const handleOpenAddressForm = () => {
+    setModalAddressOpen(true)
+    setFormData({
+        namaLengkap: '',
+        email: '',
+        nomorTelepon: '',
+        address: '',
+        subdistrict: { id: '', name: '' },
+        city: { id: '', name: '' },
+        province: { id: '', name: '' },
+        kelurahan: '',
+    });
+};
+const handleCloseModalAddress = () => {
+    setModalAddressOpen(false)
+    setConfirmDialogOpen(false);
+};
 
 const handleOpenModalVoucher = () => setModalVoucherOpen(true);
 const handleCloseModalVoucher = () => setModalVoucherOpen(false);
-
-const [selectedProducts, setSelectedProducts] = useState([]);
 
 
 const [formData, setFormData] = useState({
@@ -208,9 +249,6 @@ const handleSubmitShipping = (e) => {
     }
 };
 
-
-
-// Fungsi untuk menangani perubahan pada input form
 const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -254,6 +292,16 @@ const handleChange = (e) => {
 const [savedAddress, setSavedAddress] = useState({});
 
 useEffect(() => {
+    // Ambil data dari localStorage saat komponen dimuat
+    const storedAddress = JSON.parse(localStorage.getItem('savedAddress'));
+    if (storedAddress) {
+      setFormData(storedAddress);
+      setSavedAddress(storedAddress);
+      console.log(storedAddress)
+    }
+  }, []);
+
+useEffect(() => {
     // Jika formData.subdistrict.id sudah diisi
     if (formData.subdistrict.id) {
         // Ambil opsi pengiriman
@@ -265,12 +313,8 @@ const handleSubmit = (event) => {
     event.preventDefault();
     // Update state untuk menampilkan alamat yang disimpan
     handleCloseModalAddress()
-    setSavedAddress({
-        address: formData.address,
-        subdistrict: formData.subdistrict.name,
-        city: formData.city.name,
-        province: formData.province.name
-    });
+    localStorage.setItem('savedAddress', JSON.stringify(formData));
+    setSavedAddress(formData);
     setIsFormSaved(true);
 };
 
@@ -286,56 +330,31 @@ const [showHalloExpress, setShowHalloExpress] = useState(false);
 const [isFormSaved, setIsFormSaved] = useState(false);
 
 useEffect(() => {
-    if (isFormSaved) {
-        const fetchHalloExpressAvailability = async () => {
-            try {
-                const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
-                setShowHalloExpress(response.status === 200);
-                console.log('Fetching Hallo Express availability...');
-            } catch (error) {
-                console.error('Error fetching Hallo Express availability:', error);
-                setShowHalloExpress(false); // Sembunyikan jika error atau tidak ditemukan
-            }
-        };
+    const fetchHalloExpressAvailability = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
+            setShowHalloExpress(response.status === 200);
+            console.log('Fetching Hallo Express availability...');
+        } catch (error) {
+            console.error('Error fetching Hallo Express availability:', error);
+            setShowHalloExpress(false); // Sembunyikan jika error atau tidak ditemukan
+        }
+    };
 
-        // Periksa apakah kota yang dipilih adalah 'Kota Tasikmalaya' atau 'Kabupaten Tasikmalaya'
-        if (formData.city.name === 'Kota Tasikmalaya' || formData.city.name === 'Kabupaten Tasikmalaya') {
+    const checkHalloExpressAvailability = () => {
+        // Periksa dulu di localStorage apakah data kota tersimpan
+        const storedAddress = JSON.parse(localStorage.getItem('savedAddress'));
+        const cityName = (storedAddress && storedAddress.city.name) || formData.city.name;
+
+        if (cityName === 'Kota Tasikmalaya' || cityName === 'Kabupaten Tasikmalaya') {
             fetchHalloExpressAvailability();
         } else {
-            setShowHalloExpress(false); // Sembunyikan jika kota bukan Tasikmalaya
+            setShowHalloExpress(false);
         }
-    }
-}, [isFormSaved, formData.city.name]);
+    };
 
-
-const [totalHarga, setTotalHarga] = useState(null);
-
-// const fetchDataCartTotalPrice = async () => {
-//     try {
-//         const userId = user.posLoginId;
-//         const cartStatus = 'true';
-
-//         const response = await axios.get(`/api/cartTotalPrice/${userId}/${cartStatus}`);
-//         const data = response.data;
-
-//         // Mengambil nilai count dari respons API dan menyimpannya di state
-//         if (data && data.data && data.data.grand_total_asli) {
-//             const grandTotalAsliInteger = parseInt(data.data.grand_total_asli.replace('.', '')); // Mengubah string menjadi integer, dan menghapus titik desimal jika ada
-//             setTotalHarga(grandTotalAsliInteger); // Menyimpan nilai integer ke dalam state totalHarga
-//             console.log(response.data);
-//         }            
-//     } catch (error) {
-//         console.error('Error fetching cart total:', error);
-//     }
-// };
-
-// useEffect(() => {
-//   if (user && user.posLoginId) {
-//       fetchDataCartTotalPrice();
-//   }
-// }, [user]);
-
-
+    checkHalloExpressAvailability();
+}, [isFormSaved, formData]);
 
 const [isCoordinateSelected, setIsCoordinateSelected] = useState(false);
 
@@ -351,23 +370,27 @@ const handleSubmitCheckout = async () => {
         return;
       }
 
-      const formDataParams = new URLSearchParams({
-        posEmail: user.email,
-        posNoHp: user.noTelp,
-        posAlamat: formData.address,
-        posKelurahan: formData.kelurahan,
-        posKecamatan: formData.subdistrict.name,
-        posKota: formData.city.name,
-        posProvinsi: formData.province.name,
-        posKecamatanKode: formData.subdistrict.id,
-        posKotaKode: formData.city.id,
-        posProvKode: formData.province.id,
-        posShiping: selectedShipping.service,
-        posOngkir: selectedShipping.value,
-        posno_resi: '-', // Isian default
-        posLatitude: selectedCoordinates.lat,
-        posLongitude: selectedCoordinates.lng
-      });
+        const savedCoordinates = JSON.parse(localStorage.getItem('savedCoordinates'));
+        const posLatitude = savedCoordinates ? savedCoordinates.lat : null;
+        const posLongitude = savedCoordinates ? savedCoordinates.lng : null;
+
+        const formDataParams = new URLSearchParams({
+            posEmail: user.email,
+            posNoHp: user.noTelp,
+            posAlamat: formData.address,
+            posKelurahan: formData.kelurahan,
+            posKecamatan: formData.subdistrict.name,
+            posKota: formData.city.name,
+            posProvinsi: formData.province.name,
+            posKecamatanKode: formData.subdistrict.id,
+            posKotaKode: formData.city.id,
+            posProvKode: formData.province.id,
+            posShiping: selectedShipping.service,
+            posOngkir: selectedShipping.value,
+            posno_resi: '-', // Isian default
+            posLatitude: posLatitude, // Ganti dengan nilai latitude yang dipilih
+            posLongitude: posLongitude // Ganti dengan nilai longitude yang dipilih
+        });
 
       const response = await axios.post('http://localhost:4000/api/shipping', formDataParams, {
         headers: {
@@ -391,9 +414,10 @@ const handleSubmitCheckout = async () => {
           posStatus = 'pending';
         }
 
+        const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.posLoginId}`;
         const formDataParamsTransaksi = new URLSearchParams({
-          posMerchantId: 9,
-          posKodeTransaksi: `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.posLoginId}`,
+          posMerchantId: 1,
+          posKodeTransaksi: posKodeTransaksi,
           posCustomerId: user.posLoginId,
           posTanggalTransaksi: getCurrentFormattedDate(),
           posTipeTransaksi: 3,
@@ -464,9 +488,9 @@ const handleSubmitCheckout = async () => {
 
           if (posJenisPembayaranOnline !== 'COD') {
             const midtransTransactionParams = {
-              order_id: transaksiResponse.data.lastTransaksiId,
+              order_id: posKodeTransaksi,
               gross_amount: totalPembayaran,
-              first_name: user.name,
+              first_name: user.nama,
               email: user.email,
               phone: user.noTelp
             };
@@ -521,8 +545,8 @@ const handleSubmitCheckout = async () => {
 
 useEffect(() => {
   const script = document.createElement('script');
-  script.src = 'https://app.sandbox.midtrans.com/snap/snap.js';
-  script.setAttribute('data-client-key', 'SB-Mid-client-S6EszAqNswaDdtwr');
+  script.src = 'https://app.midtrans.com/snap/snap.js';
+  script.setAttribute('data-client-key', 'Mid-client-LqB2N4zhOwgOxZn0');
   document.body.appendChild(script);
 
   return () => {
@@ -546,9 +570,11 @@ const checkoutButton = handleSubmitCheckout;
 
 const [selectedCoordinates, setSelectedCoordinates] = useState(null);
 
-const handleCoordinateSelect = (coordinates) => {
-    setSelectedCoordinates(coordinates);
-  };
+    const handleCoordinateSelect = (coordinates) => {
+        // Simpan koordinat ke localStorage
+        setSelectedCoordinates(coordinates);
+        localStorage.setItem('savedCoordinates', JSON.stringify(coordinates));
+      };
 
 const [vouchers, setVouchers] = useState([]);
 
@@ -619,6 +645,16 @@ useEffect(() => {
   };
   const [totalPembayaran, setTotalPembayaran] = useState(0);
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+      function showModal() {
+        setModalIsOpen(true);
+      }
+    
+      function closeModal() {
+        setModalIsOpen(false);
+      }
+
   useEffect(() => {
     if (transactionData) {
       const totalProduk = transactionData.product.hargaJual * transactionData.quantity;
@@ -656,20 +692,39 @@ useEffect(() => {
                 <div className="border-left-shipping"></div>
                 <div className="border-right-shipping"></div>
                 <div className="shipping-user">
-                    <FaUserCircle />
-                    <h3>{user.nama} ({user.noTelp})</h3>
+                    {user && user.nama && (
+                    <>
+                        <FaUserCircle />
+                        <h3>{user.nama} ({user.noTelp})</h3>
+                    </>
+                    )}
                 </div>
+
                 <div className="shipping-alamat">
-                    {savedAddress.address && savedAddress.subdistrict && savedAddress.city && savedAddress.province ? (
-                        <p>{savedAddress.address}, {savedAddress.subdistrict}, {savedAddress.city}, {savedAddress.province}</p>
+                    {savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name ? (
+                        <p>{savedAddress.address}, {savedAddress.subdistrict.name}, {savedAddress.city.name}, {savedAddress.province.name}</p>
                     ) : (
                         <p>Alamat belum diisi.</p>
                     )}
-                    <button onClick={handleOpenModalAddress}>
-                        {savedAddress.address && savedAddress.subdistrict && savedAddress.city && savedAddress.province ? 'Ubah Alamat' : 'Isi Alamat'}
+                    <button onClick={() => {
+                        if (savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name) {
+                            handleOpenModalAddress();
+                        } else {
+                            handleOpenAddressForm();
+                        }
+                    }}>
+                        {savedAddress.address && savedAddress.subdistrict.name && savedAddress.city.name && savedAddress.province.name ? 'Ubah Alamat' : 'Isi Alamat'}
                     </button>
                 </div>
             </div>
+            <Modal isOpen={confirmDialogOpen} onClose={closeModal}>
+                <FaMapLocationDot className="check-cart"/>
+                <p className="check-notif-cart">Yakin ingin ubah alamat?</p>
+                <div className="confirmation-buttons">
+                    <button onClick={handleCloseModalAddress}>Tidak</button>
+                    <button onClick={handleConfirmChangeAddress}>Lanjut Ubah Alamat</button>
+                </div>
+            </Modal>
             <div className="product-layout-container">
                 <div className="heading-checkout-product-mobile">
                     <h4>Produk yang akan dibeli</h4>
@@ -692,7 +747,9 @@ useEffect(() => {
                         <div className="product-checkout-container">
                             <div className="list-product-checkout">
                                 <div className="product-details-checkout">
-                                    <img src={`https://api.upos-conn.com/master/v1/${transactionData.product.gambar}`} alt={transactionData.product.namaVarian} />
+                                    <div className="product-details-checkout-image">
+                                        <img src={`https://api.upos-conn.com/master/v1/${transactionData.product.gambar}`} alt={transactionData.product.namaVarian} />
+                                    </div>
                                     <div className="product-details-checkout-name">
                                         <h4>{transactionData.product.namaProduk}</h4>
                                         <p>{transactionData.product.namaVarian}</p>
@@ -823,46 +880,45 @@ useEffect(() => {
                         <button className="close-button" onClick={handleCloseModalAddress}><IoClose /></button>
                         <h1>Isi Alamat dulu!</h1>
                         <div className="choose-shipping">
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-second-layout">
-                                    <input type="text" value={user.nama} readOnly/>
-                                    <input type="number" value={user.noTelp} readOnly/>
-                                </div>
-                                <div className="form-second-layout">
-                                    <div className="select-form-layout">
-                                    <select name="province" value={formData.province.id} onChange={handleChange} required>
-                                        <option value="">Pilih Provinsi</option>
-                                        {provinces.map(province => (
-                                            <option key={province.province_id} value={province.province_id}>{province.province}</option>
-                                        ))}
-                                    </select>
-                                        <LuChevronDown />
-                                    </div>
-                                    <div className="select-form-layout">
-                                        <select name="city" value={formData.city.id} onChange={handleChange} required>
-                                            <option value="">Pilih Kota</option>
-                                            {cities.map(city => (
-                                                <option key={city.city_id} value={city.city_id}>{city.type} {city.city_name}</option>
-                                            ))}
-                                        </select>
-                                        <LuChevronDown />
-                                    </div>
-                                </div>
-                                <div className="form-second-layout">
-                                    <div className="select-form-layout">
-                                        <select name="subdistrict" value={formData.subdistrict.id} onChange={handleChange} required>
-                                            <option value="">Pilih Kecamatan</option>
-                                            {subdistrict.map(sd => (
-                                                <option key={sd.subdistrict_id} value={sd.subdistrict_id}>{sd.subdistrict_name}</option>
-                                            ))}
-                                        </select>
-                                        <LuChevronDown />
-                                    </div>
-                                    <input type="text" placeholder="Kelurahan" style={{textTransform: 'capitalize'}} value={formData.kelurahan} onChange={handleKelurahanChange}/>
-                                </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-second-layout">
+                            <input type="text" value={user.nama} readOnly/>
+                            <input type="number" value={user.noTelp} readOnly/>
+                            </div>
+                            <div className="form-second-layout">
+                            <div className="select-form-layout">
+                                <select name="province" value={formData.province.id} onChange={handleChange} required>
+                                <option value="">Pilih Provinsi</option>
+                                {provinces.map(province => (
+                                    <option key={province.province_id} value={province.province_id}>{province.province}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            <div className="select-form-layout">
+                                <select name="city" value={formData.city.id} onChange={handleChange} required>
+                                <option value="">Pilih Kota</option>
+                                {cities.map(city => (
+                                    <option key={city.city_id} value={city.city_id}>{city.type} {city.city_name}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            </div>
+                            <div className="form-second-layout">
+                            <div className="select-form-layout">
+                                <select name="subdistrict" value={formData.subdistrict.id} onChange={handleChange} required>
+                                <option value="">Pilih Kecamatan</option>
+                                {subdistrict.map(sd => (
+                                    <option key={sd.subdistrict_id} value={sd.subdistrict_id}>{sd.subdistrict_name}</option>
+                                ))}
+                                </select>
+                                <LuChevronDown />
+                            </div>
+                            <input type="text" placeholder="Kelurahan" style={{textTransform: 'capitalize'}} value={formData.kelurahan} onChange={handleKelurahanChange}/>
+                            </div>
                                 <textarea placeholder="Alamat Lengkap" className="textarea-shipping" name="address" value={formData.address} onChange={handleChange}></textarea>
                                 <MapComponent kelurahan={formData.kelurahan} city={formData.city} onCoordinateSelect={() => setIsCoordinateSelected(true)} ifCoordinateSelect={handleCoordinateSelect}/>
-                                
                                 <button type="submit" disabled={!isButtonEnabled} className='form-button-style'>Simpan Alamat <FaSave /></button>
                             </form>
                         </div>

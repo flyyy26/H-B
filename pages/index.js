@@ -31,7 +31,7 @@ export default function HomePage({articles}) {
   const [randomProducts, setRandomProducts] = useState([]);
   const [posQty, setPosQty] = useState(1);
   
-  const router = useRouter()
+  const router = useRouter() 
 
   useEffect(() => {
     const fetchDiscount = async () => {
@@ -184,12 +184,12 @@ export default function HomePage({articles}) {
           </div>
           <div className="display-flex mtop-1">
             <div className="banner-catalog-home">
-              <Link href="#">
+              <Link href="/discount">
                 <Image src={discountPromo} alt="Diskon Produk Hallo Beauty"/>
               </Link>
             </div>
             <div className="banner-catalog-mobile">
-              <Link href="#">
+              <Link href="/discount">
                 <Image src={discountPromoMobile} alt="Diskon Produk Hallo Beauty"/>
               </Link>
             </div>
@@ -197,12 +197,26 @@ export default function HomePage({articles}) {
               <div className="list-product-home">
               {discount.map((product, index) => (
                 <div className="box-product box-product-scroll" key={index}>
+                  {product.jumlahStok === "0" && (
+                    <div className='produk-habis'>
+                      <div className='box-produk-habis'>
+                        <span>Habis</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="image-product">
                     <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
                   </div>
                   <h4 className="box-product-name">{product.namaVarian}</h4>
                   <div className="box-product-price">
-                    <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h4>
+                    {product.harga_promo > 0 ? (
+                      <>
+                        <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.harga_promo)}</h4>
+                        <h5>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h5>
+                      </>
+                    ) : (
+                      <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h4>
+                    )}
                   </div>
                   <div className="box-product-btn">
                     <button onClick={() => handleBuyNowClick(product.posVarianId)}>Beli Sekarang</button>
@@ -224,7 +238,7 @@ export default function HomePage({articles}) {
           </div>
           <div className="display-flex mtop-1">
             <div className="banner-catalog-mobile">
-              <Link href="#">
+              <Link href="/catalog-product">
                 <Image src={discountPromoMobile} alt="Diskon Produk Hallo Beauty"/>
               </Link>
             </div>
@@ -232,6 +246,13 @@ export default function HomePage({articles}) {
               <div className="list-product-home">
               {randomProducts.map((product, index) => (
                 <div className="box-product box-product-scroll" key={index}>
+                  {product.jumlahStok === "0" && (
+                    <div className='produk-habis'>
+                      <div className='box-produk-habis'>
+                        <span>Habis</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="image-product">
                     <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
                   </div>
@@ -251,7 +272,7 @@ export default function HomePage({articles}) {
               </div>
             </div>
             <div className="banner-catalog-home">
-              <Link href="#">
+              <Link href="/catalog-product">
                 <Image src={lihatDulu} alt="Diskon Produk Hallo Beauty"/>
               </Link>
             </div>
