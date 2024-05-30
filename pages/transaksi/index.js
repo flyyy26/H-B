@@ -18,8 +18,9 @@ import { GoChevronRight } from "react-icons/go";
 import { Link } from "react-router-dom";
 import Modal from "@/components/modal";
 import { FaMapLocationDot } from "react-icons/fa6";
+require('dotenv').config();
 
-
+const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
 const MapComponent = dynamic(() => import('@/components/maps'), {
     ssr: false
@@ -613,7 +614,7 @@ export default function Transaksi(){
     useEffect(() => {
         const script = document.createElement('script');
         script.src = 'https://app.midtrans.com/snap/snap.js';
-        script.setAttribute('data-client-key', 'Mid-client-LqB2N4zhOwgOxZn0'); 
+        script.setAttribute('data-client-key', MIDTRANS_CLIENT_KEY); 
         document.body.appendChild(script);
 
         return () => {
