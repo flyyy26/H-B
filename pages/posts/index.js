@@ -10,7 +10,7 @@ export default function Post({ limit }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/article');
+        const response = await fetch('http://103.153.43.25/api/article');
         const data = await response.json();
         if (data && data.data) { // Pastikan data dan data.data ada
           setArticles(data.data); // Setel data objek banner
@@ -75,7 +75,7 @@ export default function Post({ limit }) {
 export async function getStaticProps() {
   // Fetch data for the component
   try {
-    const response = await fetch('http://localhost:3000/api/article');
+    const response = await fetch('http://103.153.43.25/api/article');
     const data = await response.json();
     if (data && data.data) { // Pastikan data dan data.data ada
       return {

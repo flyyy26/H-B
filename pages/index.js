@@ -36,7 +36,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/discount');
+        const response = await fetch('http://103.153.43.25/api/discount');
         const data = await response.json();
         const limitedData = data.data.slice(0, 4); // Limit to 4 items
         setDiscount(limitedData);
@@ -51,7 +51,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/category');
+      const response = await fetch('http://103.153.43.25/api/category');
       const data = await response.json();
 
       // Membersihkan data kategori dari simbol &amp;
@@ -72,7 +72,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/randomProduct');
+        const response = await axios.get('http://103.153.43.25/api/randomProduct');
         const randomProductsData = response.data.sort(() => Math.random() - 0.5).slice(0, 4);
         setRandomProducts(randomProductsData);
       } catch (error) {
@@ -114,7 +114,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchBestSeller = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/bestSeller');
+        const response = await fetch('http://103.153.43.25/api/bestSeller');
         const data = await response.json();
         setBestSeller(data.data);
       } catch (error) {

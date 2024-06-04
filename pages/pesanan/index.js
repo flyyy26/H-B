@@ -32,7 +32,7 @@ const Pesanan = () => {
             if (!customerId) return;
 
             try {
-                const response = await axios.get(`/api/listTransaksi/${customerId}`);
+                const response = await axios.get(`http://103.153.43.25/api/listTransaksi/${customerId}`);
                 const data = response.data;
 
                 console.log(response.data)
@@ -56,7 +56,7 @@ const Pesanan = () => {
 
     const fetchDriverDetails = async (no_resi) => {
         try {
-            const response = await axios.get(`/api/driver/${no_resi}`);
+            const response = await axios.get(`http://103.153.43.25/api/driver/${no_resi}`);
             if (response.status === 200) {
                 const details = response.data.data;
     
@@ -81,7 +81,7 @@ const Pesanan = () => {
 
     const fetchTransactionDetails = async (posTransaksiId) => {
         try {
-            const response = await axios.get(`/api/transaksiDetail/${posTransaksiId}`);
+            const response = await axios.get(`http://103.153.43.25/api/transaksiDetail/${posTransaksiId}`);
             if (response.status === 200) {
                 const details = response.data.data;
 
@@ -101,7 +101,7 @@ const Pesanan = () => {
 
     const fetchProductDetails = async (varianiId) => {
         try {
-            const response = await axios.get(`/api/productId/${varianiId}`);
+            const response = await axios.get(`http://103.153.43.25/api/productId/${varianiId}`);
             if (response.status === 200) {
                 const productData = response.data.data[0]; // Assuming data is in the first element of the array
                 setProductDetails(prevDetails => ({
@@ -116,7 +116,7 @@ const Pesanan = () => {
 
     const handleDeleteTransaction = async (posTransaksiId) => {
         try {
-            const responseTransaction = await axios.delete(`/api/deleteTransaction/${posTransaksiId}`);
+            const responseTransaction = await axios.delete(`http://103.153.43.25/api/deleteTransaction/${posTransaksiId}`);
             if (responseTransaction.status === 200) {
                 setTransactions(prevTransactions => (
                     prevTransactions.filter(transaction => transaction.posTransaksiId !== posTransaksiId)
@@ -124,7 +124,7 @@ const Pesanan = () => {
 
                 const transactionDetailsToDelete = transactionDetails[posTransaksiId] || [];
                 for (let detail of transactionDetailsToDelete) {
-                    await axios.delete(`/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
+                    await axios.delete(`http://103.153.43.25/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
                 }
 
                 setTransactionDetails(prevDetails => {
@@ -154,7 +154,7 @@ const Pesanan = () => {
 
     const handleRetryPayment = async (transaction) => {
         try {
-            const response = await fetch('http://localhost:3000/api/retry-payment', {
+            const response = await fetch('http://103.153.43.25/api/retry-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

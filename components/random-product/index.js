@@ -24,7 +24,7 @@ function RandomProduct({ limit }) {
         const totalPages = 131; // Ganti dengan jumlah total halaman yang tersedia di API Anda
         const randomPage = Math.floor(Math.random() * totalPages) + 1; // Menghasilkan nomor halaman secara acak
   
-        const response = await axios.get(`http://localhost:3000/api/randomProduct?page=${randomPage}`);
+        const response = await axios.get(`http://103.153.43.25/api/randomProduct?page=${randomPage}`);
         if (response.data && Array.isArray(response.data)) {
           // Use map to iterate over the products and replace &amp; with &
           const cleanedData = response.data.map(product => ({

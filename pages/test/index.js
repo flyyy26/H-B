@@ -17,7 +17,7 @@ function Test() {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/test');
+        const response = await fetch('http://103.153.43.25/api/test');
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {

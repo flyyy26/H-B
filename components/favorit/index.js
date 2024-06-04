@@ -32,7 +32,7 @@ const FavoritComponent = ({ id, status }) => {
   const fetchData = async () => {
     if (id && status) {
       try {
-        const response = await axios.get(`http://localhost:3000/api/cart/${id}/${status}`);
+        const response = await axios.get(`http://103.153.43.25/api/cart/${id}/${status}`);
         if (response.status === 200) {
           // Replace &amp; in namaVarian and namaProduk
           const cleanedData = response.data.data.map(item => ({
@@ -64,7 +64,7 @@ const FavoritComponent = ({ id, status }) => {
 
 const handleDeleteAllCartItems = async () => {
   try {
-    const response = await axios.delete(`http://localhost:3000/api/deleteAllFavorit/${user.userId}/2`);
+    const response = await axios.delete(`http://103.153.43.25/api/deleteAllFavorit/${user.userId}/2`);
     if (response.status === 200) {
       if (response.data && response.data.messages && response.data.messages.success) {
         showModal(response.data.messages.success);

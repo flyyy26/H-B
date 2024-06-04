@@ -37,7 +37,7 @@ const ProductDetails = () => {
                 const userId = user.userId;
                 const cartStatus = 1;
 
-                const response = await axios.get(`http://localhost:3000/api/cartTotal/${userId}/${cartStatus}`);
+                const response = await axios.get(`http://103.153.43.25/api/cartTotal/${userId}/${cartStatus}`);
                 const data = response.data;
 
                 if (data && data.data && data.data.count) {
@@ -57,7 +57,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchDetailsProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/productId/${router.query.id}`);
+        const response = await fetch(`http://103.153.43.25/api/productId/${router.query.id}`);
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];

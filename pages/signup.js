@@ -21,7 +21,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/daftar', {
+      const response = await fetch('http://103.153.43.25/api/daftar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'

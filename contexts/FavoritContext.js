@@ -32,7 +32,7 @@ export const FavoritProvider = ({ children }) => {
         return;
       }
 
-      const response = await axios.post('http://localhost:3000/api/addToFavorit', { 
+      const response = await axios.post('http://103.153.43.25/api/addToFavorit', { 
         posUser_id: user.userId,
         posVarian_id: posVarianId
       });

@@ -17,7 +17,7 @@ function BestSeller({ limit }) {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/bestSeller');
+        const response = await fetch('http://103.153.43.25/api/bestSeller');
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {

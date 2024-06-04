@@ -10,7 +10,7 @@ export default function Merk(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/brands');
+                const response = await fetch('http://103.153.43.25/api/brands');
                 const data = await response.json();
                 if (data && data.data) { // Pastikan data dan data.data ada
                 setBrands(data.data); // Setel data objek banner

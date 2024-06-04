@@ -18,7 +18,7 @@ export default function VerifikasiPage() {
 
     useEffect(() => {
         if (email && token) {
-            fetch(`http://localhost:3000/api/verifikasi?email=${email}&token=${token}`)
+            fetch(`http://103.153.43.25/api/verifikasi?email=${email}&token=${token}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log("Response data from /api/verifikasi:", data);  // Log the data from the /api/verif
