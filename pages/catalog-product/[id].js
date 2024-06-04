@@ -11,6 +11,7 @@ import { RiHeartsFill } from "react-icons/ri";
 import { IoCart } from "react-icons/io5";
 import { useAuth } from '@/contexts/AuthContext';
 import axios from 'axios';
+import LoginForm from '@/components/login-form';
 
 const ProductDetails = () => {
   const { user } = useAuth();
@@ -19,18 +20,24 @@ const ProductDetails = () => {
   const [posQty, setPosQty] = useState(1);
   const { handleAddToFavorit } = useFavorit();
   const { handleAddToCart } = useCart();
+  const [showLogin, setShowLogin] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [count, setCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    if (user && user.posLoginId) {
+    if (user && user.userId) {
         const fetchDataCartTotal = async () => {
             try {
-                const userId = user.posLoginId;
+                const userId = user.userId;
                 const cartStatus = 1;
 
-                const response = await axios.get(`http://localhost:4000/api/cartTotal/${userId}/${cartStatus}`);
+                const response = await axios.get(`http://localhost:3000/api/cartTotal/${userId}/${cartStatus}`);
                 const data = response.data;
 
                 if (data && data.data && data.data.count) {
@@ -50,7 +57,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchDetailsProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/productId/${router.query.id}`);
+        const response = await fetch(`http://localhost:3000/api/productId/${router.query.id}`);
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];
@@ -105,7 +112,22 @@ const ProductDetails = () => {
     }
   };
 
+  
+
+  const openLogin = () => {
+    setShowLogin(true);
+  };
+
+  const closeLogin = () => {
+    setShowLogin(false);
+  };
+
   const handleBuyNow = () => {
+    if (!user || !user.userId) {
+      router.push(`/masuk`);
+      return;
+    }
+
     const transactionData = {
       product: details,
       quantity: posQty
@@ -116,8 +138,8 @@ const ProductDetails = () => {
 
   const goToCartPage = () => {
     // Pastikan pengguna telah login dan memiliki ID yang valid
-    if (user && user.posLoginId) {
-        const userId = user.posLoginId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
+    if (user && user.userId) {
+        const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
         const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
         router.push(`/keranjang/${userId}/${cartStatus}`);
     } else {
@@ -127,6 +149,7 @@ const ProductDetails = () => {
 
   return (
     <div className="homepage-layout">
+      {showLogin && <LoginForm onClose={closeLogin} suppressHydrationWarning/>}
       <div className="product-details-layout">
         <div className="product-details-image">
           <div className="menu-popup-mobile menu-popup-mobile-template menu-popup-mobile-template-product">

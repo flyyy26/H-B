@@ -32,7 +32,7 @@ const RegisterForm = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:4000/api/daftar', {
+      const response = await fetch('http://localhost:3000/api/daftar', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -112,7 +112,7 @@ const RegisterForm = ({ onClose }) => {
             <button type="submit">Daftar</button>
         </form>
         <span><p>Sudah punya akun?</p> <p onClick={masukClick} className='btn-popup-mobile-other'>Masuk</p></span>
-        <button onClick={handleBackLogin} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
+        <button onClick={() => router.back()} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
       </div>
       <img src='/images/bg-login-dekstop.png' alt='Logo H!bi' className='logo-login-dekstop'/>
       {message && (
@@ -134,7 +134,7 @@ const RegisterForm = ({ onClose }) => {
           </div>
         </div>
       )}
-      <button onClick={handleBackLogin} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
+      <button onClick={() => router.back()} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
     </div>
   );
 };

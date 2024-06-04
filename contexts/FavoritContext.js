@@ -26,14 +26,14 @@ export const FavoritProvider = ({ children }) => {
 
   const handleAddToFavorit = async (posVarianId) => {
     try {
-      if (!user || !user.posLoginId) {
+      if (!user || !user.userId) {
         openLogin();
         // Tambahkan logika untuk menangani jika pengguna tidak login
         return;
       }
 
-      const response = await axios.post('http://localhost:4000/api/addToFavorit', { 
-        posUser_id: user.posLoginId,
+      const response = await axios.post('http://localhost:3000/api/addToFavorit', { 
+        posUser_id: user.userId,
         posVarian_id: posVarianId
       });
 

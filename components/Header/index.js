@@ -39,7 +39,7 @@ export default function Header(){
     useEffect(() => {
         const fetchLogo = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/logo');
+                const response = await axios.get('http://localhost:3000/api/logo');
                 const logoPath = response.data.data.image;
                 setImageUrl(`https://prahwa.net/storage/${logoPath}`); 
             } catch (error) {
@@ -75,8 +75,8 @@ export default function Header(){
 
     const goToCartPage = () => {
     // Pastikan pengguna telah login dan memiliki ID yang valid
-    if (user && user.posLoginId) {
-        const userId = user.posLoginId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
+    if (user && user.userId) {
+        const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
         const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
         router.push(`/keranjang/${userId}/${cartStatus}`);
     } else {
@@ -86,8 +86,8 @@ export default function Header(){
 
     const goToFavoritPage = () => {
         // Pastikan pengguna telah login dan memiliki ID yang valid
-        if (user && user.posLoginId) {
-            const userId = user.posLoginId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
+        if (user && user.userId) {
+            const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
             const cartStatus = 2; // Ganti dengan status keranjang yang sesuai
             router.push(`/favorit/${userId}/${cartStatus}`);
         } else {
@@ -99,13 +99,13 @@ export default function Header(){
     const [countFavorit, setCountFavorit] = useState(0);
 
     useEffect(() => {
-        if (user && user.posLoginId) {
+        if (user && user.userId) {
             const fetchDataCartTotal = async () => {
                 try {
-                    const userId = user.posLoginId;
+                    const userId = user.userId;
                     const cartStatus = 1;
 
-                    const response = await axios.get(`http://localhost:4000/api/cartTotal/${userId}/${cartStatus}`);
+                    const response = await axios.get(`http://localhost:3000/api/cartTotal/${userId}/${cartStatus}`);
                     const data = response.data;
 
                     if (data && data.data && data.data.count) {
@@ -123,13 +123,13 @@ export default function Header(){
     }, [user]);
 
     useEffect(() => {
-        if (user && user.posLoginId) {
+        if (user && user.userId) {
             const fetchDataFavoritTotal = async () => {
                 try {
-                    const userId = user.posLoginId;
+                    const userId = user.userId;
                     const cartStatus = 2;
 
-                    const response = await axios.get(`http://localhost:4000/api/cartTotal/${userId}/${cartStatus}`);
+                    const response = await axios.get(`http://localhost:3000/api/cartTotal/${userId}/${cartStatus}`);
                     const data = response.data;
 
                     if (data && data.data && data.data.count) {
@@ -320,10 +320,10 @@ export default function Header(){
                         <h3>Aktivitas <span>Beauty Bestie</span></h3>
                         <ul>
                             <Link href='#' onClick={handleClickFavorit} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><RiHeartsFill /> Lihat Favorit</div><GoChevronRight /></li></Link>
-                            <Link href='#' className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><PiClipboardTextFill /> Pesanan Kamu</div><GoChevronRight /></li></Link>
+                            <Link href='/pesanan' onClick={toggleMenuMobile} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><PiClipboardTextFill /> Pesanan Kamu</div><GoChevronRight /></li></Link>
                             <Link href='/catalog-product' onClick={toggleMenuMobile} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><FaShoppingBasket/>Katalog Produk</div><GoChevronRight /></li></Link>
                             <Link href='/discount' onClick={toggleMenuMobile} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><PiPercentFill /> Produk Promo</div><GoChevronRight /></li></Link>
-                            <Link href='/posts' onClick={toggleMenuMobile} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><BsFillFileEarmarkTextFill /> Artikel Hib!</div><GoChevronRight /></li></Link>
+                            <Link href='/artikel' onClick={toggleMenuMobile} className="menu-popup-mobile-item-link"><li><div className="menu-popup-mobile-item"><BsFillFileEarmarkTextFill /> Artikel Hib!</div><GoChevronRight /></li></Link>
                         </ul>
                     </div>
                     <div className="identity-mobile">

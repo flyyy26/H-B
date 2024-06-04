@@ -26,14 +26,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const handleAddToCart = async (posVarianId, quantity) => {
-    if (!user || !user.posLoginId) {
+    if (!user || !user.userId) {
       openLogin();
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/api/addToCart', {
-        posUser_id: user.posLoginId,
+      const response = await axios.post('http://localhost:3000/api/addToCart', {
+        posUser_id: user.userId,
         posVarian_id: posVarianId,
         posQty: quantity 
       });

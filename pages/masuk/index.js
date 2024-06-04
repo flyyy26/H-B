@@ -35,7 +35,7 @@ const LoginForm = ({ onClose }) => {
     e.preventDefault();
     setButtonText('Tunggu sebentar...');
     try {
-      const response = await axios.post('http://localhost:4000/api/login', formData);
+      const response = await axios.post('http://localhost:3000/api/login', formData);
       const data = response.data;
 
       if (data.status === 200) {
@@ -95,7 +95,7 @@ const LoginForm = ({ onClose }) => {
     // Pastikan event tidak membubbling
     e.preventDefault();
     window.location.href = '/daftar';
-    // Navigasi ke halaman daftar setelah onClose dijalankan
+    // Navigasi ke halaman daftar setelah onClose dijalankan 
     
   };
 
@@ -136,7 +136,7 @@ const LoginForm = ({ onClose }) => {
             <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>Masuk</button>
         </form>
         <span><p>Belum punya akun?</p> <p onClick={registerClick} className='btn-popup-mobile-other'>Daftar</p></span>
-        <button onClick={handleBackLogin} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
+        <button onClick={() => router.back()} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
       </div>
       <img src='/images/bg-login-dekstop.png' alt='Logo H!bi' className='logo-login-dekstop'/>
       {message && (
@@ -163,7 +163,7 @@ const LoginForm = ({ onClose }) => {
           </div>
         </div>
       )}
-      <button onClick={handleBackLogin} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
+      <button onClick={() => router.back()} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
     </div>
   );
 };

@@ -142,7 +142,16 @@ body{
 .list-menu-popup-mobile{
     display: none;
 }
+.pesanan-kosong{
+    width: 23vw;
+    display: block;
+        margin: auto;
+}
 @media (max-width:768px) {
+    .pesanan-kosong{
+        width: 46vw;
+        
+    }
     .menu-mobile{
         display: block;
         position: fixed;
@@ -151,8 +160,8 @@ body{
         width: 100%;
         z-index: 50;
         background-color: var(--sekunder);
-        padding: 2vw 4vw;
-        padding-top: 2.7vw;
+        padding: 2.6vw 4vw;
+        padding-top: 3vw;
         box-shadow: 0px -3px 22px -7px rgba(70,67,91,0.3);
 -webkit-box-shadow: 0px -3px 22px -7px rgba(70,67,91,0.3);
 -moz-box-shadow: 0px -3px 22px -7px rgba(70,67,91,0.3);
@@ -168,7 +177,7 @@ body{
     }
     .menu-mobile-layout ul li a{
         color: var(--tersier);
-        font-size: 3.5vw;
+        font-size: 3.3vw;
     }
     .menu-mobile-layout ul li a span{
         display: flex;
@@ -1898,7 +1907,7 @@ p{
         padding: 0 4vw;
     }
     .mobile-option-box img{
-        width: 65%;
+        width: 15vw;
         display: block;
         margin: auto;
         margin-bottom: 2.5vw;
@@ -1917,6 +1926,17 @@ p{
     background-color: #251D1B;
     height: auto;
     border-radius: 1vw;
+    position: relative;
+    height: 32.4vw;
+    overflow: hidden;
+}
+.topup img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
 }
 .display-flex{
     display: flex;
@@ -2197,10 +2217,15 @@ cursor: pointer;
     }
     .box-product-price{
         margin-bottom: 2.3vw;
+        gap: 1.3vw;
     }
     .box-product-price h4{
         font-size: 4vw;
         font-weight: 600;
+    }
+    .box-product-price h5{
+        font-size: 3vw;
+        margin-bottom: .3vw;
     }
     .box-product-btn{
         display: grid;
@@ -2526,6 +2551,12 @@ cursor: pointer;
     grid-gap: 1.8vw;
     margin-top: 1.7vw;
 }
+.artikel-layout-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1.8vw;
+    margin-top: 1.7vw;
+}
 .post-card span{
     font-size: .9vw;
     text-transform: uppercase;
@@ -2616,11 +2647,19 @@ cursor: pointer;
     color: #423836;
     letter-spacing: .03vw;
 }
+.artikel-layouting{
+    width: 100%;
+    padding: 2vw 5vw;
+}
 @media (max-width:768px) {
     .post-layouting{
         width: 100%;
         margin: 7vw 0;
         margin-top: 7vw;
+    }
+    .artikel-layouting{
+        width: 100%;
+        padding: 2vw 4vw;
     }
     .padding-mobile{
         padding: 0 4vw;
@@ -2638,8 +2677,16 @@ cursor: pointer;
         display: flex;
         gap: 4.5vw;
     }
+    .artikel-layout-grid{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 4vw;
+    }
     .post-card{
         width: 60vw;
+    }
+    .artikel-layout-grid .post-card{
+        width: 100%;
     }
     .post-card-img{
         height: 37vw;
@@ -3365,6 +3412,12 @@ border: .12vw solid #251D1B;
     grid-gap: 1.4vw;
     align-items: center;
 }
+.product-detail-pesanan{
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-gap: 2.4vw;
+    align-items: center;
+}
 .product-image-cart{
     width: 5vw;
     height: 5vw;
@@ -3702,8 +3755,9 @@ input::-webkit-inner-spin-button {
         margin-bottom: 2.3vw;
         padding-right: 0;
         font-weight: 400;
-        border-bottom: .3vw solid var(--sekunder);
-        padding-bottom: 2vw;
+        border-bottom:none;
+        padding-bottom: 0;
+        -webkit-line-clamp: 1;
     }
     .product-desc-cart span{
         font-size: 4vw;
@@ -4089,6 +4143,7 @@ input[type=number] {
     gap: .7vw;
     border-radius: .8vw;
     background-color: var(--sekunder);
+    width: max-content;
 }
 .product-details-merk-box h3{
     font-size: 1.2vw;
@@ -4745,6 +4800,7 @@ input[type=number] {
     transition: .4s all;
     color: var(--tersier);
     border-radius: 3vw;
+    outline: none;
 }
 .tabs button.active{
     background-color:#8f82ce21 ;
@@ -4754,6 +4810,9 @@ input[type=number] {
     background-color: var(--sekunder);
     border-radius: 1.5vw;
     margin-bottom: 1vw;
+    position: relative;
+    z-index: 4;
+    transition: .4s all;
 }
 .wait-pay:nth-child(1){
     border-top: none;
@@ -4761,13 +4820,16 @@ input[type=number] {
 
 .wait-pay-box-header{
     display: grid;
-    grid-template-columns: 44% 14% 21% 21%;
+    grid-template-columns: 30% 15% 15% 15% 25%;
     width: 100%;
     background-color: transparent;
     width: 100%;
     padding: 1vw;
     border-radius: 1vw;
     margin-top: 0;
+}
+.wait-pay-box-header-success{
+    grid-template-columns: 35% 16% 16% 16% 17%;
 }
 .wait-pay-box-header .header-cart-dekstop-box:nth-child(1){
     text-align: start;
@@ -4777,12 +4839,45 @@ input[type=number] {
 }
 .wait-pay-box-dikemas{
     display: grid;
-    grid-template-columns: 47% 26% 27%;
+    grid-template-columns: 32% 26% 15% 27%;
 }
 .wait-pay-box-layout{
     display: flex;
     flex-direction: column;
     gap: 1vw;
+}
+.driver-layout{
+    transition: .3s all;
+    margin-top: .5vw;
+    margin-right: 1vw;
+}
+.driver-box{
+    display: flex;
+    align-items: center;
+    gap: .6vw;
+    color: var(--primer);
+}
+.driver-box-name{
+    display: flex;
+    align-items: center;
+    gap: .4vw;
+}
+/* .wait-pay:hover .driver-layout{
+    transform: translateY(0);
+    margin-top: 1vw;
+    position: relative;
+} */
+.wait-pay-dikirim{
+    display: flex;
+    justify-content: space-between;
+}
+.wait-pay-dikirim p{
+    font-size: .8vw;
+    color: var(--primer);
+}
+.driver-box-name svg{
+    font-size: 1vw;
+    color: var(--primer);
 }
 @media (max-width:768px) {
     .wait-pay-box-layout{
@@ -4793,32 +4888,42 @@ input[type=number] {
         padding: 2vw;
         border-radius: 4vw;
     }
+    .wait-pay-box-layout-success{
+        background-color: #75D6CD;
+    }
+    .wait-pay-box-layout-success .wait-pay-box-body {
+        border: none;
+    }
+    .wait-pay-box-layout-pending{
+        background-color: #D40066;
+    }
+    .wait-pay-box-layout-pending .wait-pay-box-body {
+        border: none;
+    }
 }
 .action-pesanan{
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     gap: .5vw;
 }
 .cancel-pesanan{
-    width: 100%;
     border: #E5E5E5;
-    padding: .5vw 1vw;
+    padding: .5vw 1.2vw;
     background-color: #D40066;
     border: none;
     outline: none;
-    font-size: .7vw;
+    font-size: .9vw;
     color: white;
     border-radius: .6vw;
     cursor: pointer;
 }
 .pay-pesanan{
-    width: 100%;
     border: .12vw solid var(--primer);
-    padding: .5vw 1vw;
+    padding: .5vw 1.2vw;
     background-color: transparent;
     border-radius: .6vw;
-    font-size: .7vw;
+    font-size: .9vw;
     color: #251D1B;
     outline: none;
     cursor: pointer;
@@ -4848,9 +4953,9 @@ input[type=number] {
     width: max-content;
 }
 .wait-pay-header-complete{
-    background-color: #75d6cc1e;
+    background-color: #75D6CD;
     border: .12vw solid #75D6CD;
-    color: #75D6CD;
+    color: var(--sekunder);
 }
 .kurir-image{
     width: 3vw;
@@ -4905,7 +5010,18 @@ input[type=number] {
 .container-small-checkout {
     padding: 1vw 19vw;
 }
+.isi-alamat-icon{
+    width: 26vw;
+    display: block;
+    margin: auto;
+}
 @media (max-width:768px) {
+    .isi-alamat-icon{
+        width: 82vw;
+        display: block;
+        margin: auto;
+        margin-top: 39vw;
+    }
     .random-products-container{
         margin-top: 10vw !important;
     }
@@ -4944,16 +5060,16 @@ input[type=number] {
         text-align: center;
         border-radius: 3.3vw 3.3vw 0 0;
         padding-bottom: 4vw;
-        margin-bottom: -3.8vw;
+        margin-bottom: -3.3vw;
     }
     .wait-pay-header span{
         font-size: 3vw;
         font-weight: 400;
     }
     .wait-pay-header-complete{
-        background-color: #75d6cc1e;
+        background-color: #75D6CD;
         border: .3vw solid #75D6CD;
-        color: #75D6CD;
+        color: var(--sekunder);
     }
     .wait-pay{
         padding: 1.6vw 0;
@@ -4984,6 +5100,7 @@ input[type=number] {
         font-size: 3vw;
         font-weight: 300;
         border-radius: 4vw;
+        width: 100%;
     }
     .pay-pesanan{
         border: .3vw solid var(--primer);
@@ -4991,9 +5108,10 @@ input[type=number] {
         border-radius: 4vw;
         font-size: 3vw;
         color: var(--primer);
+        width: 100%;
     }
     .pay-pesanan-again{
-        font-size: 1vw;
+        font-size: 3.7vw;
     }
     .product-desc-cart{
         display: flex;
@@ -5780,7 +5898,7 @@ input[type=number] {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    z-index: 15;
 }
 .modal-box-shipping{
     background-color: #FCF9FD;

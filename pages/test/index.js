@@ -5,7 +5,7 @@ import { useFavorit } from "@/contexts/FavoritContext";
 import { BsCartPlusFill } from "react-icons/bs";
 import { IoMdHeartEmpty } from "react-icons/io";
 
-function Discount({ limit }) {
+function Test() {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
   const [posQty, setPosQty] = useState(1);
@@ -17,7 +17,7 @@ function Discount({ limit }) {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/discount');
+        const response = await fetch('http://localhost:3000/api/test');
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {
@@ -75,4 +75,4 @@ function Discount({ limit }) {
   );
 }
 
-export default Discount;
+export default Test;

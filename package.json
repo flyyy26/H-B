@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next -p 4000",
+    "dev": "next -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
-  },
+  },  
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
     "axios": "^1.6.8",

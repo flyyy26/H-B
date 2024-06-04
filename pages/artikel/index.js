@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import router from "next/router";
-import Link from "next/link";
 
-export default function Post({ limit }) {
+export default function Artikel() {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
@@ -27,11 +26,9 @@ export default function Post({ limit }) {
 
   console.log(articles)
 
-  const limitedArticles = limit ? articles.slice(0, limit) : articles;
-
   // Fungsi untuk menavigasi ke halaman detail postingan
   const navigateToDetail = (id) => {
-    router.push(`/posts/${id}`);
+    router.push(`/artikel/${id}`);
   };
 
   const formatDate = (timestamp) => {
@@ -42,19 +39,10 @@ export default function Post({ limit }) {
   };
 
   return (
-    <div className="mtop-3 post-layouting">
-      <div className="heading-small padding-mobile">
-        <h1>Trik Cantik yang Harus Diketahui oleh Para <span>beauty bestie</span></h1>
-      </div>
-      <div className="heading-mobile">
-        <h1>Artikel dari Hib!</h1>
-        <Link href="/artikel">
-        <span>Lihat Semua</span>
-        </Link>
-      </div>
+    <div className="artikel-layouting">
       <div className="post-layouting-scroll">
-        <div className="post-layout-grid">
-          {limitedArticles.map(item => (
+        <div className="artikel-layout-grid">
+          {articles.map(item => (
             <div className="post-card" key={item.id}>
               <div className="post-card-img">
                 <img src={`https://prahwa.net/storage/${item.image}`} alt={item.title}/>

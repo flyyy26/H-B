@@ -11,7 +11,12 @@ export const AuthProvider = ({ children }) => {
     const cookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('user='));
     if (cookie) {
       const userData = cookie.split('=')[1];
-      setUser(JSON.parse(userData));
+      try {
+        const parsedUserData = JSON.parse(userData);
+        setUser(parsedUserData);
+      } catch (error) {
+        console.error('Error parsing user data from cookie:', error);
+      }
     }
   }, []);
 

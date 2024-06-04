@@ -36,7 +36,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/discount');
+        const response = await fetch('http://localhost:3000/api/discount');
         const data = await response.json();
         const limitedData = data.data.slice(0, 4); // Limit to 4 items
         setDiscount(limitedData);
@@ -51,7 +51,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/category');
+      const response = await fetch('http://localhost:3000/api/category');
       const data = await response.json();
 
       // Membersihkan data kategori dari simbol &amp;
@@ -72,7 +72,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/randomProduct');
+        const response = await axios.get('http://localhost:3000/api/randomProduct');
         const randomProductsData = response.data.sort(() => Math.random() - 0.5).slice(0, 4);
         setRandomProducts(randomProductsData);
       } catch (error) {
@@ -114,7 +114,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchBestSeller = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/bestSeller');
+        const response = await fetch('http://localhost:3000/api/bestSeller');
         const data = await response.json();
         setBestSeller(data.data);
       } catch (error) {
@@ -135,22 +135,30 @@ export default function HomePage({articles}) {
 
       <div className="homepage-layout">
           <div className="mobile-option">
+            <Link href="/catalog-product/search/face">
             <div className="mobile-option-box">
-              <img src="images/pulsa-data.png" />
-              <h3>Pulsa & Data</h3>
+              <img src="images/face-care.png" />
+              <h3>Face Care</h3>
             </div>
+            </Link>
+            <Link href="/catalog-product/search/body">
             <div className="mobile-option-box">
-              <img src="images/topup.png" />
-              <h3>Top up & Tagihan</h3>
+              <img src="images/body-care.png" />
+              <h3>Body Care</h3>
             </div>
+            </Link>
+            <Link href="/catalog-product/search/skin">
             <div className="mobile-option-box">
-              <img src="images/artikel.png" />
-              <h3>Artikel Hib!</h3>
+              <img src="images/skin-care.png" />
+              <h3>Skin Care</h3>
             </div>
+            </Link>
+            <Link href="/best-seller">
             <div className="mobile-option-box">
               <img src="images/terlaris.png" />
               <h3>Produk Terlaris</h3>
             </div>
+            </Link>
           </div>
           <div className="list-category-mobile mtop-2">
             <div className="heading-small">
@@ -177,6 +185,7 @@ export default function HomePage({articles}) {
           </div>
           <div className="section-first-home display-flex">
             <div className="topup">
+              <img src="/images/disc-dummy.jpg" alt="example"/>
             </div>
             <div className="voucher-home">
               <Image src={gratisOngkir} alt="Gratis Ongkir Hallo Beauty"/>
@@ -309,7 +318,7 @@ export default function HomePage({articles}) {
           <div className="best-seller-mobile">
             <div className="heading-mobile">
               <h1>Best Seller Hib!</h1>
-              <span>Lihat Semua</span>
+              <Link href="/best-seller"><span>Lihat Semua</span></Link>
             </div>
             <div className="best-seller-mobile-layout">
                 <div className="best-seller-mobile-scroll">

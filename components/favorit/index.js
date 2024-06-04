@@ -32,7 +32,7 @@ const FavoritComponent = ({ id, status }) => {
   const fetchData = async () => {
     if (id && status) {
       try {
-        const response = await axios.get(`http://localhost:4000/api/cart/${id}/${status}`);
+        const response = await axios.get(`http://localhost:3000/api/cart/${id}/${status}`);
         if (response.status === 200) {
           // Replace &amp; in namaVarian and namaProduk
           const cleanedData = response.data.data.map(item => ({
@@ -64,7 +64,7 @@ const FavoritComponent = ({ id, status }) => {
 
 const handleDeleteAllCartItems = async () => {
   try {
-    const response = await axios.delete(`http://localhost:4000/api/deleteAllFavorit/${user.posLoginId}/2`);
+    const response = await axios.delete(`http://localhost:3000/api/deleteAllFavorit/${user.userId}/2`);
     if (response.status === 200) {
       if (response.data && response.data.messages && response.data.messages.success) {
         showModal(response.data.messages.success);
@@ -94,8 +94,8 @@ function closeModal() {
 
 const goToCartPage = () => {
   // Pastikan pengguna telah login dan memiliki ID yang valid
-  if (user && user.posLoginId) {
-      const userId = user.posLoginId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
+  if (user && user.userId) {
+      const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
       const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
       router.push(`/keranjang/${userId}/${cartStatus}`);
   } else {

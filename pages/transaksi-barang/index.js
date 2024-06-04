@@ -18,6 +18,7 @@ import { GoChevronRight } from "react-icons/go";
 import { Link } from "react-router-dom";
 import Modal from "@/components/modal";
 import { FaMapLocationDot } from "react-icons/fa6";
+import { FaShippingFast } from "react-icons/fa";
 
 const MIDTRANS_CLIENT_KEY = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
@@ -138,7 +139,7 @@ useEffect(() => {
 // Fungsi untuk mengambil daftar provinsi dari API
 const fetchProvinces = async () => {
     try {
-        const response = await fetch('http://localhost:4000/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch('http://localhost:3000/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setProvinces(data);
     } catch (error) {
@@ -149,7 +150,7 @@ const fetchProvinces = async () => {
 // Fungsi untuk mengambil daftar kota dari API berdasarkan provinsi yang dipilih
 const fetchCities = async (provinceId) => {
     try {
-        const response = await fetch(`http://localhost:4000/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch(`http://localhost:3000/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setCities(data);
     } catch (error) {
@@ -159,7 +160,7 @@ const fetchCities = async (provinceId) => {
 
 const fetchSubdistrict = async (cityId) => {
     try {
-        const response = await fetch(`http://localhost:4000/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+        const response = await fetch(`http://localhost:3000/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
         const data = await response.json();
         setSubdistrict(data);
     } catch (error) {
@@ -180,7 +181,7 @@ const fetchShippingOptions = async () => {
         console.log('Alamat Asal:', originCityId, originCityName, originProvinceName);
         
         if (destinationSubdistrictId && originCityId) {
-            const response = await fetch('http://localhost:4000/api/cost', {
+            const response = await fetch('http://localhost:3000/api/cost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -334,7 +335,7 @@ const [isFormSaved, setIsFormSaved] = useState(false);
 useEffect(() => {
     const fetchHalloExpressAvailability = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/api/hallo-express/`);
+            const response = await axios.get(`http://localhost:3000/api/hallo-express/`);
             setShowHalloExpress(response.status === 200);
             console.log('Fetching Hallo Express availability...');
         } catch (error) {
@@ -394,7 +395,7 @@ const handleSubmitCheckout = async () => {
             posLongitude: posLongitude // Ganti dengan nilai longitude yang dipilih
         });
 
-      const response = await axios.post('http://localhost:4000/api/shipping', formDataParams, {
+      const response = await axios.post('http://localhost:3000/api/shipping', formDataParams, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -416,12 +417,13 @@ const handleSubmitCheckout = async () => {
           posStatus = 'pending';
         }
 
-        const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.posLoginId}`;
+        const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.userId}`;
+        const posTanggalTransaksi = `${getCurrentFormattedDateTime()}`;
         const formDataParamsTransaksi = new URLSearchParams({
           posMerchantId: 1,
           posKodeTransaksi: posKodeTransaksi,
-          posCustomerId: user.posLoginId,
-          posTanggalTransaksi: getCurrentFormattedDate(),
+          posCustomerId: user.userId,
+          posTanggalTransaksi: posTanggalTransaksi,
           posTipeTransaksi: 3,
           posKasirId: 0,
           posStatus: posStatus,
@@ -432,7 +434,7 @@ const handleSubmitCheckout = async () => {
           posDiskon_voucher: 0
         });
 
-        const transaksiResponse = await axios.post('http://localhost:4000/api/postTransaksi', formDataParamsTransaksi, {
+        const transaksiResponse = await axios.post('http://localhost:3000/api/postTransaksi', formDataParamsTransaksi, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -451,7 +453,7 @@ const handleSubmitCheckout = async () => {
             posDiskonPersen: 0
           });
 
-          const detailTransaksiResponse = await axios.post('http://localhost:4000/api/detailTransaksi', detailTransaksiData, {
+          const detailTransaksiResponse = await axios.post('http://localhost:3000/api/detailTransaksi', detailTransaksiData, {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             }
@@ -461,7 +463,7 @@ const handleSubmitCheckout = async () => {
 
           if (selectedVoucher && selectedVoucher.code) {
             const formDataVoucher = {
-              member_id: user.posLoginId,
+              member_id: user.userId,
               price_total: transactionData.product.hargaJual * transactionData.quantity,
               code: selectedVoucher.code,
               order_id: transaksiResponse.data.lastTransaksiId
@@ -470,7 +472,7 @@ const handleSubmitCheckout = async () => {
             console.log('Data voucher yang dikirim:', formDataVoucher);
 
             try {
-              const voucherPostResponse = await axios.post('http://localhost:4000/api/voucherPost', formDataVoucher, {
+              const voucherPostResponse = await axios.post('http://localhost:3000/api/voucherPost', formDataVoucher, {
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -498,7 +500,7 @@ const handleSubmitCheckout = async () => {
             };
 
             try {
-              const midtransResponse = await axios.post('http://localhost:4000/api/midtrans', midtransTransactionParams);
+              const midtransResponse = await axios.post('http://localhost:3000/api/midtrans', midtransTransactionParams);
 
               if (midtransResponse.status === 200) {
                 // Membuat pembayaran menggunakan Snap.js
@@ -540,7 +542,7 @@ const handleSubmitCheckout = async () => {
       console.error('Terjadi kesalahan saat menyimpan data pengiriman.');
     }
   } else {
-    console.error('Pilih opsi pengiriman terlebih dahulu.');
+    showModal();;
   }
 };
   
@@ -568,6 +570,17 @@ const getCurrentFormattedDate = () => {
     return `${day}${month}${year}`;
 }
 
+const getCurrentFormattedDateTime = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
 const checkoutButton = handleSubmitCheckout;
 
 const [selectedCoordinates, setSelectedCoordinates] = useState(null);
@@ -583,7 +596,7 @@ const [vouchers, setVouchers] = useState([]);
 useEffect(() => {
     const fetchVoucher = async () => {
         try {
-            const response = await fetch('http://localhost:4000/api/voucher');
+            const response = await fetch('http://localhost:3000/api/voucher');
             const data = await response.json();
             const today = new Date();
             const filteredVouchers = data.data.filter(voucher => {
@@ -682,8 +695,29 @@ useEffect(() => {
     return <div>Tunggu Sebentar...</div>;
   }
 
+  function showModal() {
+    setModalIsOpen(true);
+  }
+
+  function closeModal() {
+    setModalIsOpen(false);
+  }
+
+  function showModal() {
+    setModalIsOpen(true);
+
+    // Set timeout to close the modal after 3 seconds
+    setTimeout(() => {
+      closeModal();
+    }, 680);
+  }
+
   return (
     <>
+    <Modal isOpen={modalIsOpen} onClose={closeModal}>
+            <FaShippingFast className="check-cart" />
+            <p className="check-notif-cart">Pilih pengiriman terlebih dahulu</p>
+        </Modal>
     <div className="menu-popup-mobile menu-popup-mobile-template">
             <span className="close"><HiOutlineArrowLeft onClick={() => router.back()} /> Transaksi</span>
         </div>
@@ -779,8 +813,8 @@ useEffect(() => {
                         {selectedShipping ? (
                             <React.Fragment>
                                 <h3>
-                                {selectedShipping.service === 'Hallo Express' ? selectedShipping.service : `${selectedCourier} ${selectedShipping.service}`} 
-                                <span> - Estimasi tiba {selectedShipping.etd.includes('-') ? selectedShipping.etd.split('-')[0].trim() : selectedShipping.etd} hari</span>
+                                    {selectedShipping.service === 'Hallo Express' ? selectedShipping.service : `${selectedCourier} ${selectedShipping.service}`} 
+                                    <span> - Estimasi tiba {selectedShipping.etd.includes('-') ? selectedShipping.etd.split('-')[0].trim() : selectedShipping.etd} {selectedShipping.service === 'Hallo Express' ? '' : 'hari'}</span>
                                 </h3>
                                 <button onClick={handleOpenModal}>Ubah</button>
                             </React.Fragment>
@@ -825,50 +859,66 @@ useEffect(() => {
                             <span className="close"><HiOutlineArrowLeft onClick={handleCloseModal}/> Pilih Ekspedisi</span>
                         </div>
                         <button className="close-button" onClick={handleCloseModal}><IoClose /></button>
-                        <h1>Pilih Ekspedisi dulu!</h1>
                         <div className="choose-shipping">
+                            {shippingOptions.length === 0 ? (
+                                <img src="/images/isi-alamat.png" alt="Isi Alamat" className="isi-alamat-icon"/>
+                            ) : (
                             <form onSubmit={handleSubmitShipping}>
                                 {shippingOptions.map(option => (
-                                    <React.Fragment key={option.service}>
-                                        <label className="shipping-radio">
-                                            <input type="radio" name="shippingOption" value={option.service} onChange={() => handleSelectOption(option)} checked={selectedShipping && selectedShipping.service === option.service}/>
-                                            <span>
-                                                <div className="heading-shipping-method">
-                                                    <h3 htmlFor={option.service}>{selectedCourier} {option.service} - {option.description}</h3>
-                                                    <div>
-                                                        {option.cost[0].etd === '1-1' ? (
-                                                            <p>Estimasi tiba 1 hari</p>
-                                                        ) : (
-                                                            <p>Estimasi tiba {option.cost[0].etd} hari</p>
-                                                        )}
-                                                    </div>
-
-                                                </div>
-                                                <div className="price-shipping">
-                                                    <h5>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(option.cost[0].value)}</h5>
-                                                    <PiCheckCircleFill className='check-ekspedisi'/>
-                                                </div>
-                                            </span>
-                                        </label>
-                                    </React.Fragment>
+                                <React.Fragment key={option.service}>
+                                    <label className="shipping-radio">
+                                    <input
+                                        type="radio"
+                                        name="shippingOption"
+                                        value={option.service}
+                                        onChange={() => handleSelectOption(option)}
+                                        checked={selectedShipping && selectedShipping.service === option.service}
+                                    />
+                                    <span>
+                                        <div className="heading-shipping-method">
+                                        <h3 htmlFor={option.service}>{selectedCourier} {option.service} - {option.description}</h3>
+                                        <div>
+                                            {option.cost[0].etd === '1-1' ? (
+                                            <p>Estimasi tiba 1 hari</p>
+                                            ) : (
+                                            <p>Estimasi tiba {option.cost[0].etd} hari</p>
+                                            )}
+                                        </div>
+                                        </div>
+                                        <div className="price-shipping">
+                                        <h5>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(option.cost[0].value)}</h5>
+                                        <PiCheckCircleFill className='check-ekspedisi'/>
+                                        </div>
+                                    </span>
+                                    </label>
+                                </React.Fragment>
                                 ))}
                                 {showHalloExpress && (
-                                    <label className="shipping-radio shipping-radio-hallo">
-                                        <input type="radio" name="shippingOption" value='Hallo Express' onChange={() => handleSelectOption({service: 'Hallo Express', description: 'BIAYA LEBIH HEMAT'})} checked={selectedShipping && selectedShipping.service === 'Hallo Express'} />
-                                        <span>
-                                            <div className="heading-shipping-method">
-                                                <h3>Hallo Express - BIAYA LEBIH HEMAT</h3>
-                                                <p>Estimasi tiba hari ini</p>
-                                            </div>
-                                            <div className="price-shipping">
-                                                <h5>Gratis Ongkir</h5>
-                                                <PiCheckCircleFill className='check-ekspedisi'/>
-                                            </div>
-                                        </span>
-                                    </label>
+                                <label className="shipping-radio shipping-radio-hallo">
+                                    <input
+                                    type="radio"
+                                    name="shippingOption"
+                                    value='Hallo Express'
+                                    onChange={() => handleSelectOption({ service: 'Hallo Express', description: 'BIAYA LEBIH HEMAT' })}
+                                    checked={selectedShipping && selectedShipping.service === 'Hallo Express'}
+                                    />
+                                    <span>
+                                    <div className="heading-shipping-method">
+                                        <h3>Hallo Express - BIAYA LEBIH HEMAT</h3>
+                                        <p>Estimasi tiba hari ini</p>
+                                    </div>
+                                    <div className="price-shipping">
+                                        <h5>Gratis Ongkir</h5>
+                                        <PiCheckCircleFill className='check-ekspedisi'/>
+                                    </div>
+                                    </span>
+                                </label>
                                 )}
-                                <button type="submit" disabled={!selectedShipping} className='form-button-style'>Konfirmasi Ekspedisi <FaSave /></button>
+                                <button type="submit" disabled={!selectedShipping} className='form-button-style'>
+                                Konfirmasi Ekspedisi <FaSave />
+                                </button>
                             </form>
+                            )}
                         </div>
                     </div>
                 </div>

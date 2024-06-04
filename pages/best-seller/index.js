@@ -5,7 +5,7 @@ import { useFavorit } from "@/contexts/FavoritContext";
 import { BsCartPlusFill } from "react-icons/bs";
 import { IoMdHeartEmpty } from "react-icons/io";
 
-function Discount({ limit }) {
+function BestSeller({ limit }) {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
   const [posQty, setPosQty] = useState(1);
@@ -17,7 +17,7 @@ function Discount({ limit }) {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/discount');
+        const response = await fetch('http://localhost:3000/api/bestSeller');
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {
@@ -35,7 +35,7 @@ function Discount({ limit }) {
   return (
     <div className='homepage-layout medium-container'>
     <div className="heading-small">
-        <h1> Hemat Lebih Banyak dengan <span>Diskon</span> Hebat!</h1>
+        <h1> Produk <span>teratas</span> dari H!b</h1>
     </div>
       <div className='catalog-layout mtop-2'>
         {discount.map(product => (
@@ -75,4 +75,4 @@ function Discount({ limit }) {
   );
 }
 
-export default Discount;
+export default BestSeller;

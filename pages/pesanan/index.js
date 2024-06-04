@@ -1,159 +1,188 @@
-import { useState } from 'react';
-import RandomProducts from '@/components/random-product';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
 import Modal from '@/components/modal';
 import { FaTrashAlt } from "react-icons/fa";
+import RandomProducts from '@/components/random-product';
+import { useRouter } from 'next/router';
+import { GiFullMotorcycleHelmet } from "react-icons/gi";
 
 
 const Pesanan = () => {
-  const { user } = useAuth();
-  const [transactions, setTransactions] = useState([]);
-  const [transactionDetails, setTransactionDetails] = useState({});
-  const customerId = user ? user.posLoginId : null;
-  const [activeTab, setActiveTab] = useState('Semua');
-  const [isOpenKurir, setIsOpenKurir] = useState(false);
-  const [productDetails, setProductDetails] = useState({});
+    const { user } = useAuth();
+    const [transactions, setTransactions] = useState([]);
+    const [transactionDetails, setTransactionDetails] = useState({});
+    const customerId = user ? user.userId : null;
+    const [activeTab, setActiveTab] = useState('Semua');
+    const [isOpenKurir, setIsOpenKurir] = useState(false);
+    const [productDetails, setProductDetails] = useState({});
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const router = useRouter();
 
-  const toggleKurir = () => {
-    setIsOpenKurir(!isOpenKurir);
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
-
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get('/api/listTransaksi');
-        const data = response.data;
-        const filteredTransactions = data.data.filter(transaction => transaction.customerId === customerId);
-        setTransactions(filteredTransactions);
-        console.log(response.data)
-        // Fetch details for each transaction
-        filteredTransactions.forEach(transaction => {
-          fetchTransactionDetails(transaction.posTransaksiId);
-          
-        });
-      } catch (error) {
-        console.error('Error fetching transactions:', error);
-      }
+    const toggleKurir = () => {
+        setIsOpenKurir(!isOpenKurir);
     };
 
-    if (customerId) {
-      fetchTransactions();
-    }
-  }, [customerId]);
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
+    };
 
-  const fetchTransactionDetails = async (posTransaksiId) => {
-    try {
-      const response = await axios.get(`/api/transaksiDetail/${posTransaksiId}`);
-      if (response.status === 200) {
-        const details = response.data.data;
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (!customerId) return;
 
-        // Fetch product details for each varianiId in transaction details
-        details.forEach(detail => {
-          fetchProductDetails(detail.varianiId);
-        });
+            try {
+                const response = await axios.get(`/api/listTransaksi/${customerId}`);
+                const data = response.data;
 
-        setTransactionDetails(prevDetails => ({
-          ...prevDetails,
-          [posTransaksiId]: details
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching transaction details:', error);
-    }
-  };
+                console.log(response.data)
 
-  const fetchProductDetails = async (varianiId) => {
-    try {
-      const response = await axios.get(`/api/productId/${varianiId}`);
-      if (response.status === 200) {
-        const productData = response.data.data[0]; // Assuming data is in the first element of the array
-        setProductDetails(prevDetails => ({
-          ...prevDetails,
-          [varianiId]: productData,
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching product details:', error);
-    }
-  };
+                if (data && data.data) {
+                    const transactionsArray = Array.isArray(data.data) ? data.data : [data.data];
+                    setTransactions(transactionsArray);
+                    transactionsArray.forEach(transaction => {
+                        fetchTransactionDetails(transaction.posTransaksiId);
+                    });
+                } else {
+                    console.error('Expected an object with a data property but got:', data);
+                }
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+            }
+        };
 
-  const handleDeleteTransaction = async (posTransaksiId) => {
-    try {
-      // Delete the transaction
-      const responseTransaction = await axios.delete(`/api/deleteTransaction/${posTransaksiId}`);
-      if (responseTransaction.status === 200) {
-        // Remove the deleted transaction from state
-        setTransactions(prevTransactions => (
-          prevTransactions.filter(transaction => transaction.posTransaksiId !== posTransaksiId)
-        ));
+        fetchTransactions();
+    }, [customerId]);
 
-        // Also delete all transaction details for this transaction
-        const transactionDetailsToDelete = transactionDetails[posTransaksiId] || [];
-        for (let detail of transactionDetailsToDelete) {
-          await axios.delete(`/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
+    const fetchDriverDetails = async (no_resi) => {
+        try {
+            const response = await axios.get(`/api/driver/${no_resi}`);
+            if (response.status === 200) {
+                const details = response.data.data;
+    
+                setTransactionDetails(prevDetails => ({
+                    ...prevDetails,
+                    [no_resi]: details,
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching driver details:', error);
         }
+    };
 
-        // Remove transaction details from state
-        setTransactionDetails(prevDetails => {
-          const updatedDetails = { ...prevDetails };
-          delete updatedDetails[posTransaksiId];
-          return updatedDetails;
+    useEffect(() => {
+        transactions.forEach(transaction => {
+            if (transaction.status === 'pickup') {
+                fetchDriverDetails(transaction.no_resi);
+            }
         });
+    }, [transactions]);
+    
 
-        showModal();
-      }
-    } catch (error) {
-      console.error('Error deleting transaction and details:', error);
-      alert('Failed to delete transaction and details.');
-    }
-  };
+    const fetchTransactionDetails = async (posTransaksiId) => {
+        try {
+            const response = await axios.get(`/api/transaksiDetail/${posTransaksiId}`);
+            if (response.status === 200) {
+                const details = response.data.data;
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+                setTransactionDetails(prevDetails => ({
+                    ...prevDetails,
+                    [posTransaksiId]: details,
+                }));
 
+                details.forEach(detail => {
+                    fetchProductDetails(detail.varianiId);
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching transaction details:', error);
+        }
+    };
 
-  function showModal() {
-    setModalIsOpen(true);
+    const fetchProductDetails = async (varianiId) => {
+        try {
+            const response = await axios.get(`/api/productId/${varianiId}`);
+            if (response.status === 200) {
+                const productData = response.data.data[0]; // Assuming data is in the first element of the array
+                setProductDetails(prevDetails => ({
+                    ...prevDetails,
+                    [varianiId]: productData,
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching product details:', error);
+        }
+    };
 
-    // Set timeout to close the modal after 3 seconds
-    setTimeout(() => {
-      closeModal();
-    }, 680);
-  }
+    const handleDeleteTransaction = async (posTransaksiId) => {
+        try {
+            const responseTransaction = await axios.delete(`/api/deleteTransaction/${posTransaksiId}`);
+            if (responseTransaction.status === 200) {
+                setTransactions(prevTransactions => (
+                    prevTransactions.filter(transaction => transaction.posTransaksiId !== posTransaksiId)
+                ));
 
-  function closeModal() {
-    setModalIsOpen(false);
-  }
+                const transactionDetailsToDelete = transactionDetails[posTransaksiId] || [];
+                for (let detail of transactionDetailsToDelete) {
+                    await axios.delete(`/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
+                }
 
-  const handleRetryPayment = async (transaction) => {
-    const response = await fetch('http://localhost:4000/api/retry-payment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            order_id: transaction.order_id,  // Gunakan order_id dari transaction
-            gross_amount: transaction.totalBayar,
-            first_name: transaction.customerName,
-            email: transaction.customerEmail,
-            phone: transaction.customerPhone
-        })
-    });
+                setTransactionDetails(prevDetails => {
+                    const updatedDetails = { ...prevDetails };
+                    delete updatedDetails[posTransaksiId];
+                    return updatedDetails;
+                });
 
-    const result = await response.json();
+                showModal();
+            }
+        } catch (error) {
+            console.error('Error deleting transaction and details:', error);
+            alert('Failed to delete transaction and details.');
+        }
+    };
 
-    if (response.ok) {
-        window.snap.pay(result.token);
-    } else {
-        console.error('Failed to create transaction:', result.error);
-    }
-};
+    const showModal = () => {
+        setModalIsOpen(true);
+        setTimeout(() => {
+            closeModal();
+        }, 680);
+    };
 
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
+    const handleRetryPayment = async (transaction) => {
+        try {
+            const response = await fetch('http://localhost:3000/api/retry-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    order_id: transaction.order_id,
+                    gross_amount: transaction.totalBayar,
+                    first_name: transaction.customerName,
+                    email: transaction.customerEmail,
+                    phone: transaction.customerPhone
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                window.snap.pay(result.token);
+            } else {
+                console.error('Failed to create transaction:', result.error);
+            }
+        } catch (error) {
+            console.error('Error retrying payment:', error);
+        }
+    };
+
+    const handleBuyNowClick = (posVarianId) => {
+        router.push(`/catalog-product/${posVarianId}`);
+      };
 
   return (
     <div className='container-small container-small-checkout'>
@@ -193,354 +222,489 @@ const Pesanan = () => {
                 </div>
             </div>
             <div className="tab-content">
-                {activeTab === 'Semua' && 
-                <>
-                {transactions.map((transaction) => (
-                    transaction.status === 'pending' && (
-                    <div className='wait-pay' key={transaction.posTransaksiId}>
-                        <div className='wait-pay-header'>
-                            <span>Menunggu Pembayaran</span>
-                        </div>
-                        <div className='wait-pay-box-layout'>
-                        {transactionDetails[transaction.posTransaksiId] &&
-                        transactionDetails[transaction.posTransaksiId].map((detail) => (
-                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                <div className='wait-pay-box-header wait-pay-box-body'>
-                                    <div className="product-detail-cart">
-                                        {productDetails[detail.varianiId] && (
-                                            <>
-                                            <div className="product-image-cart">
-                                                <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+            {activeTab === 'Semua' && (
+            <>
+                {transactions.length === 0 ? (
+                     <img src="/images/pesanan-kosong.png" alt="Pesanan H!b" className='pesanan-kosong'/>
+                ) : (
+                    transactions.map((transaction) => (
+                        <>
+                            {transaction.status === 'pending' && (
+                                <div className='wait-pay' key={transaction.posTransaksiId}>
+                                    <div className='wait-pay-header'>
+                                        <span>Menunggu Pembayaran</span>
+                                    </div>
+                                    <div className='wait-pay-box-layout wait-pay-box-layout-pending'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map((detail) => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty}x</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
+                                                    <div className='action-pesanan'>
+                                                        {transaction.status === 'pending' && (
+                                                            <button className='cancel-pesanan' onClick={() => handleDeleteTransaction(transaction.posTransaksiId)}>Batalkan</button>
+                                                        )}
+                                                        {productDetails[detail.varianiId] && (
+                                                            <button className='pay-pesanan' onClick={() => handleBuyNowClick(detail.varianiId)}>
+                                                                Bayar
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="product-desc-cart product-desc-cart-pesanan">
-                                            
-                                                <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                                <h3>{productDetails[detail.varianiId].namaVarian}</h3>
-                                                <p>{detail.qty} Produk</p>
-                                                <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
-                                            </div>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="product-price-cart">
-                                        <span>{detail.qty} Produk</span>
-                                    </div>
-                                    <div className="product-price-cart">
-                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                    </div>
-                                    
-                                    <div className='action-pesanan'>
-                                        {transaction.status === 'pending' && (
-                                        <button className='cancel-pesanan' onClick={() => handleDeleteTransaction(transaction.posTransaksiId)}>Batalkan Pesanan</button>
-                                    )}
-                                        <button className='pay-pesanan'>Bayar Sekarang</button>
+                                        ))}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        </div>
-                    </div>
-                    )
-                    ))}
-                    {transactions.map((transaction) => (
-                        transaction.status === 'COD' && (
-                            <div key={transaction.posTransaksiId} className='wait-pay'>
-                            <div className='wait-pay-header wait-pay-header-brown'>
-                                <span>Sedang Dikemas</span>
-                            </div>
-                            <div className='wait-pay-box-layout'>
-                                {transactionDetails[transaction.posTransaksiId] &&
-                                transactionDetails[transaction.posTransaksiId].map((detail) => (
-                                    <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                        <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
-                                            <div className="product-detail-cart">
-                                                {productDetails[detail.varianiId] && (
-                                                    <>
-                                                    <div className="product-image-cart">
-                                                        <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                            )}
+                            {transaction.status === 'COD' && (
+                                <div key={transaction.posTransaksiId} className='wait-pay'>
+                                    {/* <div className='wait-pay-header wait-pay-header-brown'>
+                                        <span>COD</span>
+                                    </div> */}
+                                    <div className='wait-pay-box-layout'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <p></p>
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
                                                     </div>
-                                                    <div className="product-desc-cart product-desc-cart-pesanan">
-                                                        <p></p>
-                                                        <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                                        <h3>{productDetails[detail.varianiId].namaVarian}</h3>
-                                                        <p>{detail.qty} Produk</p>
-                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
                                                     </div>
-                                                    </>
-                                                )}
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty} Produk</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="product-price-cart">
-                                                <span>{detail.qty} Produk</span>
-                                            </div>
-                                            <div className="product-price-cart">
-                                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
                                 </div>
-                            </div>
-                        )
-                        ))}
-                        {transactions.map((transaction) => (
-                        transaction.status === 'LUNAS' && (
-                            <div key={transaction.posTransaksiId} className='wait-pay'>
-                            <div className='wait-pay-header wait-pay-header-brown'>
-                                <span>Sedang Dikemas</span>
-                            </div>
-                            <div className='wait-pay-box-layout'>
-                                {transactionDetails[transaction.posTransaksiId] &&
-                                transactionDetails[transaction.posTransaksiId].map((detail) => (
-                                    <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                        <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
-                                        <div className="product-detail-cart">
-                                            {productDetails[detail.varianiId] && (
-                                                <>
-                                                <div className="product-image-cart">
-                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
-                                                </div>
-                                                <div className="product-desc-cart product-desc-cart-pesanan">
-                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
-                                                    <p>{detail.qty} Produk</p>
-                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
-                                                </div>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="product-price-cart">
-                                            <span>{detail.qty} Produk</span>
-                                        </div>
-                                        <div className="product-price-cart">
-                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                        </div>
-                                        <div className='action-pesanan'>
-                                            <div className='kurir-image' onClick={toggleKurir}>
-                                            <img src='images/kurir-image.png' alt='Kurir Image' />
-                                            </div>
-                                            {isOpenKurir && (
-                                            <div className='popup-checkout' onClick={toggleKurir}>
-                                                <div className='kurir-image-popup'>
-                                                <img src='images/kurir-image.png' alt='Kurir Image' />
+                            )}
+                            {transaction.status === 'LUNAS' && (
+                                <div key={transaction.posTransaksiId} className='wait-pay'>
+                                    <div className='wait-pay-box-layout'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <p></p>
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty} Produk</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            )}
-                                            <div className='kurir-details'>
-                                            <h3>Siti Aisyach</h3>
-                                            <span>Z 1234 HJ</span>
-                                            </div>
-                                        </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                            </div>
-                        )
-                        ))}
-                    
-                </>
-                }
-                {activeTab === 'Menunggu Pembayaran' && (
+                                </div>
+                            )}
+                            {transaction.status === 'Packaged' && (
+                                <div key={transaction.posTransaksiId} className='wait-pay'>
+                                    <div className='wait-pay-header wait-pay-header-brown'>
+                                        <span>Sedang Dikemas</span>
+                                    </div>
+                                    <div className='wait-pay-box-layout'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty} Produk</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {transaction.status === 'pickup' && (
+                                <div key={transaction.posTransaksiId} className='wait-pay'>
+                                    <div className='wait-pay-header wait-pay-header-brown'>
+                                        <span>Sedang Dikirim</span>
+                                    </div>
+                                    <div className='wait-pay-box-layout'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty} Produk</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {transaction.status === 'pickupSuccess' && (
+                                <div key={transaction.posTransaksiId} className='wait-pay'>
+                                    <div className='wait-pay-header wait-pay-header-complete'>
+                                        <span>Pesanan Selesai</span>
+                                    </div>
+                                    <div className='wait-pay-box-layout wait-pay-box-layout-success'>
+                                        {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-header-success'>
+                                                    <div className="product-detail-cart product-detail-pesanan">
+                                                        {productDetails[detail.varianiId] && (
+                                                            <>
+                                                                <div className="product-image-cart">
+                                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                </div>
+                                                                <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                    <p>{detail.qty} Produk</p>
+                                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{transaction.jenisPembayaranOnline}</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>{detail.qty} Produk</span>
+                                                    </div>
+                                                    <div className="product-price-cart">
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                    </div>
+                                                    <div className='action-pesanan'>
+                                                        {productDetails[detail.varianiId] && (
+                                                            <button className='pay-pesanan' onClick={() => handleBuyNowClick(detail.varianiId)}>Beli Lagi</button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ))
+                )}
+            </>
+        )}
+                 {activeTab === 'Menunggu Pembayaran' && (
                     <>
-                        {transactions.map((transaction) => (
-                    transaction.status === 'pending' && (
-                    <div className='wait-pay' key={transaction.posTransaksiId}>
-                        <div className='wait-pay-header'>
-                            <span>Menunggu Pembayaran</span>
-                        </div>
-                        <div className='wait-pay-box-layout'>
-                            {transactionDetails[transaction.posTransaksiId] &&
-                            transactionDetails[transaction.posTransaksiId].map((detail) => (
-                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                    <div className='wait-pay-box-header wait-pay-box-body'>
-                                        <div className="product-detail-cart">
-                                            {productDetails[detail.varianiId] && (
-                                                <>
-                                                <div className="product-image-cart">
-                                                    <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                        {transactions.filter(transaction => transaction.status === 'pending').length === 0 ? (
+                            <img src="/images/pesanan-kosong.png" alt="Pesanan H!b" className='pesanan-kosong'/>
+                        ) : (
+                            transactions.map((transaction) => (
+                                transaction.status === 'pending' && (
+                                    <div className='wait-pay' key={transaction.posTransaksiId}>
+                                        <div className='wait-pay-header'>
+                                            <span>Menunggu Pembayaran</span>
+                                        </div>
+                                        <div className='wait-pay-box-layout wait-pay-box-layout-pending'>
+                                            {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map((detail) => (
+                                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                    <div className='wait-pay-box-header wait-pay-box-body'>
+                                                        <div className="product-detail-cart product-detail-pesanan">
+                                                            {productDetails[detail.varianiId] && (
+                                                                <>
+                                                                    <div className="product-image-cart">
+                                                                        <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                    </div>
+                                                                    <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                        <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                        <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                        <p>{detail.qty} Produk</p>
+                                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{transaction.jenisPembayaranOnline}</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{detail.qty}x</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                        </div>
+                                                        <div className='action-pesanan'>
+                                                            {transaction.status === 'pending' && (
+                                                                <button className='cancel-pesanan' onClick={() => handleDeleteTransaction(transaction.posTransaksiId)}>Batalkan</button>
+                                                            )}
+                                                            {productDetails[detail.varianiId] && (
+                                                                <button className='pay-pesanan' onClick={() => handleBuyNowClick(detail.varianiId)}>
+                                                                    Bayar
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="product-desc-cart product-desc-cart-pesanan">
-                                                    <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                                    <h3>{productDetails[detail.varianiId].namaVarian}</h3>
-                                                    <p>{detail.qty} Produk</p>
-                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
-                                                </div>
-                                                </>
-                                            )}
-                                        </div>
-                                        <div className="product-price-cart">
-                                            <span>{detail.qty} Produk</span>
-                                        </div>
-                                        <div className="product-price-cart">
-                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                        </div>
-                                        
-                                        <div className='action-pesanan'>
-                                            {transaction.status === 'pending' && (
-                                            <button className='cancel-pesanan' onClick={() => handleDeleteTransaction(transaction.posTransaksiId)}>Batalkan Pesanan</button>
-                                        )}
-                                            <button className='pay-pesanan'>Bayar Sekarang</button>
+                                            ))}
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    )
-                    ))}
+                                )
+                            ))
+                        )}
                     </>
-                    )}
+                )}
                 {activeTab === 'Sedang Dikemas' && (
                     <>
-                        {transactions.map((transaction) => (
-                        transaction.status === 'COD' && (
-                            <div key={transaction.posTransaksiId} className='wait-pay'>
-                            <div className='wait-pay-header wait-pay-header-brown'>
-                                <span>Sedang Dikemas</span>
-                            </div>
-                            <div className='wait-pay-box-layout'>
-                                {transactionDetails[transaction.posTransaksiId] &&
-                                transactionDetails[transaction.posTransaksiId].map((detail) => (
-                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                    <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
-                                    <div className="product-detail-cart">
-                                        {productDetails[detail.varianiId] && (
-                                            <>
-                                            <div className="product-image-cart">
-                                                <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
-                                            </div>
-                                            <div className="product-desc-cart product-desc-cart-pesanan">
-                                                <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                                <h3>{productDetails[detail.varianiId].namaVarian}</h3>
-                                                <p>{detail.qty} Produk</p>
-                                                    <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
-                                            </div>
-                                            </>
-                                        )}
-                                    </div>
-                                    <div className="product-price-cart">
-                                        <span>{detail.qty} Produk</span>
-                                    </div>
-                                    <div className="product-price-cart">
-                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                    </div>
-                                    </div>
-                                </div>
-                                ))}
-                            </div>
-                            </div>
-                        )
-                        ))}
-                        {transactions.map((transaction) => (
-                        transaction.status === 'LUNAS' && (
-                            <div key={transaction.posTransaksiId} className='wait-pay'>
-                            <div className='wait-pay-header wait-pay-header-brown'>
-                                <span>Sedang Dikemas</span>
-                            </div>
-                            <div className='wait-pay-box-layout'>
-                            {transactionDetails[transaction.posTransaksiId] &&
-                            transactionDetails[transaction.posTransaksiId].map((detail) => (
-                            <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
-                                <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
-                                <div className="product-detail-cart">
-                                    {productDetails[detail.varianiId] && (
-                                        <>
-                                        <div className="product-image-cart">
-                                            <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                        {transactions.filter(transaction => transaction.status === 'Packaged').length === 0 ? (
+                             <img src="/images/pesanan-kosong.png" alt="Pesanan H!b" className='pesanan-kosong'/>
+                        ) : (
+                            transactions.map((transaction) => (
+                                transaction.status === 'Packaged' && (
+                                    <div key={transaction.posTransaksiId} className='wait-pay'>
+                                        <div className='wait-pay-header wait-pay-header-brown'>
+                                            <span>Sedang Dikemas</span>
                                         </div>
-                                        <div className="product-desc-cart">
-                                            <h2>{productDetails[detail.varianiId].namaProduk}</h2>
-                                            <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                        <div className='wait-pay-box-layout'>
+                                            {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                    <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                        <div className="product-detail-cart product-detail-pesanan">
+                                                            {productDetails[detail.varianiId] && (
+                                                                <>
+                                                                    <div className="product-image-cart">
+                                                                        <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                    </div>
+                                                                    <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                        <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                        <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                        <p>{detail.qty} Produk</p>
+                                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{transaction.jenisPembayaranOnline}</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{detail.qty} Produk</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
-                                        </>
-                                    )}
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>{detail.qty} Produk</span>
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
-                                </div>
-                                </div>
-                            </div>
-                            ))}
-                            </div>
-                            </div>
-                        )
-                        ))}
+                                    </div>
+                                )
+                            ))
+                        )}
                     </>
-                    )}
-                {activeTab === 'Sedang Dikirim' && 
-                    <div className='wait-pay'>
-                        <div className='wait-pay-header wait-pay-header-brown'>
-                            <span>Sedang Dikirim</span>
-                        </div>
-                        <div className='wait-pay-box'>
-                            <div className='wait-pay-box-header wait-pay-box-body'>
-                                <div className="product-detail-cart">
-                                    <div className="product-image-cart">
-                                        <img src='images/product.png' />
-                                    </div>
-                                    <div className="product-desc-cart">
-                                        <h2>Scarlett</h2>
-                                        <h3>Scarlett whitening glowing</h3>
-                                    </div>
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>1x</span>
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>Rp.25000</span>
-                                </div>
-                                <div className='action-pesanan'>
-                                    <div className='kurir-image' onClick={toggleKurir}>
-                                        <img src='images/kurir-image.png' />
-                                    </div>
-                                    {isOpenKurir && (
-                                        <div className='popup-checkout' onClick={toggleKurir}>
-                                            <div className='kurir-image-popup'>
-                                                <img src='images/kurir-image.png' />
+                )}
+                {activeTab === 'Sedang Dikirim' && (
+                    <>
+                        {transactions.filter(transaction => transaction.status === 'pickup').length === 0 ? (
+                             <img src="/images/pesanan-kosong.png" alt="Pesanan H!b" className='pesanan-kosong'/>
+                        ) : (
+                            transactions.map((transaction) => (
+                                transaction.status === 'pickup' && (
+                                    <div key={transaction.posTransaksiId} className='wait-pay'>
+                                        <div className='wait-pay-dikirim'>
+                                            <div className='wait-pay-header wait-pay-header-brown'>
+                                                <span>Sedang Dikirim</span>
+                                            </div>
+                                            <div className='driver-layout'>
+                                                <div className='driver-box'>
+                                                    <div className='driver-box-name'>
+                                                        <GiFullMotorcycleHelmet/>
+                                                        <p>{transactionDetails[transaction.no_resi]?.driver}</p>
+                                                    </div>
+                                                    |
+                                                    <p>{transactionDetails[transaction.no_resi]?.keterangan}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    )}
-                                    <div className='kurir-details'>
-                                        <h3>Siti Aisyach</h3>
-                                        <span>Z 1234 HJ</span>
+                                        <div className='wait-pay-box-layout'>
+                                            {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                    <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
+                                                        <div className="product-detail-cart product-detail-pesanan">
+                                                            {productDetails[detail.varianiId] && (
+                                                                <>
+                                                                    <div className="product-image-cart">
+                                                                        <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                    </div>
+                                                                    <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                        <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                        <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                        <p>{detail.qty} Produk</p>
+                                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{transaction.jenisPembayaranOnline}</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{detail.qty} Produk</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                {activeTab === 'Selesai' && 
-                    <div className='wait-pay'>
-                        <div className='wait-pay-header wait-pay-header-complete'>
-                            <span>Pesanan Selesai</span>
-                        </div>
-                        <div className='wait-pay-box'>
-                            <div className='wait-pay-box-header wait-pay-box-body'>
-                                <div className="product-detail-cart">
-                                    <div className="product-image-cart">
-                                        <img src='images/product.png' />
+                                )
+                            ))
+                        )}
+                    </>
+                )}
+                {activeTab === 'Selesai' && (
+                    <>
+                        {transactions.filter(transaction => transaction.status === 'pickupSuccess').length === 0 ? (
+                             <img src="/images/pesanan-kosong.png" alt="Pesanan H!b" className='pesanan-kosong'/>
+                        ) : (
+                            transactions.map((transaction) => (
+                                transaction.status === 'pickupSuccess' && (
+                                    <div key={transaction.posTransaksiId} className='wait-pay'>
+                                        <div className='wait-pay-header wait-pay-header-complete'>
+                                            <span>Pesanan Selesai</span>
+                                        </div>
+                                        <div className='wait-pay-box-layout wait-pay-box-layout-success'>
+                                            {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                                <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
+                                                    <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-header-success'>
+                                                        <div className="product-detail-cart product-detail-pesanan">
+                                                            {productDetails[detail.varianiId] && (
+                                                                <>
+                                                                    <div className="product-image-cart">
+                                                                        <img src={`https://api.upos-conn.com/master/v1/${productDetails[detail.varianiId].gambar}`} alt={productDetails[detail.varianiId].namaVarian} />
+                                                                    </div>
+                                                                    <div className="product-desc-cart product-desc-cart-pesanan">
+                                                                        <h2>{productDetails[detail.varianiId].namaProduk}</h2>
+                                                                        <h3>{productDetails[detail.varianiId].namaVarian}</h3>
+                                                                        <p>{detail.qty} Produk</p>
+                                                                        <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</p>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{transaction.jenisPembayaranOnline}</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>{detail.qty} Produk</span>
+                                                        </div>
+                                                        <div className="product-price-cart">
+                                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(detail.total)}</span>
+                                                        </div>
+                                                        <div className='action-pesanan'>
+                                                            {productDetails[detail.varianiId] && (
+                                                                <button className='pay-pesanan' onClick={() => handleBuyNowClick(detail.varianiId)}>Beli Lagi</button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="product-desc-cart">
-                                        <h2>Scarlett</h2>
-                                        <h3>Scarlett whitening glowing</h3>
-                                    </div>
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>1x</span>
-                                </div>
-                                <div className="product-price-cart">
-                                    <span>Rp.25000</span>
-                                </div>
-                                <div className='action-pesanan'>
-                                    <button className='pay-pesanan pay-pesanan-again'>Beli Lagi</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+                                )
+                            ))
+                        )}
+                    </>
+                )}
             </div>
         </div>
         <div className='container-random'>
