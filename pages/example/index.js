@@ -10,11 +10,12 @@ const Dropdown = () => {
   const [selectedBrand, setSelectedBrand] = useState('');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/category');
+        const response = await fetch(`${baseUrl}/category`);
         const data = await response.json();
 
         const cleanedCategories = data.data.map(category => ({
@@ -33,7 +34,7 @@ const Dropdown = () => {
 
   const fetchBrands = async (categoryId) => {
     try {
-      const response = await fetch(`http://103.153.43.25/api/example/${categoryId}`);
+      const response = await fetch(`${baseUrl}/example/${categoryId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

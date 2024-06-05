@@ -53,6 +53,7 @@ export default function Transaksi(){
     const [isModalVoucherOpen, setModalVoucherOpen] = useState(false);
     const [isModalAddressOpen, setModalAddressOpen] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     const handleOpenModal = () => setModalOpen(true);
     const handleCloseModal = () => setModalOpen(false);
@@ -142,7 +143,7 @@ export default function Transaksi(){
     // Fungsi untuk mengambil daftar provinsi dari API
     const fetchProvinces = async () => {
         try {
-            const response = await fetch('http://103.153.43.25/api/provinces'); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch(`${baseUrl}/provinces`); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setProvinces(data);
         } catch (error) {
@@ -153,7 +154,7 @@ export default function Transaksi(){
     // Fungsi untuk mengambil daftar kota dari API berdasarkan provinsi yang dipilih
     const fetchCities = async (provinceId) => {
         try {
-            const response = await fetch(`http://103.153.43.25/api/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch(`${baseUrl}/city?provinceId=${provinceId}`); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setCities(data);
         } catch (error) {
@@ -163,7 +164,7 @@ export default function Transaksi(){
 
     const fetchSubdistrict = async (cityId) => {
         try {
-            const response = await fetch(`http://103.153.43.25/api/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
+            const response = await fetch(`${baseUrl}/subdistrict?cityId=${cityId}`); // Ganti URL sesuai dengan endpoint API di Next.js
             const data = await response.json();
             setSubdistrict(data);
         } catch (error) {
@@ -184,7 +185,7 @@ export default function Transaksi(){
             console.log('Alamat Asal:', originCityId, originCityName, originProvinceName);
             
             if (destinationSubdistrictId && originCityId) {
-                const response = await fetch('http://103.153.43.25/api/cost', {
+                const response = await fetch(`${baseUrl}/cost`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -339,7 +340,7 @@ export default function Transaksi(){
     useEffect(() => {
         const fetchHalloExpressAvailability = async () => {
             try {
-                const response = await axios.get(`http://103.153.43.25/api/hallo-express/`);
+                const response = await axios.get(`${baseUrl}/hallo-express/`);
                 setShowHalloExpress(response.status === 200);
                 console.log('Fetching Hallo Express availability...');
             } catch (error) {
@@ -366,7 +367,7 @@ export default function Transaksi(){
     
     const fetchDataProduct = async () => {
         try {
-            const response = await fetch(`http://103.153.43.25/api/transactionProduct/${user.userId}/true`);
+            const response = await fetch(`${baseUrl}/transactionProduct/${user.userId}/true`);
             const data = await response.json();
             
             // Mengonversi nilai-nilai tertentu menjadi integer
@@ -398,7 +399,7 @@ export default function Transaksi(){
             const userId = user.userId;
             const cartStatus = 'true';
 
-            const response = await axios.get(`http://103.153.43.25/api/cartTotalPrice/${userId}/${cartStatus}`);
+            const response = await axios.get(`${baseUrl}/cartTotalPrice/${userId}/${cartStatus}`);
             const data = response.data;
 
             // Mengambil nilai count dari respons API dan menyimpannya di state
@@ -435,7 +436,7 @@ export default function Transaksi(){
             const savedCoordinates = JSON.parse(localStorage.getItem('savedCoordinates'));
             const posLatitude = savedCoordinates ? savedCoordinates.lat : null;
             const posLongitude = savedCoordinates ? savedCoordinates.lng : null;
-
+      
             const formDataParams = new URLSearchParams({
               posEmail: user.email,
               posNoHp: user.noTelp,
@@ -453,22 +454,22 @@ export default function Transaksi(){
               posLatitude: posLatitude, // Ganti dengan nilai latitude yang dipilih
               posLongitude: posLongitude // Ganti dengan nilai longitude yang dipilih
             });
-      
-            const response = await axios.post('http://103.153.43.25/api/shipping', formDataParams, {
+        
+            const response = await axios.post(`${baseUrl}/shipping`, formDataParams, {
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
               }
             });
-      
+        
             if (response.status === 201) {
               console.log('Shipping success:', response.data.messages.success);
-      
+        
               const posShippingId = response.data.lastShipingId;
-      
+        
               // Determine the payment type based on the selected shipping service
               let posJenisPembayaranOnline = '';
               let posStatus = '';
-      
+        
               if (selectedShipping.service === 'Hallo Express') {
                 posJenisPembayaranOnline = 'COD';
                 posStatus = 'COD';
@@ -476,7 +477,7 @@ export default function Transaksi(){
                 posJenisPembayaranOnline = 'cashlezz';
                 posStatus = 'pending'; 
               }
-      
+        
               const posKodeTransaksi = `INV-${getRandomFourDigits()}-${getCurrentFormattedDate()}-${user.userId}`;
               const posTanggalTransaksi = `${getCurrentFormattedDateTime()}`;
               const formDataParamsTransaksi = new URLSearchParams({
@@ -493,20 +494,25 @@ export default function Transaksi(){
                 posShipingId: posShippingId,
                 posDiskon_voucher: 0
               });
-
-              console.log('Data being sent:', Object.fromEntries(formDataParamsTransaksi.entries()));
       
-              const transaksiResponse = await axios.post('http://103.153.43.25/api/postTransaksi', formDataParamsTransaksi, {
+              console.log('Data being sent:', Object.fromEntries(formDataParamsTransaksi.entries()));
+        
+              const transaksiResponse = await axios.post(`${baseUrl}/postTransaksi`, formDataParamsTransaksi, {
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded'
                 }
               });
-      
+        
               if (transaksiResponse.status === 201) {
                 console.log('Transaksi success:', transaksiResponse.data.messages.success);
                 console.log(transaksiResponse.data)
-      
+        
+                // Iterate through selected products and delete them from cart
                 for (const product of selectedProducts) {
+                  // Delete the cart item based on posVarianId
+                  await handleDeleteItem(product.id_cso);
+        
+                  // Save transaction details
                   const detailTransaksiData = new URLSearchParams({
                     posTransaksiId: transaksiResponse.data.lastTransaksiId,
                     posVarianId: parseInt(product.varian_id, 10),
@@ -516,16 +522,16 @@ export default function Transaksi(){
                     posDiskonRp: 0,
                     posDiskonPersen: 0
                   });
-      
-                  const detailTransaksiResponse = await axios.post('http://103.153.43.25/api/detailTransaksi', detailTransaksiData, {
+        
+                  const detailTransaksiResponse = await axios.post(`${baseUrl}/detailTransaksi`, detailTransaksiData, {
                     headers: {
                       'Content-Type': 'application/x-www-form-urlencoded'
                     }
                   });
-      
+        
                   console.log('Response detail transaksi:', detailTransaksiResponse.data);
                 }
-      
+        
                 if (selectedVoucher && selectedVoucher.code) {
                   const formDataVoucher = {
                     member_id: user.userId,
@@ -533,16 +539,16 @@ export default function Transaksi(){
                     code: selectedVoucher.code,
                     order_id: transaksiResponse.data.lastTransaksiId
                   };
-      
+        
                   console.log('Data voucher yang dikirim:', formDataVoucher);
-      
+        
                   try {
-                    const voucherPostResponse = await axios.post('http://103.153.43.25/api/voucherPost', formDataVoucher, {
+                    const voucherPostResponse = await axios.post(`${baseUrl}/voucherPost`, formDataVoucher, {
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       }
                     });
-      
+        
                     if (voucherPostResponse.status === 201) {
                       console.log('Voucher berhasil diterapkan:', voucherPostResponse.data);
                     } else {
@@ -554,7 +560,7 @@ export default function Transaksi(){
                 } else {
                   console.log('Tidak ada voucher yang dipilih atau kode voucher tidak valid.');
                 }
-      
+        
                 // Display Midtrans payment if posJenisPembayaranOnline is not 'COD'
                 if (posJenisPembayaranOnline !== 'COD') {
                   const midtransTransactionParams = {
@@ -564,12 +570,12 @@ export default function Transaksi(){
                     email: user.email,
                     phone: user.noTelp
                   };
-      
+        
                   console.log('Data yang dikirim ke Midtrans:', midtransTransactionParams); // Log untuk debugging
-      
+        
                   try {
-                    const midtransResponse = await axios.post('http://103.153.43.25/api/midtrans', midtransTransactionParams);
-      
+                    const midtransResponse = await axios.post(`${baseUrl}/midtrans`, midtransTransactionParams);
+        
                     if (midtransResponse.status === 200) {
                       // Membuat pembayaran menggunakan Snap.js
                       window.snap.pay(midtransResponse.data.token, {
@@ -611,8 +617,18 @@ export default function Transaksi(){
             console.error('Terjadi kesalahan saat menyimpan data pengiriman.');
           }
         } else {
-            showModal();
-
+          showModal();
+        }
+      };
+      
+      const handleDeleteItem = async (id_cso) => {
+        try {
+          const response = await axios.delete(`${baseUrl}/deleteCart`, {
+            data: { csoId: id_cso }
+          });
+          console.log(`Item dengan id_cso ${id_cso} berhasil dihapus dari keranjang.`);
+        } catch (error) {
+          console.error(`Error deleting item with id_cso ${id_cso} from cart:`, error);
         }
       };
       
@@ -667,7 +683,7 @@ export default function Transaksi(){
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await fetch('http://103.153.43.25/api/voucher');
+                const response = await fetch(`${baseUrl}/voucher`);
                 const data = await response.json();
                 const today = new Date();
                 const filteredVouchers = data.data.filter(voucher => {
@@ -1021,53 +1037,65 @@ export default function Transaksi(){
                 </div>
             )}
             {isModalVoucherOpen && (
-                <div className="modal-shipping-overlay"> 
-                    <div className="modal-box-shipping">
-                        <div className="menu-popup-mobile menu-popup-mobile-template">
-                            <span className="close"><HiOutlineArrowLeft onClick={handleCloseModalVoucher}/> Pilih Voucher</span>
-                        </div>
-                        <button className="close-button" onClick={handleCloseModalVoucher}><IoClose /></button>
-                        <h1>Pilih Voucher dulu!</h1>
-                        <div className="choose-shipping">
-                        <form onSubmit={handleApplyVoucher}>
-                            <div className="input-search-voucher">
-                                <input type="text" placeholder="Cari Voucher Disini..." value={search} onChange={handleSearchChange}/>
-                                <span onClick={handleVoucherSelect}>PAKAI</span>
-                            </div>
-                            <div className="shipping-radio-overflow">
-                            {vouchers.map(voucher => {
-                                const daysLeft = calculateDaysLeft(voucher.exp_date);
-                                return (
-                                    <label className="shipping-radio-voucher" key={voucher.id} onClick={() => handleVoucherSelect(voucher)}>
-                                        <input type="radio" name="voucherOption" value={voucher.code} onClick={(e) => e.stopPropagation()} /> {/* Mencegah event bubbling ke label */}
-                                        <span>
-                                            <div className="voucher-box-layout">
-                                                <div className="voucher-box-image">
-                                                    <img src={`https://prahwa.net/storage/${voucher.image}`} />
-                                                    <div className="circle-left"></div>
-                                                    <div className="circle-right"></div>
-                                                </div>
-                                                <div className="voucher-box-content">
-                                                    <h5><BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.min_spend)},-</h5>
-                                                    {daysLeft >= 0 ? (
-                                                        <p>Berakhir dalam {daysLeft} hari</p>
-                                                    ) : (
-                                                        <p>Kedaluwarsa</p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </span>
-                                    </label>
-                                );
-                            })}
-
-                            </div>
-                            <button type="submit" className='form-button-style'>Pakai Voucher<FaSave /></button>
-                            </form>
-                        </div>
-                    </div>
+        <div className="modal-shipping-overlay">
+            <div className="modal-box-shipping">
+                <div className="menu-popup-mobile menu-popup-mobile-template">
+                    <span className="close">
+                        <HiOutlineArrowLeft onClick={handleCloseModalVoucher}/> Pilih Voucher
+                    </span>
                 </div>
-            )}
+                <button className="close-button" onClick={handleCloseModalVoucher}>
+                    <IoClose />
+                </button>
+                <h1>Pilih Voucher dulu!</h1>
+                <div className="choose-shipping">
+                    <form onSubmit={handleApplyVoucher}>
+                        <div className="input-search-voucher">
+                            <input type="text" placeholder="Cari Voucher Disini..." value={search} onChange={handleSearchChange} />
+                            <span onClick={handleVoucherSelect}>PAKAI</span>
+                        </div>
+                        <div className="shipping-radio-overflow">
+                            {vouchers.length === 0 ? (
+                                <p>Belum ada voucher</p>
+                            ) : (
+                                vouchers.map(voucher => {
+                                    const daysLeft = calculateDaysLeft(voucher.exp_date);
+                                    return (
+                                        <label className="shipping-radio-voucher" key={voucher.id} onClick={() => handleVoucherSelect(voucher)}>
+                                            <input type="radio" name="voucherOption" value={voucher.code} onClick={(e) => e.stopPropagation()} /> {/* Mencegah event bubbling ke label */}
+                                            <span>
+                                                <div className="voucher-box-layout">
+                                                    <div className="voucher-box-image">
+                                                        <img src={`https://prahwa.net/storage/${voucher.image}`} />
+                                                        <div className="circle-left"></div>
+                                                        <div className="circle-right"></div>
+                                                    </div>
+                                                    <div className="voucher-box-content">
+                                                        <h5>
+                                                            <BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.min_spend)},-
+                                                        </h5>
+                                                        {daysLeft >= 0 ? (
+                                                            <p>Berakhir dalam {daysLeft} hari</p>
+                                                        ) : (
+                                                            <p>Kedaluwarsa</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </label>
+                                    );
+                                })
+                            )}
+                        </div>
+                        <button type="submit" className='form-button-style'>
+                            Pakai Voucher<FaSave />
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    )}
+
         </div>
         </>
     );

@@ -9,6 +9,7 @@ function Test() {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
   const [posQty, setPosQty] = useState(1);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const [discount, setDiscount] = useState([]);
 
@@ -17,7 +18,7 @@ function Test() {
   useEffect(() => { 
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/test');
+        const response = await fetch(`${baseUrl}/test`);
         const data = await response.json();
         setDiscount(data.data);
       } catch (error) {

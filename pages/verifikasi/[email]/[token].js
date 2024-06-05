@@ -7,6 +7,7 @@ export default function VerifikasiPage() {
     const { email, token } = router.query;
     const [status, setStatus] = useState('Tunggu...');
     const [showLogin, setShowLogin] = useState(false);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -18,7 +19,7 @@ export default function VerifikasiPage() {
 
     useEffect(() => {
         if (email && token) {
-            fetch(`http://103.153.43.25/api/verifikasi?email=${email}&token=${token}`)
+            fetch(`${baseUrl}/verifikasi?email=${email}&token=${token}`)
                 .then(res => res.json())
                 .then(data => {
                     console.log("Response data from /api/verifikasi:", data);  // Log the data from the /api/verif

@@ -30,7 +30,7 @@ import { FaRegEdit } from "react-icons/fa";
 
 export default function Header(){
     const { user } = useAuth();
-
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
     const router = useRouter();
     const [imageUrl, setImageUrl] = useState('');
     const [showLogin, setShowLogin] = useState(false);
@@ -39,7 +39,7 @@ export default function Header(){
     useEffect(() => {
         const fetchLogo = async () => {
             try {
-                const response = await axios.get('http://103.153.43.25/api/logo');
+                const response = await axios.get(`${baseUrl}/logo`);
                 const logoPath = response.data.data.image;
                 setImageUrl(`https://prahwa.net/storage/${logoPath}`); 
             } catch (error) {
@@ -105,7 +105,7 @@ export default function Header(){
                     const userId = user.userId;
                     const cartStatus = 1;
 
-                    const response = await axios.get(`http://103.153.43.25/api/cartTotal/${userId}/${cartStatus}`);
+                    const response = await axios.get(`${baseUrl}/cartTotal/${userId}/${cartStatus}`);
                     const data = response.data;
 
                     if (data && data.data && data.data.count) {
@@ -129,7 +129,7 @@ export default function Header(){
                     const userId = user.userId;
                     const cartStatus = 2;
 
-                    const response = await axios.get(`http://103.153.43.25/api/cartTotal/${userId}/${cartStatus}`);
+                    const response = await axios.get(`${baseUrl}/cartTotal/${userId}/${cartStatus}`);
                     const data = response.data;
 
                     if (data && data.data && data.data.count) {

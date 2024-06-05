@@ -6,11 +6,12 @@ import { Autoplay } from 'swiper/modules';
 
 export default function Merk(){
     const [brands, setBrands] = useState([]);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://103.153.43.25/api/brands');
+                const response = await fetch(`${baseUrl}/brands`);
                 const data = await response.json();
                 if (data && data.data) { // Pastikan data dan data.data ada
                 setBrands(data.data); // Setel data objek banner

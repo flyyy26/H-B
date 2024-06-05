@@ -12,6 +12,7 @@ const ProfilePage = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
   console.log(user)
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   if (!user) {
     return <div>Anda harus masuk untuk melihat halaman ini.</div>;
@@ -29,7 +30,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await fetch('http://103.153.43.25/api/voucher');
+                const response = await fetch(`${baseUrl}/voucher`);
                 const data = await response.json();
                 const today = new Date();
                 const filteredVouchers = data.data.filter(voucher => {

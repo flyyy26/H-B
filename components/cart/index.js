@@ -17,6 +17,7 @@ import { RiHeartsFill } from "react-icons/ri";
 const CartComponent = ({ id, status }) => {
   const { user } = useAuth();
   const router = useRouter();
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const handleCheckout = () => {
     if (checkedItems.length === 0) {
@@ -39,7 +40,7 @@ const CartComponent = ({ id, status }) => {
   const fetchData = async () => {
     if (id && status) {
       try {
-        const response = await axios.get(`http://103.153.43.25/api/cart/${id}/${status}`);
+        const response = await axios.get(`${baseUrl}/cart/${id}/${status}`);
         if (response.status === 200) {
           const modifiedData = response.data.data.map(item => ({
             ...item,
@@ -72,7 +73,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDeleteItem = async (csoId) => {
     try {
-      const response = await axios.delete(`http://103.153.43.25/api/deleteCart`, {
+      const response = await axios.delete(`${baseUrl}/deleteCart`, {
         data: { csoId }
       });
   
@@ -94,7 +95,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleIncreaseQuantity = async (csoId) => {
     try {
-      const response = await axios.get(`http://103.153.43.25/api/plusQuantity/${csoId}`);
+      const response = await axios.get(`${baseUrl}/plusQuantity/${csoId}`);
       if (response.status === 201) {
         fetchData();
         fetchDataCartTotalPrice();
@@ -108,7 +109,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDecreaseQuantity = async (csoId) => {
     try {
-      const response = await axios.get(`http://103.153.43.25/api/minQuantity/${csoId}`);
+      const response = await axios.get(`${baseUrl}/minQuantity/${csoId}`);
       if (response.status === 201) {
         fetchData();
         fetchDataCartTotalPrice();
@@ -122,7 +123,7 @@ const CartComponent = ({ id, status }) => {
 
   const handleDeleteAllCartItems = async () => {
     try {
-      const response = await axios.delete(`http://103.153.43.25/api/deleteAll/${user.userId}/1`);
+      const response = await axios.delete(`${baseUrl}/deleteAll/${user.userId}/1`);
       if (response.status === 200) {
         if (response.data && response.data.messages && response.data.messages.success) {
           showModal(response.data.messages.success);
@@ -169,7 +170,7 @@ const CartComponent = ({ id, status }) => {
       const userId = user.userId;
       const cartStatus = 'true';
 
-      const response = await axios.get(`http://103.153.43.25/api/cartTotalPrice/${userId}/${cartStatus}`);
+      const response = await axios.get(`${baseUrl}/cartTotalPrice/${userId}/${cartStatus}`);
       const data = response.data;
 
       if (data && data.data && data.data.grand_total_asli) {
@@ -192,7 +193,7 @@ const CartComponent = ({ id, status }) => {
   async function handleCheckboxChange(id_cso, checked) {
     try {
       const status = checked ? 'true' : 'false';
-      const response = await fetch(`http://103.153.43.25/api/checkItem/${id_cso}/${status}`);
+      const response = await fetch(`${baseUrl}/checkItem/${id_cso}/${status}`);
       if (!response.ok) {
         console.error('HTTP error', response.status, await response.text());
         return;

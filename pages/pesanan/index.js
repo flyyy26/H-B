@@ -18,6 +18,8 @@ const Pesanan = () => {
     const [productDetails, setProductDetails] = useState({});
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const router = useRouter();
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const [driver, setDriver] = useState(null);
 
     const toggleKurir = () => {
         setIsOpenKurir(!isOpenKurir);
@@ -32,16 +34,22 @@ const Pesanan = () => {
             if (!customerId) return;
 
             try {
-                const response = await axios.get(`http://103.153.43.25/api/listTransaksi/${customerId}`);
+                const response = await axios.get(`${baseUrl}/listTransaksi/${customerId}`);
                 const data = response.data;
 
-                console.log(response.data)
+                console.log(response.data);
 
                 if (data && data.data) {
                     const transactionsArray = Array.isArray(data.data) ? data.data : [data.data];
                     setTransactions(transactionsArray);
+
+                    // Fetch transaction details and driver details for transactions with status 'pickup'
                     transactionsArray.forEach(transaction => {
                         fetchTransactionDetails(transaction.posTransaksiId);
+
+                        if (transaction.status === 'pickup' && transaction.no_resi) {
+                            fetchDriverDetails(transaction.no_resi);
+                        }
                     });
                 } else {
                     console.error('Expected an object with a data property but got:', data);
@@ -56,15 +64,11 @@ const Pesanan = () => {
 
     const fetchDriverDetails = async (no_resi) => {
         try {
-            const response = await axios.get(`http://103.153.43.25/api/driver/${no_resi}`);
-            if (response.status === 200) {
-                const details = response.data.data;
-    
-                setTransactionDetails(prevDetails => ({
-                    ...prevDetails,
-                    [no_resi]: details,
-                }));
-            }
+            const response = await axios.get(`${baseUrl}/driver/${no_resi}`);
+            const driverDetails = response.data;
+            console.log('Driver details:', driverDetails);
+            // Handle driver details, e.g., update state
+            setDriver(driverDetails); // Assuming you have state for driver details
         } catch (error) {
             console.error('Error fetching driver details:', error);
         }
@@ -81,7 +85,7 @@ const Pesanan = () => {
 
     const fetchTransactionDetails = async (posTransaksiId) => {
         try {
-            const response = await axios.get(`http://103.153.43.25/api/transaksiDetail/${posTransaksiId}`);
+            const response = await axios.get(`${baseUrl}/transaksiDetail/${posTransaksiId}`);
             if (response.status === 200) {
                 const details = response.data.data;
 
@@ -101,7 +105,7 @@ const Pesanan = () => {
 
     const fetchProductDetails = async (varianiId) => {
         try {
-            const response = await axios.get(`http://103.153.43.25/api/productId/${varianiId}`);
+            const response = await axios.get(`${baseUrl}/productId/${varianiId}`);
             if (response.status === 200) {
                 const productData = response.data.data[0]; // Assuming data is in the first element of the array
                 setProductDetails(prevDetails => ({
@@ -116,7 +120,7 @@ const Pesanan = () => {
 
     const handleDeleteTransaction = async (posTransaksiId) => {
         try {
-            const responseTransaction = await axios.delete(`http://103.153.43.25/api/deleteTransaction/${posTransaksiId}`);
+            const responseTransaction = await axios.delete(`${baseUrl}/deleteTransaction/${posTransaksiId}`);
             if (responseTransaction.status === 200) {
                 setTransactions(prevTransactions => (
                     prevTransactions.filter(transaction => transaction.posTransaksiId !== posTransaksiId)
@@ -124,7 +128,7 @@ const Pesanan = () => {
 
                 const transactionDetailsToDelete = transactionDetails[posTransaksiId] || [];
                 for (let detail of transactionDetailsToDelete) {
-                    await axios.delete(`http://103.153.43.25/api/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
+                    await axios.delete(`${baseUrl}/deleteTransactionDetail/${detail.posTransaksiDetailId}`);
                 }
 
                 setTransactionDetails(prevDetails => {
@@ -154,7 +158,7 @@ const Pesanan = () => {
 
     const handleRetryPayment = async (transaction) => {
         try {
-            const response = await fetch('http://103.153.43.25/api/retry-payment', {
+            const response = await fetch(`${baseUrl}/retry-payment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -396,11 +400,36 @@ const Pesanan = () => {
                             )}
                             {transaction.status === 'pickup' && (
                                 <div key={transaction.posTransaksiId} className='wait-pay'>
-                                    <div className='wait-pay-header wait-pay-header-brown'>
-                                        <span>Sedang Dikirim</span>
+                                    <div className='wait-pay-dikirim'>
+                                        <div className='wait-pay-header wait-pay-header-brown'>
+                                            <span>Sedang Dikirim</span>
+                                        </div>
+                                        <div className='driver-layout'>
+                                            {transaction.no_resi === "-" ? (
+                                                <div className='driver-box'>
+                                                    <div className='driver-box-name'>
+                                                        <p>Handle by JNE</p>
+                                                    </div>
+                                                    <span>|</span>
+                                                    <p>Silahkan hubungi admin untuk info lebih lanjut</p>
+                                                </div>
+                                            ) : (
+                                                driver && (
+                                                    <div className='driver-box'>
+                                                        <div className='driver-box-name'>
+                                                            <GiFullMotorcycleHelmet />
+                                                            <p>{driver.driver}</p>
+                                                        </div>
+                                                        <span>|</span>
+                                                        <p>{driver.keterangan}</p>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
                                     </div>
                                     <div className='wait-pay-box-layout'>
                                         {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                            <>
                                             <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
                                                 <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
                                                     <div className="product-detail-cart product-detail-pesanan">
@@ -429,7 +458,16 @@ const Pesanan = () => {
                                                     </div>
                                                 </div>
                                             </div>
+                                            
+                                            </>
                                         ))}
+                                        {transaction.no_resi === "-" ? (
+                                                    <p className='driver-mobile'>Silahkan hubungi admin untuk info lebih lanjut</p>
+                                            ) : (
+                                                driver && (
+                                                    <p className='driver-mobile'>{driver.keterangan}</p>
+                                                )
+                                            )}
                                     </div>
                                 </div>
                             )}
@@ -603,18 +641,31 @@ const Pesanan = () => {
                                                 <span>Sedang Dikirim</span>
                                             </div>
                                             <div className='driver-layout'>
-                                                <div className='driver-box'>
-                                                    <div className='driver-box-name'>
-                                                        <GiFullMotorcycleHelmet/>
-                                                        <p>{transactionDetails[transaction.no_resi]?.driver}</p>
+                                                {transaction.no_resi === "-" ? (
+                                                    <div className='driver-box'>
+                                                        <div className='driver-box-name'>
+                                                            <p>Handle by JNE</p>
+                                                        </div>
+                                                        <span>|</span>
+                                                        <p>Silahkan hubungi admin untuk info lebih lanjut</p>
                                                     </div>
-                                                    |
-                                                    <p>{transactionDetails[transaction.no_resi]?.keterangan}</p>
-                                                </div>
+                                                ) : (
+                                                    driver && (
+                                                        <div className='driver-box'>
+                                                            <div className='driver-box-name'>
+                                                                <GiFullMotorcycleHelmet />
+                                                                <p>{driver.driver}</p>
+                                                            </div>
+                                                            <span>|</span>
+                                                            <p>{driver.keterangan}</p>
+                                                        </div>
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                         <div className='wait-pay-box-layout'>
                                             {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
+                                                <>
                                                 <div className='wait-pay-box' key={detail.posTransaksiDetailId}>
                                                     <div className='wait-pay-box-header wait-pay-box-body wait-pay-box-dikemas'>
                                                         <div className="product-detail-cart product-detail-pesanan">
@@ -643,7 +694,16 @@ const Pesanan = () => {
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
+                                                </>
                                             ))}
+                                            {transaction.no_resi === "-" ? (
+                                                        <p className='driver-mobile'>Silahkan hubungi admin untuk info lebih lanjut</p>
+                                                ) : (
+                                                    driver && (
+                                                        <p className='driver-mobile'>{driver.keterangan}</p>
+                                                    )
+                                                )}
                                         </div>
                                     </div>
                                 )

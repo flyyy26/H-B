@@ -10,7 +10,7 @@ import { useFavorit } from "@/contexts/FavoritContext";
 const BrandsCatalog = ({ isLoading }) => {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
-  
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [allProducts, setAllProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,7 +20,7 @@ const BrandsCatalog = ({ isLoading }) => {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const response = await fetch(`http://103.153.43.25/api/AllProduct?page=${currentPage}`);
+        const response = await fetch(`${baseUrl}/AllProduct?page=${currentPage}`);
         const data = await response.json();
   
         // Check if data exists and has items

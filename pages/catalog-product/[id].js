@@ -22,6 +22,7 @@ const ProductDetails = () => {
   const { handleAddToCart } = useCart();
   const [showLogin, setShowLogin] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     setIsClient(true);
@@ -37,7 +38,7 @@ const ProductDetails = () => {
                 const userId = user.userId;
                 const cartStatus = 1;
 
-                const response = await axios.get(`http://103.153.43.25/api/cartTotal/${userId}/${cartStatus}`);
+                const response = await axios.get(`${baseUrl}/cartTotal/${userId}/${cartStatus}`);
                 const data = response.data;
 
                 if (data && data.data && data.data.count) {
@@ -57,7 +58,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchDetailsProduct = async () => {
       try {
-        const response = await fetch(`http://103.153.43.25/api/productId/${router.query.id}`);
+        const response = await fetch(`${baseUrl}/productId/${router.query.id}`);
         const data = await response.json();
         if (data && data.data.length > 0) {
           const cleanedData = data.data[0];

@@ -18,7 +18,7 @@ const LoginForm = ({ onClose }) => {
     posPin: '0000',
     rememberMe: false
   });
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const [message, setMessage] = useState('');
   const [alertType, setAlertType] = useState(null);
   const [buttonText, setButtonText] = useState('Masuk'); 
@@ -35,7 +35,7 @@ const LoginForm = ({ onClose }) => {
     e.preventDefault();
     setButtonText('Tunggu sebentar...');
     try {
-      const response = await axios.post('http://103.153.43.25/api/login', formData);
+      const response = await axios.post(`${baseUrl}/login`, formData);
       const data = response.data;
 
       if (data.status === 200) {

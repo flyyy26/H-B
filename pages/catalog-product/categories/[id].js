@@ -10,7 +10,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 const CategoryFilter = () => {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const { id } = router.query;
   const [category, setCategory] = useState([]);
@@ -26,7 +26,7 @@ const CategoryFilter = () => {
       const fetchCategory = async () => {
         setIsLoading(true);
         try {
-          const response = await axios.get(`http://103.153.43.25/api/categories/${cleanId}`);
+          const response = await axios.get(`${baseUrl}/categories/${cleanId}`);
           
           if (response.data && response.data.data && Array.isArray(response.data.data)) {
             // Assuming each item in the array has a `namaVarian` field that needs cleaning
@@ -60,7 +60,7 @@ const CategoryFilter = () => {
 
   const handlePaginationClick = async (url) => {
     try {
-      const response = await axios.get(`http://103.153.43.25/api/proxy?url=${url}`);
+      const response = await axios.get(`${baseUrl}/proxy?url=${url}`);
       setCategory(response.data.data);
       setPagination(response.data.pagination);
     } catch (error) {

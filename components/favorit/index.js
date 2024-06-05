@@ -26,13 +26,14 @@ const FavoritComponent = ({ id, status }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [posQty, setPosQty] = useState(1);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const { handleAddToCart } = useCart();
 
   const fetchData = async () => {
     if (id && status) {
       try {
-        const response = await axios.get(`http://103.153.43.25/api/cart/${id}/${status}`);
+        const response = await axios.get(`${baseUrl}/cart/${id}/${status}`);
         if (response.status === 200) {
           // Replace &amp; in namaVarian and namaProduk
           const cleanedData = response.data.data.map(item => ({
@@ -64,7 +65,7 @@ const FavoritComponent = ({ id, status }) => {
 
 const handleDeleteAllCartItems = async () => {
   try {
-    const response = await axios.delete(`http://103.153.43.25/api/deleteAllFavorit/${user.userId}/2`);
+    const response = await axios.delete(`${baseUrl}/deleteAllFavorit/${user.userId}/2`);
     if (response.status === 200) {
       if (response.data && response.data.messages && response.data.messages.success) {
         showModal(response.data.messages.success);

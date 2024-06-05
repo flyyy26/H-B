@@ -37,11 +37,12 @@ function customDots(i) {
 
 const BannerPage = () => {
   const [banners, setBanners] = useState([]);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/banner');
+        const response = await fetch(`${baseUrl}/banner`);
         const data = await response.json();
         if (data && data.data) { // Pastikan data dan data.data ada
           setBanners(data.data); // Setel data objek banner

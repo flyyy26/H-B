@@ -4,11 +4,12 @@ import { useRouter } from 'next/router';
 const PostDetail = () => {
   const [post, setPost] = useState(null);
   const router = useRouter();
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://103.153.43.25/api/article/${router.query.id}`);
+        const response = await fetch(`${baseUrl}/article/${router.query.id}`);
         const data = await response.json();
         setPost(data.data); // Perhatikan bahwa data yang ingin Anda tampilkan berada di dalam properti "data"
       } catch (error) {

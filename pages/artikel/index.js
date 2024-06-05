@@ -5,11 +5,12 @@ import router from "next/router";
 
 export default function Artikel() {
   const [articles, setArticles] = useState([]);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/article');
+        const response = await fetch(`${baseUrl}/article`);
         const data = await response.json();
         if (data && data.data) { // Pastikan data dan data.data ada
           setArticles(data.data); // Setel data objek banner
@@ -63,7 +64,7 @@ export default function Artikel() {
 export async function getStaticProps() {
   // Fetch data for the component
   try {
-    const response = await fetch('http://103.153.43.25/api/article');
+    const response = await fetch(`${baseUrl}/article`);
     const data = await response.json();
     if (data && data.data) { // Pastikan data dan data.data ada
       return {

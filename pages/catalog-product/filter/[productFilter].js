@@ -10,7 +10,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 const ProductFilterPage = () => {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const { productFilter } = router.query;
   const [products, setProducts] = useState([]);
@@ -20,7 +20,7 @@ const ProductFilterPage = () => {
   const fetchProducts = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://103.153.43.25/api/filter/${id}`);
+      const response = await axios.get(`${baseUrl}/filter/${id}`);
       console.log('Data from API:', response.data);
       if (response.data && response.data.data && Array.isArray(response.data.data)) {
         const cleanedProducts = response.data.data.map(product => {

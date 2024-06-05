@@ -15,6 +15,7 @@ export const CartProvider = ({ children }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [showLogin, setShowLogin] = useState(false);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
   const openLogin = () => {
@@ -32,7 +33,7 @@ export const CartProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post('http://103.153.43.25/api/addToCart', {
+      const response = await axios.post(`${baseUrl}/addToCart`, {
         posUser_id: user.userId,
         posVarian_id: posVarianId,
         posQty: quantity 

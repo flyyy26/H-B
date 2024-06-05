@@ -30,13 +30,14 @@ export default function HomePage({articles}) {
   const [discount, setDiscount] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [posQty, setPosQty] = useState(1);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   
   const router = useRouter() 
 
   useEffect(() => {
     const fetchDiscount = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/discount');
+        const response = await fetch(`${baseUrl}/discount`);
         const data = await response.json();
         const limitedData = data.data.slice(0, 4); // Limit to 4 items
         setDiscount(limitedData);
@@ -51,7 +52,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchCategories = async () => {
     try {
-      const response = await fetch('http://103.153.43.25/api/category');
+      const response = await fetch(`${baseUrl}/category`);
       const data = await response.json();
 
       // Membersihkan data kategori dari simbol &amp;
@@ -72,7 +73,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
-        const response = await axios.get('http://103.153.43.25/api/randomProduct');
+        const response = await axios.get(`${baseUrl}/randomProduct`);
         const randomProductsData = response.data.sort(() => Math.random() - 0.5).slice(0, 4);
         setRandomProducts(randomProductsData);
       } catch (error) {
@@ -114,7 +115,7 @@ export default function HomePage({articles}) {
   useEffect(() => {
     const fetchBestSeller = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/bestSeller');
+        const response = await fetch(`${baseUrl}/bestSeller`);
         const data = await response.json();
         setBestSeller(data.data);
       } catch (error) {

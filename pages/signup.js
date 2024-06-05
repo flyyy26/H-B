@@ -9,6 +9,7 @@ const Signup = () => {
     posNoTelp: ''
   });
   const [message, setMessage] = useState('');
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +22,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://103.153.43.25/api/daftar', {
+      const response = await fetch(`${baseUrl}/daftar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'

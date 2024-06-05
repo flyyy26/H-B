@@ -14,7 +14,7 @@ export const FavoritProvider = ({ children }) => {
   const [modalIsOpenFavorit, setModalIsOpenFavorit] = useState(false);
   const [modalMessageFavorit, setModalMessageFavorit] = useState('');
   const [showLogin, setShowLogin] = useState(false);
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const openLogin = () => {
     setShowLogin(true);
@@ -32,7 +32,7 @@ export const FavoritProvider = ({ children }) => {
         return;
       }
 
-      const response = await axios.post('http://103.153.43.25/api/addToFavorit', { 
+      const response = await axios.post(`${baseUrl}/addToFavorit`, { 
         posUser_id: user.userId,
         posVarian_id: posVarianId
       });

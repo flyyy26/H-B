@@ -13,11 +13,12 @@ import { Autoplay,Pagination } from 'swiper/modules';
 const BestSeller = () => {
   // State untuk menyimpan data produk dengan rating
   const [bestSeller, setBestSeller] = useState([]);
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
     const fetchBestSeller = async () => {
       try {
-        const response = await fetch('http://103.153.43.25/api/bestSeller');
+        const response = await fetch(`${baseUrl}/bestSeller`);
         const data = await response.json();
         setBestSeller(data.data);
       } catch (error) {

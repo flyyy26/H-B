@@ -6,12 +6,13 @@ const PilihEkspedisi = () => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
     const [cartItems, setCartItems] = useState([]);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
     useEffect(() => {
         // Fetch data ekspedisi dari API RajaOngkir
         const fetchShippingOptions = async () => {
             try {
-                const response = await fetch('http://103.153.43.25/api/cost', {
+                const response = await fetch(`${baseUrl}/cost`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

@@ -9,7 +9,7 @@ import { IoMdHeartEmpty } from "react-icons/io";
 const ProductSearch = () => {
   const { handleAddToCart } = useCart();
   const { handleAddToFavorit } = useFavorit();
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
   const { productSearch } = router.query;
   const [products, setProducts] = useState([]);
@@ -19,7 +19,7 @@ const ProductSearch = () => {
   useEffect(() => {
     if (productSearch) {
       setIsLoading(true);
-      fetch(`http://103.153.43.25/api/search?searchQuery=${encodeURIComponent(productSearch)}`)
+      fetch(`${baseUrl}/search?searchQuery=${encodeURIComponent(productSearch)}`)
         .then(response => response.json())
         .then(data => {
           if (data.data && Array.isArray(data.data)) {
