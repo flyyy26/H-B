@@ -1,5 +1,3 @@
-// contexts/AuthContext.js
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import cookie from 'js-cookie';
@@ -25,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    cookie.set('user', JSON.stringify(userData), { path: '/' });
+    cookie.set('user', JSON.stringify(userData), { path: '/', expires: 1 }); // Set expires to 1 day for example
   };
 
   const logout = async () => {
@@ -33,9 +31,7 @@ export const AuthProvider = ({ children }) => {
     cookie.remove('user', { path: '/' });
 
     await new Promise(resolve => setTimeout(resolve, 100));
-
-    // window.location.href = '/';
-    
+    router.push('/');
   };
 
   return (

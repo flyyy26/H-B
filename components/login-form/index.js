@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { IoClose, IoCheckmarkCircleOutline, IoAlertCircleOutline } from "react-icons/io5";
 import axios from 'axios';
-import { useRouter } from 'next/router'; // Tambahkan ini
+import { useRouter } from 'next/router';
 import { useAuth } from "@/contexts/AuthContext";
 import RegisterForm from '../register-form';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ import { BsArrowLeft } from "react-icons/bs";
 
 const LoginForm = ({ onClose }) => {
   const { login } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     posEmail: '',
     posPassword: '',
@@ -38,13 +39,13 @@ const LoginForm = ({ onClose }) => {
       const data = response.data;
 
       if (data.status === 200) {
-        document.cookie = `user=${JSON.stringify(data.data)}`;
+        login(data.data);
         setMessage(data.messages.success);
         setAlertType('success');
         // Tunda eksekusi onClose dan refresh halaman
         setTimeout(() => {
           onClose();
-          window.location.reload();
+          router.push('/');
         }, 2500); // Tunda selama 2.5 detik
       } else if (data.status === 400 && data.messages.success === "Password Salah.") {
         setMessage(data.messages.success);
@@ -106,7 +107,6 @@ const LoginForm = ({ onClose }) => {
       <img src='/images/bg-login.png' alt='Logo H!bi' className='logo-login-mobile'/>
       <div className='form-box-popup'>
         <img src='/images/logo-2.png' alt='Logo H!bi' className='logo-popup'/>  
-        {/* <button className="close-button" onClick={onClose}><IoClose /></button> */}
         <h2>Masuk dulu yuk!</h2>
         <form onSubmit={handleSubmitLogin}>
             <input type="email" name="posEmail" placeholder="Email" onChange={handleChangeLogin} required />
