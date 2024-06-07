@@ -189,6 +189,7 @@ const Profil = () => {
           </div>
           <div className='profile-page-dekstop'>
             <img src="/images/tersedia.png" alt='Buka di Handphone' className='login-first'/>
+            <button className='logout-btn' onClick={handleLogout}><RiLogoutBoxRLine/>Keluar Akun</button>
           </div>
         </>
       ) : (

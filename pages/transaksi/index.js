@@ -887,7 +887,7 @@ export default function Transaksi(){
                 </div>
                 <div className="list-menu-popup-transaksi">
                     <ul>
-                        <li><div className="menu-popup-mobile-item" onClick={handleOpenModalVoucher}><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
+                        <li onClick={handleOpenModalVoucher}><div className="menu-popup-mobile-item"><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
                     </ul>
                 </div>
                 <div className="total-product-checkout">

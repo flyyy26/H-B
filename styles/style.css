@@ -777,10 +777,28 @@ a{
 .profile-page-dekstop{
     display: flex;
     justify-content: center;
+    flex-direction: column;
     padding: 4vw 0;
 }
 .header-profile-page{
     display: none;
+}
+.logout-btn{
+    background-color: #DF4268;
+    width: max-content;
+    margin: auto;
+    cursor: pointer;
+    margin-top: 5vw;
+    display: flex;
+    align-items: center;
+    gap: .7vw;
+    justify-content: center;
+    border: none;
+    outline: none;
+    border-radius: 4vw;
+    font-size: 1.3vw;
+    color: var(--sekunder);
+    padding: .7vw 1.6vw;
 }
 @media (max-width:768px){
     .profile-page-dekstop{
@@ -2058,7 +2076,7 @@ cursor: pointer;
     height: 100%;
     top: 0;
     left: 0;
-    background-color: #46435b49;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.514) 0%, rgba(0,0,0,0) 100%);
     z-index: 2;
     border-radius: .8vw;
 }
@@ -2087,12 +2105,12 @@ cursor: pointer;
         border-radius: 1.2vw;
     }
     .box-produk-habis{
-        top: 14vw;
-        width: 16vw;
-        height: 16vw;
+        top: 13vw;
+        width: 19vw;
+        height: 19vw;
     }
     .box-produk-habis span{
-        font-size: 3vw;
+        font-size: 4.5vw;
     }
 }
 .box-product-name{
