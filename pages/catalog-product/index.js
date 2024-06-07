@@ -56,7 +56,7 @@ const BrandsCatalog = ({ isLoading }) => {
   };
 
   const handleBuyNowClick = (posVarianId) => {
-    router.push(`/catalog-product/${posVarianId}`);
+    router.push(`/catalog-product/produk-detail/${posVarianId}`);
   };
 
   function paginate(totalPages, currentPage, pageNeighbours = 2) {
@@ -120,7 +120,9 @@ const BrandsCatalog = ({ isLoading }) => {
 <CatalogProductLayout>
       <div className='catalog-layout'>
         {isLoading ? (
-          <div>Loading...</div>
+          <div className='login-first-layout'>
+            <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+          </div>
         ) : (
           allProducts.map((product) => (
             <div className="box-product" key={product.posVarianId}>

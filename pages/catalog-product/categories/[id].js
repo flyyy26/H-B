@@ -55,7 +55,7 @@ const CategoryFilter = () => {
 
 
   const handleBuyNowClick = (productId) => {
-    router.push(`/catalog-product/${productId}`); 
+    router.push(`/catalog-product/produk-detail/${productId}`); 
   };
 
   const handlePaginationClick = async (url) => {
@@ -90,7 +90,9 @@ const CategoryFilter = () => {
   return (
     <CatalogProductLayout>
       {isLoading ? (
-        <p>Loading...</p>
+        <div className='login-first-layout'>
+          <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+        </div>
       ) : (
         <>
           <div className='catalog-layout'>

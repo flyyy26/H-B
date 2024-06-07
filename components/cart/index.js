@@ -243,20 +243,30 @@ const CartComponent = ({ id, status }) => {
     }
   };
 
-  if (isLoading) return <p>Tunggu Sebentar...</p>;
+  if (isLoading) return (
+    <div className='login-first-layout'>
+      <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+    </div>
+  );
 
   const goToFavoritPage = () => {
     if (user && user.userId) {
       const userId = user.userId;
       const cartStatus = 2;
-      router.push(`/favorit/${userId}/${cartStatus}`);
+      router.push(`/wishlist/${userId}/${cartStatus}`);
     } else {
       openLogin();
     }
   };
 
+  const clickLogin = () => {
+    router.push(`/masuk`);
+  };
+
   return (
     <>
+    {user ? (
+      <>
       <div className="menu-popup-mobile menu-popup-mobile-template">
         <span className="close"><HiOutlineArrowLeft onClick={() => router.back()} /> Keranjang</span>
         <RiHeartsFill className='favorit-icon-mobile' onClick={goToFavoritPage} />
@@ -375,6 +385,16 @@ const CartComponent = ({ id, status }) => {
           <button className="checkout-cart-mobile" onClick={handleCheckout}>Checkout</button>
         </div>
       </div>
+      </>
+      ) : (
+        <>
+          <div className='login-first-layout'>
+          <img src="/images/login-first.png" alt="Masuk dulu H!b" className='login-first'/>
+          <button onClick={clickLogin}>Masuk Sekarang</button>
+          </div>
+        </>
+      )
+      }
     </>
   );
 };

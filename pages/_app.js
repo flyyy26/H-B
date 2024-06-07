@@ -13,31 +13,33 @@ import PopupWelcome from '@/components/popup-welcome';
 
 function MyAppContent({ Component, pageProps }) {
   const router = useRouter();
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+  const [windowWidth, setWindowWidth] = useState(0);  // Default to 0
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
+    // This effect will run only on the client
     const isFirstVisit = localStorage.getItem('isFirstVisit');
     if (!isFirstVisit) {
       setShowPopup(true);
       localStorage.setItem('isFirstVisit', 'true');
     }
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    // Set initial window width
+    setWindowWidth(window.innerWidth);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleClosePopup = () => {
     setShowPopup(false);
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const pathsToHideHeader = ['/keranjang', '/favorit', '/catalog-product/[id]', '/transaksi', '/profile'];
+  const pathsToHideHeader = ['/cart', '/wishlist', '/catalog-product/produk-detail/[id]', '/transaksi', '/profil'];
   const shouldHideHeader = pathsToHideHeader.some(path => router.pathname.startsWith(path)) && windowWidth <= 768;
 
   return (
@@ -53,7 +55,6 @@ function MyAppContent({ Component, pageProps }) {
 
 export default function App({ Component, pageProps }) {
   return (
-    
     <AuthProvider>
       <CartProvider>
         <FavoritProvider>

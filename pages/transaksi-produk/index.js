@@ -432,7 +432,7 @@ const handleSubmitCheckout = async () => {
           posTotalBayar: transactionData.product.hargaJual * transactionData.quantity,
           posJenisPembayaranOnline: posJenisPembayaranOnline,
           posShipingId: posShippingId,
-          posDiskon_voucher: 0
+          posDiskon_voucher: appliedVoucher.value
         });
 
         const transaksiResponse = await axios.post(`${baseUrl}/postTransaksi`, formDataParamsTransaksi, {
@@ -448,7 +448,7 @@ const handleSubmitCheckout = async () => {
             posTransaksiId: transaksiResponse.data.lastTransaksiId,
             posVarianId: parseInt(transactionData.product.posVarianId, 10),
             posQty: parseInt(transactionData.quantity, 10),
-            posTotal: transactionData.product.hargaJual * transactionData.quantity,
+            posTotal: transactionData.product.hargaJual * transactionData.quantity, 
             posDiskonId: 0,
             posDiskonRp: 0,
             posDiskonPersen: 0
@@ -633,7 +633,7 @@ useEffect(() => {
     if (selectedVoucher) {
       handleCloseModalVoucher();
       setAppliedVoucher(selectedVoucher); // Simpan objek voucher yang dipilih
-      console.log(`Voucher dipilih: ${selectedVoucher.code} dengan diskon Rp. ${selectedVoucher.min_spend} berakhir dalam ${calculateDaysLeft(selectedVoucher.exp_date)} hari.`);
+      console.log(`Voucher dipilih: ${selectedVoucher.code} dengan diskon Rp. ${selectedVoucher.value} berakhir dalam ${calculateDaysLeft(selectedVoucher.exp_date)} hari.`);
     } else {
       alert('Pilih voucher terlebih dahulu');
     }
@@ -671,17 +671,15 @@ useEffect(() => {
         setModalIsOpen(false);
       }
 
-  useEffect(() => {
-    if (transactionData) {
-      const totalProduk = transactionData.product.hargaJual * transactionData.quantity;
-      const ongkosKirim = (selectedShipping && selectedShipping.value) || 0;
-      const diskonVoucher = (appliedVoucher && appliedVoucher.min_spend) || 0;
-      const totalPembayaran = totalProduk + ongkosKirim - diskonVoucher;
-      setTotalPembayaran(totalPembayaran);
-    }
-  }, [transactionData, selectedShipping, appliedVoucher]);
-    // Menampilkan hasil di console.log
-    console.log("Total Pembayaran:", totalPembayaran);
+      useEffect(() => {
+        if (transactionData) {
+          const totalProduk = transactionData.product.hargaJual * transactionData.quantity;
+          const ongkosKirim = (selectedShipping && selectedShipping.value) || 0;
+          const diskonVoucher = (appliedVoucher && appliedVoucher.value) || 0;
+          const totalPembayaran = (totalProduk - diskonVoucher) + ongkosKirim;
+          setTotalPembayaran(totalPembayaran);
+        }
+      }, [transactionData, selectedShipping, appliedVoucher]);   
 
   useEffect(() => {
     const data = localStorage.getItem('transactionData');
@@ -713,8 +711,11 @@ useEffect(() => {
     }, 680);
   }
 
+    console.log('Current User:', user);
   return (
     <>
+    {user ? (
+        <>
     <Modal isOpen={modalIsOpen} onClose={closeModal}>
             <FaShippingFast className="check-cart" />
             <p className="check-notif-cart">Pilih pengiriman terlebih dahulu</p>
@@ -788,8 +789,8 @@ useEffect(() => {
                                         <img src={`https://api.upos-conn.com/master/v1/${transactionData.product.gambar}`} alt={transactionData.product.namaVarian} />
                                     </div>
                                     <div className="product-details-checkout-name">
-                                        <h4>{transactionData.product.namaProduk}</h4>
-                                        <p>{transactionData.product.namaVarian}</p>
+                                        <h4>{transactionData.product.namaProduk.replace(/&amp;/g, '&')}</h4>
+                                        <p>{transactionData.product.namaVarian.replace(/&amp;/g, '&')}</p>
                                         <div className="price-quantity-mobile">
                                             <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.hargaJual)}</span>
                                             <span>{transactionData.quantity}x</span>
@@ -827,7 +828,7 @@ useEffect(() => {
                 </div>
                 <div className="list-menu-popup-transaksi">
                     <ul>
-                        <li><div className="menu-popup-mobile-item" onClick={handleOpenModalVoucher}><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
+                        <li><div className="menu-popup-mobile-item" onClick={handleOpenModalVoucher}><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
                     </ul>
                 </div>
                 <div className="total-product-checkout">
@@ -839,7 +840,7 @@ useEffect(() => {
                             <p>Total Ongkos Kirim:</p> <p>Rp. {selectedShipping ? selectedShipping.value.toLocaleString() : '0'}</p>
                         </div>
                         <div className="total-product-checkout-box">
-                            <p>Potongan Voucher:</p> <p>- Rp. {appliedVoucher ? `${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 0}</p>
+                            <p>Potongan Voucher:</p> <p>- Rp. {appliedVoucher ? `${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 0}</p>
                         </div>
                         <div className="total-product-checkout-box">
                             <h4>Total Pembayaran:</h4> <span>Rp. {totalPembayaran.toLocaleString()}</span>
@@ -849,7 +850,7 @@ useEffect(() => {
             </div>
             <div className="btn-checkout-pilihan">
                 <button className="voucher-checkout" onClick={handleOpenModalVoucher}>
-                    <BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 'Gunakan Voucher'}
+                    <BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}
                 </button>
                 <button className="buy-now-checkout" onClick={checkoutButton}>Bayar Sekarang</button>
             </div>
@@ -993,33 +994,49 @@ useEffect(() => {
                                 <span onClick={handleVoucherSelect}>PAKAI</span>
                             </div>
                             <div className="shipping-radio-overflow">
-                            {vouchers.map(voucher => {
-                                const daysLeft = calculateDaysLeft(voucher.exp_date);
-                                return (
-                                    <label className="shipping-radio-voucher" key={voucher.id} onClick={() => handleVoucherSelect(voucher)}>
-                                        <input type="radio" name="voucherOption" value={voucher.code} onClick={(e) => e.stopPropagation()} /> {/* Mencegah event bubbling ke label */}
+                                {vouchers.length === 0 ? (
+                                    <p>Belum ada voucher</p>
+                                ) : (
+                                    vouchers.map(voucher => {
+                                    const daysLeft = calculateDaysLeft(voucher.exp_date);
+                                    const isVoucherApplicable = totalPembayaran >= voucher.min_spend;
+                                    const remainingAmount = voucher.min_spend - totalPembayaran;
+
+                                    return (
+                                        <label className="shipping-radio-voucher" key={voucher.id} onClick={() => handleVoucherSelect(voucher)} disabled={!isVoucherApplicable}>
+                                        <input 
+                                            type="radio" 
+                                            name="voucherOption" 
+                                            value={voucher.code} 
+                                            onClick={(e) => e.stopPropagation()} 
+                                            disabled={!isVoucherApplicable} 
+                                        /> {/* Mencegah event bubbling ke label */}
                                         <span>
                                             <div className="voucher-box-layout">
-                                                <div className="voucher-box-image">
-                                                    <img src={`https://prahwa.net/storage/${voucher.image}`} />
-                                                    <div className="circle-left"></div>
-                                                    <div className="circle-right"></div>
-                                                </div>
-                                                <div className="voucher-box-content">
-                                                    <h5><BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.min_spend)},-</h5>
-                                                    {daysLeft >= 0 ? (
-                                                        <p>Berakhir dalam {daysLeft} hari</p>
-                                                    ) : (
-                                                        <p>Kedaluwarsa</p>
-                                                    )}
-                                                </div>
+                                            <div className="voucher-box-image">
+                                                <img src={`https://prahwa.net/storage/${voucher.image}`} />
+                                                <div className="circle-left"></div>
+                                                <div className="circle-right"></div>
+                                                {!isVoucherApplicable && (
+                                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(remainingAmount)} lagi untuk menggunakan voucher ini</span>
+                                                )}
+                                            </div>
+                                            <div className="voucher-box-content">
+                                                <h5><BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.value)},-</h5>
+                                                {daysLeft >= 0 ? (
+                                                <p>Berakhir dalam {daysLeft} hari</p>
+                                                ) : (
+                                                <p>Kedaluwarsa</p>
+                                                )}
+                                            </div>
                                             </div>
                                         </span>
-                                    </label>
-                                );
-                            })}
+                                        </label>
+                                    );
+                                    })
+                                )}
+                                </div>
 
-                            </div>
                             <button type="submit" className='form-button-style'>Pakai Voucher<FaSave /></button>
                             </form>
                         </div>
@@ -1027,6 +1044,15 @@ useEffect(() => {
                 </div>
             )}
         </div>
+        </>
+        ) : (
+            <>
+              <div className='login-first-layout'>
+              <img src="/images/login-first.png" alt="Masuk dulu H!b" className='login-first'/>
+              {/* <button onClick={clickLogin}>Masuk Sekarang</button> */}
+              </div>
+            </>
+        )}
     </>
     );
     };

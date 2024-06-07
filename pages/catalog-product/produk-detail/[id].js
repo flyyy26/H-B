@@ -116,7 +116,6 @@ const ProductDetails = () => {
       setPosQty(prevQty => prevQty - 1);
     }
   };
-
   
 
   const openLogin = () => {
@@ -128,6 +127,11 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
+    if (!user || !user.userId) {
+      openLogin();
+      return;
+    }
+
     const transactionData = {
       product: details,
       quantity: posQty
@@ -147,11 +151,14 @@ const ProductDetails = () => {
     }
     };
 
-    console.log('Current User:', user);
+    const clickLogin = () => {
+        router.push(`/masuk`);
+      };
+
+      console.log('Current User:', user);
 
   return (
     <>
-    {user ? (
     <div className="homepage-layout">
       {showLogin && <LoginForm onClose={closeLogin} suppressHydrationWarning/>}
       <div className="product-details-layout">
@@ -222,9 +229,6 @@ const ProductDetails = () => {
       </div>
       <RandomProduct limit={25}/>
     </div>
-    ) : (
-    <button className="btn-details-box" onClick={handleBuyNow}>Masuk Untuk beli</button>
-    )}
     </>
   );
 };

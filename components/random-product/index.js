@@ -23,32 +23,39 @@ function RandomProduct({ limit }) {
       try {
         const totalPages = 131; // Ganti dengan jumlah total halaman yang tersedia di API Anda
         const randomPage = Math.floor(Math.random() * totalPages) + 1; // Menghasilkan nomor halaman secara acak
-  
+    
         const response = await axios.get(`${baseUrl}/randomProduct?page=${randomPage}`);
         if (response.data && Array.isArray(response.data)) {
-          // Use map to iterate over the products and replace &amp; with &
-          const cleanedData = response.data.map(product => ({
-            ...product,
-            namaVarian: product.namaVarian ? product.namaVarian.replace(/&amp;/g, '&') : product.namaVarian
-          })).slice(0, limit); // Slice the processed array to the desired limit
-          setRandomProducts(cleanedData);
+          // Filter produk sebelum di-random dan melakukan pembersihan nama varian
+          const filteredProducts = response.data
+            .map(product => ({
+              ...product,
+              namaVarian: product.namaVarian ? product.namaVarian.replace(/&amp;/g, '&') : product.namaVarian
+            }))
+            .sort(() => Math.random() - 0.5) // Mengacak urutan produk
+            .slice(0, limit); // Slice array ke jumlah produk yang diinginkan
+          
+          setRandomProducts(filteredProducts);
         } else {
           setRandomProducts([]);
         }
-        setLoading(false);
       } catch (error) {
         setError(error);
+      } finally {
         setLoading(false);
       }
     };
   
     fetchRandomProducts();
   }, [limit]);
+  
    // Dependency array includes limit to re-fetch when it changes
   // Re-fetch data when limit changes
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className='login-first-layout'>
+    <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+  </div>;
   }
 
   if (error) {
@@ -56,7 +63,7 @@ function RandomProduct({ limit }) {
   }
 
   const handleBuyNowClick = (posVarianId) => {
-    router.push(`/catalog-product/${posVarianId}`);
+    router.push(`/catalog-product/produk-detail/${posVarianId}`);
   };
 
   const layoutClass = limit > 8 ? 'catalog-layout' : 'catalog-layout-four';

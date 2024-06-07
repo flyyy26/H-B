@@ -24,7 +24,11 @@ const PostDetail = () => {
 
   // Tampilkan loading jika data masih diambil atau jika id tidak ada
   if (!post || !router.query.id) {
-    return <div>Loading...</div>;
+    return (
+        <div className='login-first-layout'>
+          <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+        </div>
+    );
   }
 
   return (

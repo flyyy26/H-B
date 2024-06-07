@@ -48,7 +48,7 @@ const ProductFilterPage = () => {
   }, [productFilter]);
 
   const handleBuyNowClick = (productId) => {
-    router.push(`/catalog-product/${productId}`);
+    router.push(`/catalog-product/produk-detail/${productId}`);
   };
 
   return (

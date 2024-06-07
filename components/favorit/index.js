@@ -98,16 +98,26 @@ const goToCartPage = () => {
   if (user && user.userId) {
       const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
       const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
-      router.push(`/keranjang/${userId}/${cartStatus}`);
+      router.push(`/cart/${userId}/${cartStatus}`);
   } else {
       openLogin(); // Log pesan kesalahan jika ID pengguna tidak tersedia
   }
   };
 
-  if (isLoading) return <p>Tunggu Sebentar...</p>;
+  if (isLoading) return (
+    <div className='login-first-layout'>
+      <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+    </div>
+  );
+
+  const clickLogin = () => {
+    router.push(`/masuk`);
+  };
 
   return (
       <>
+      {user ? (
+        <>
       <div className="menu-popup-mobile menu-popup-mobile-template">
         <span className="close"><HiOutlineArrowLeft onClick={() => router.back()} /> Favorit</span>
         <IoCart className='favorit-icon-mobile' onClick={goToCartPage} />
@@ -150,7 +160,7 @@ const goToCartPage = () => {
                 </div>
               </div>
               <div className="product-price-cart">
-                  <span>{item.namaKategoriBarang}</span>
+                <span>{item.namaKategoriBarang.replace(/&amp;/g, '&')}</span>
               </div>
               <div className="product-price-cart">
                   <span>{item.jumlahStok}</span>
@@ -159,7 +169,7 @@ const goToCartPage = () => {
                   <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(item.harga_promo)}</span>
               </div>
               <div className="product-price-cart product-price-cart-action">
-                  <button onClick={() => handleAddToCart(item.varian_id, posQty)} ><IoCart /></button>
+                  <button onClick={() => (item.varian_id, posQty)} ><IoCart /></button>
               </div>
               <div className='add-to-cart-favorit-mobile'>
                   <button onClick={() => handleAddToCart(item.varian_id, posQty)} ><IoCart /></button>
@@ -209,6 +219,15 @@ const goToCartPage = () => {
               </ul>
           </div>
       </div>
+      </>
+      ) : (
+        <>
+          <div className='login-first-layout'>
+          <img src="/images/login-first.png" alt="Masuk dulu H!b" className='login-first'/>
+          <button onClick={clickLogin}>Masuk Sekarang</button>
+          </div>
+        </>
+      )}
       </>
 
   );

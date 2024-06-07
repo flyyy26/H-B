@@ -104,67 +104,73 @@ const LoginForm = ({ onClose }) => {
   };
 
   return (
-    <div className="form-popup login-form">
+    <>
+    { user ? (
+      <span>Kamu sudah Login</span>
+    ) : (
+      <div className="form-popup login-form">
       <img src='/images/bg-login.png' alt='Logo H!bi' className='logo-login-mobile'/>
-      <div className='form-box-popup'>
-        <img src='/images/logo-2.png' alt='Logo H!bi' className='logo-popup'/>
-        <h2>Masuk dulu yuk!</h2>
-        <form onSubmit={handleSubmitLogin}>
-            <input type="email" name="posEmail" placeholder="Email" onChange={handleChangeLogin} required />
-            <div className="password-input-container">
-              <input 
-                type={passwordVisible ? 'text' : 'password'} 
-                name="posPassword" 
-                placeholder="Kata Sandi" 
-                onChange={handleChangeLogin} 
-                required 
-              />
-              <span onClick={togglePasswordVisibility} className="password-toggle">
-                {passwordVisible ? <HiEye/> : <HiEyeOff/>}
-              </span>
-            </div>
-            <div className='remember-me'>
-              <input 
-                type="checkbox" 
-                name="rememberMe" 
-                id="rememberMe" 
-                onChange={handleChangeLogin} 
-                checked={formData.rememberMe}
-              />
-              <label htmlFor="rememberMe">Ingatkan Saya</label>
-            </div>
-            <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>Masuk</button>
-        </form>
-        <span><p>Belum punya akun?</p> <p onClick={registerClick} className='btn-popup-mobile-other'>Daftar</p></span>
-        <button onClick={() => router.back()} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
-      </div>
-      <img src='/images/bg-login-dekstop.png' alt='Logo H!bi' className='logo-login-dekstop'/>
-      {message && (
-        <div className={`modal-overlay ${alertType}`}>
-          <div className='account-success'>
-            <h1>{message}</h1>
-            {alertType === 'success' ? 
-                <>
-                  <img src='images/verification-success.png' alt='H!bi Verification'/>
-                  <p>Kamu berhasil masuk!</p>
-                </>
-                : alertType === 'warning' ?
-                <>
-                  <img src='images/alert.png' alt='H!bi Verification'/>
-                  <p>Akun Anda belum aktif. Silakan hubungi admin untuk aktivasi.</p>
-                </>
-                :
-                <>
-                  <img src='images/alert.png' alt='H!bi Verification'/>
-                  <p>Yahh.. Kata Sandi nya salah, coba cek lagi dengan teliti</p>
-                </>
-              }
-
-          </div>
+        <div className='form-box-popup'>
+          <img src='/images/logo-2.png' alt='Logo H!bi' className='logo-popup'/>
+          <h2>Masuk dulu yuk!</h2>
+          <form onSubmit={handleSubmitLogin}>
+              <input type="email" name="posEmail" placeholder="Email" onChange={handleChangeLogin} required />
+              <div className="password-input-container">
+                <input 
+                  type={passwordVisible ? 'text' : 'password'} 
+                  name="posPassword" 
+                  placeholder="Kata Sandi" 
+                  onChange={handleChangeLogin} 
+                  required 
+                />
+                <span onClick={togglePasswordVisibility} className="password-toggle">
+                  {passwordVisible ? <HiEye/> : <HiEyeOff/>}
+                </span>
+              </div>
+              <div className='remember-me'>
+                <input 
+                  type="checkbox" 
+                  name="rememberMe" 
+                  id="rememberMe" 
+                  onChange={handleChangeLogin} 
+                  checked={formData.rememberMe}
+                />
+                <label htmlFor="rememberMe">Ingatkan Saya</label>
+              </div>
+              <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>Masuk</button>
+          </form>
+          <span><p>Belum punya akun?</p> <p onClick={registerClick} className='btn-popup-mobile-other'>Daftar</p></span>
+          <button onClick={() => router.back()} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
         </div>
-      )}
-      <button onClick={() => router.back()} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
+        <img src='/images/bg-login-dekstop.png' alt='Logo H!bi' className='logo-login-dekstop'/>
+        {message && (
+          <div className={`modal-overlay ${alertType}`}>
+            <div className='account-success'>
+              <h1>{message}</h1>
+              {alertType === 'success' ? 
+                  <>
+                    <img src='images/verification-success.png' alt='H!bi Verification'/>
+                    <p>Kamu berhasil masuk!</p>
+                  </>
+                  : alertType === 'warning' ?
+                  <>
+                    <img src='images/alert.png' alt='H!bi Verification'/>
+                    <p>Akun Anda belum aktif. Silakan hubungi admin untuk aktivasi.</p>
+                  </>
+                  :
+                  <>
+                    <img src='images/alert.png' alt='H!bi Verification'/>
+                    <p>Yahh.. Kata Sandi nya salah, coba cek lagi dengan teliti</p>
+                  </>
+                }
+
+            </div>
+          </div>
+        )}
+        <button onClick={() => router.back()} className='back-from-login-dekstop'><BsArrowLeft/>Mau lihat-lihat dulu</button>
     </div>
+    )}
+    </>
   );
 };
 

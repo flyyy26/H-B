@@ -185,7 +185,7 @@ const Pesanan = () => {
     };
 
     const handleBuyNowClick = (posVarianId) => {
-        router.push(`/catalog-product/${posVarianId}`);
+        router.push(`/catalog-product/produk-detail/${posVarianId}`);
       };
 
   return (

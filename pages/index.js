@@ -70,26 +70,27 @@ export default function HomePage({articles}) {
       fetchCategories();
     }, []);
 
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/randomProduct`);
-        const randomProductsData = response.data.sort(() => Math.random() - 0.5).slice(0, 4);
-        setRandomProducts(randomProductsData);
-      } catch (error) {
-        console.error("Error fetching random products:", error);
-      }
-    };
-
-    fetchAllProducts();
-  }, []);
+    useEffect(() => {
+      const fetchAllProducts = async () => {
+        try {
+          const response = await axios.get(`${baseUrl}/randomProduct`);
+          const filteredProducts = response.data.filter(product => product.jumlahStok !== "0"); // Filter produk sebelum di-random
+          const randomProductsData = filteredProducts.sort(() => Math.random() - 0.5).slice(0, 4);
+          setRandomProducts(randomProductsData);
+        } catch (error) {
+          console.error("Error fetching random products:", error);
+        }
+      };
+  
+      fetchAllProducts();
+    }, []);
 
   if (loading) {
     return <h1>Data is Loading !!! Please stand by</h1>;
   }
 
   const handleBuyNowClick = (posVarianId) => {
-    router.push(`/catalog-product/${posVarianId}`);
+    router.push(`/catalog-product/produk-detail/${posVarianId}`);
   };
 
   const handleButtonCategories = async (categoriesFilter) => {
@@ -255,29 +256,22 @@ export default function HomePage({articles}) {
             <div className="layout-catalog-home">
               <div className="list-product-home">
               {randomProducts.map((product, index) => (
-                <div className="box-product box-product-scroll" key={index}>
-                  {product.jumlahStok === "0" && (
-                    <div className='produk-habis'>
-                      <div className='box-produk-habis'>
-                        <span>Habis</span>
-                      </div>
+                  <div className="box-product box-product-scroll" key={index}>
+                    <div className="image-product">
+                      <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
                     </div>
-                  )}
-                  <div className="image-product">
-                    <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
+                    <h4 className="box-product-name">{product.namaVarian}</h4>
+                    <div className="box-product-price">
+                      <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h4>
+                    </div>
+                    <div className="box-product-btn">
+                      <button onClick={() => handleBuyNowClick(product.posVarianId)}>Beli Sekarang</button>
+                      <button onClick={() => handleAddToCart(product.posVarianId, posQty)} className="btn-home-cart"><div className="box-product-cart"><BsCartPlusFill /></div></button>
+                    </div>
+                    <div className="box-product-favorite">
+                      <button onClick={() => handleAddToFavorit(product.posVarianId)}><IoMdHeartEmpty /> Masukkan ke favorit</button>
+                    </div>
                   </div>
-                  <h4 className="box-product-name">{product.namaVarian}</h4>
-                  <div className="box-product-price">
-                    <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h4>
-                  </div>
-                  <div className="box-product-btn">
-                    <button onClick={() => handleBuyNowClick(product.posVarianId)}>Beli Sekarang</button>
-                    <button onClick={() => handleAddToCart(product.posVarianId, posQty)} className="btn-home-cart"><div className="box-product-cart"><BsCartPlusFill /></div></button>
-                  </div>
-                  <div className="box-product-favorite">
-                    <button onClick={() => handleAddToFavorit(product.posVarianId)}><IoMdHeartEmpty /> Masukkan ke favorit</button>
-                  </div>
-                </div>
               ))}
               </div>
             </div>

@@ -66,7 +66,7 @@ export default function Header(){
     };
 
     const handleToProfile = () => {
-        router.push(`/profile/`);
+        router.push(`/profil`);
     };
 
     const logoClick = () => {
@@ -78,7 +78,7 @@ export default function Header(){
     if (user && user.userId) {
         const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
         const cartStatus = 1; // Ganti dengan status keranjang yang sesuai
-        router.push(`/keranjang/${userId}/${cartStatus}`);
+        router.push(`/cart/${userId}/${cartStatus}`);
     } else {
         openLogin(); // Log pesan kesalahan jika ID pengguna tidak tersedia
     }
@@ -89,7 +89,7 @@ export default function Header(){
         if (user && user.userId) {
             const userId = user.userId; // Gunakan ID pengguna dari data pengguna yang telah diperoleh
             const cartStatus = 2; // Ganti dengan status keranjang yang sesuai
-            router.push(`/favorit/${userId}/${cartStatus}`);
+            router.push(`/wishlist/${userId}/${cartStatus}`);
         } else {
             openLogin();// Log pesan kesalahan jika ID pengguna tidak tersedia
         }
@@ -189,7 +189,6 @@ export default function Header(){
                             <div className="profile-image">
                                 <img src={`https://api.upos-conn.com/master/v1/${user.image}`} alt={user.nama}/>
                             </div>
-                            
                         </div>
                     ) : (
                         <>
@@ -282,7 +281,7 @@ export default function Header(){
                             </Link>
                         </li>
                         <li>
-                            <Link href="/profile">
+                            <Link href="/profil">
                                 <span className={router.pathname === "/profil" ? "active" : ""}><PiUserCircleLight />Profil</span>
                             </Link>
                         </li>
@@ -307,7 +306,7 @@ export default function Header(){
                                 </div>
                             </div>
                             <div className="profil-edit-mobile">
-                                <Link href='/profile' onClick={toggleMenuMobile}><FaRegEdit /></Link>
+                                <Link href='/profil' onClick={toggleMenuMobile}><FaRegEdit /></Link>
                             </div>
                         </div> 
                     ) : (

@@ -6,16 +6,7 @@ export default function VerifikasiPage() {
     const router = useRouter();
     const { email, token } = router.query;
     const [status, setStatus] = useState('Tunggu...');
-    const [showLogin, setShowLogin] = useState(false);
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            router.push('/masuk');
-        }, 4000); // Tunggu selama 4 detik sebelum mengarahkan ke halaman "/" dan membuka popup login
-
-        return () => clearTimeout(timer);
-    }, []);
 
     useEffect(() => {
         if (email && token) {
@@ -26,8 +17,10 @@ export default function VerifikasiPage() {
                     
                     if (data.error && data.status === 400) {
                         setStatus(data.messages.success || 'Akun Verifikasi Tidak Valid');
+                        clickLogin()
                     } else {
                         setStatus(data.messages.success || 'Verifikasi berhasil!');
+                        clickLogin()
                     }
                 })
                 .catch(error => {
@@ -35,7 +28,11 @@ export default function VerifikasiPage() {
                     setStatus('Verifikasi gagal karena kesalahan sistem.');
                 });
         }
-    }, [email, token]);
+    }, [email, token, baseUrl, router]);
+
+    const clickLogin = () => {
+        router.push(`/masuk`);
+      };
 
     return (
         <div className='verif-page'>

@@ -8,7 +8,11 @@ const CartPage = () => {
   const { id, status } = router.query;
 
   if (!id || !status) {
-    return <p>Loading...</p>;
+    return (
+      <div className='login-first-layout'>
+        <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+      </div>
+    );
   }
 
   return (

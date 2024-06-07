@@ -1,19 +1,22 @@
+// contexts/AuthContext.js
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import cookie from 'js-cookie';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); 
   const router = useRouter();
 
   useEffect(() => {
-    const cookie = document.cookie.split(';').find(cookie => cookie.trim().startsWith('user='));
-    if (cookie) {
-      const userData = cookie.split('=')[1];
+    // Load user from cookies on client-side
+    const userCookie = cookie.get('user');
+    if (userCookie) {
       try {
-        const parsedUserData = JSON.parse(userData);
-        setUser(parsedUserData);
+        const userData = JSON.parse(userCookie);
+        setUser(userData);
       } catch (error) {
         console.error('Error parsing user data from cookie:', error);
       }
@@ -22,16 +25,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = (userData) => {
     setUser(userData);
-    document.cookie = `user=${JSON.stringify(userData)}; path=/`;
+    cookie.set('user', JSON.stringify(userData), { path: '/' });
   };
 
   const logout = async () => {
     setUser(null);
-    document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    cookie.remove('user', { path: '/' });
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    router.push('/masuk');
+    // window.location.href = '/';
+    
   };
 
   return (
@@ -41,4 +45,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'; // Tambahkan ini
 import { useAuth } from "@/contexts/AuthContext";
 import RegisterForm from '../register-form';
 import Link from 'next/link';
-import { HiEye,HiEyeOff } from "react-icons/hi";
+import { HiEye, HiEyeOff } from "react-icons/hi";
 import { BsArrowLeft } from "react-icons/bs";
 
 const LoginForm = ({ onClose }) => {
@@ -41,8 +41,11 @@ const LoginForm = ({ onClose }) => {
         document.cookie = `user=${JSON.stringify(data.data)}`;
         setMessage(data.messages.success);
         setAlertType('success');
-        onClose();
-        window.location.reload();
+        // Tunda eksekusi onClose dan refresh halaman
+        setTimeout(() => {
+          onClose();
+          window.location.reload();
+        }, 2500); // Tunda selama 2.5 detik
       } else if (data.status === 400 && data.messages.success === "Password Salah.") {
         setMessage(data.messages.success);
         setAlertType('error');
@@ -71,7 +74,7 @@ const LoginForm = ({ onClose }) => {
       timer = setTimeout(() => {
         setMessage('');
         setAlertType(null);
-      }, 2500); // Pesan muncul selama 3 detik
+      }, 2500); // Pesan muncul selama 2.5 detik
     }
     return () => clearTimeout(timer);
   }, [message]);
@@ -80,12 +83,12 @@ const LoginForm = ({ onClose }) => {
 
   const openRegister = () => {
     setShowRegister(true);
-};
-const closeRegister = () => {
-  setShowRegister(false);
-};
+  };
+  const closeRegister = () => {
+    setShowRegister(false);
+  };
 
-const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -96,7 +99,6 @@ const [passwordVisible, setPasswordVisible] = useState(false);
     window.location.href = '/daftar';
     onClose();
     // Navigasi ke halaman daftar setelah onClose dijalankan
-    
   };
 
   return (
@@ -130,7 +132,7 @@ const [passwordVisible, setPasswordVisible] = useState(false);
               />
               <label htmlFor="rememberMe">Ingatkan Saya</label>
             </div>
-            <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>Masuk</button>
+            <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>{buttonText}</button>
         </form>
         <span><p>Belum punya akun?</p> <p onClick={registerClick} className='btn-popup-mobile-other'>Daftar</p></span>
         <button onClick={onClose} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
@@ -142,8 +144,8 @@ const [passwordVisible, setPasswordVisible] = useState(false);
             <h1>{message}</h1>
             {alertType === 'success' ? 
                 <>
-                  <img src='images/verification-success.png' alt='H!bi Verification'/>
-                  <p>Mohon maaf akunmu tidak terdaftar, coba pakai cek kembali email dan password nya!</p>
+                  <img src='/images/verification-success.png' alt='H!bi Verification'/>
+                  <p>Kamu berhasil masuk ke akunmu, Selamat Berbelanja!</p>
                 </>
                 : alertType === 'warning' ?
                 <>

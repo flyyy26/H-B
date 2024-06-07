@@ -492,7 +492,7 @@ export default function Transaksi(){
                 posTotalBayar: totalHarga,
                 posJenisPembayaranOnline: posJenisPembayaranOnline, // Determine payment type based on shipping service
                 posShipingId: posShippingId,
-                posDiskon_voucher: 0
+                posDiskon_voucher: appliedVoucher.value
               });
       
               console.log('Data being sent:', Object.fromEntries(formDataParamsTransaksi.entries()));
@@ -719,7 +719,7 @@ export default function Transaksi(){
         if (selectedVoucher) {
           handleCloseModalVoucher();
           setAppliedVoucher(selectedVoucher); // Simpan objek voucher yang dipilih
-          console.log(`Voucher dipilih: ${selectedVoucher.code} dengan diskon Rp. ${selectedVoucher.min_spend} berakhir dalam ${calculateDaysLeft(selectedVoucher.exp_date)} hari.`);
+          console.log(`Voucher dipilih: ${selectedVoucher.code} dengan diskon Rp. ${selectedVoucher.value} berakhir dalam ${calculateDaysLeft(selectedVoucher.exp_date)} hari.`);
         } else {
           alert('Pilih voucher terlebih dahulu');
         }
@@ -766,10 +766,12 @@ export default function Transaksi(){
       }
 
       // Menghitung total pembayaran
-      const totalPembayaran = totalHarga + (selectedShipping ? selectedShipping.value : 0) - (appliedVoucher ? appliedVoucher.min_spend : 0);
+      const totalPembayaran = (totalHarga - (appliedVoucher ? appliedVoucher.value : 0)) + (selectedShipping ? selectedShipping.value : 0);
 
     return(
         <>
+        { user ? (
+            <>
         <Modal isOpen={modalIsOpen} onClose={closeModal}>
             <FaShippingFast className="check-cart" />
             <p className="check-notif-cart">Pilih pengiriman terlebih dahulu</p>
@@ -844,8 +846,8 @@ export default function Transaksi(){
                                         <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian} />
                                     </div>
                                     <div className="product-details-checkout-name">
-                                        <h4>{product.namaProduk}</h4>
-                                        <p>{product.namaVarian}</p>
+                                        <h4>{product.namaProduk.replace(/&amp;/g, '&')}</h4>
+                                        <p>{product.namaVarian.replace(/&amp;/g, '&')}</p>
                                         <div className="price-quantity-mobile">
                                             <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.harga_promo)}</span>
                                             <span>{product.qty}x</span>
@@ -885,7 +887,7 @@ export default function Transaksi(){
                 </div>
                 <div className="list-menu-popup-transaksi">
                     <ul>
-                        <li><div className="menu-popup-mobile-item" onClick={handleOpenModalVoucher}><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
+                        <li><div className="menu-popup-mobile-item" onClick={handleOpenModalVoucher}><BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}</div><GoChevronRight /></li>
                     </ul>
                 </div>
                 <div className="total-product-checkout">
@@ -897,7 +899,7 @@ export default function Transaksi(){
                             <p>Total Ongkos Kirim:</p> <p>Rp. {selectedShipping ? selectedShipping.value.toLocaleString() : '0'}</p>
                         </div>
                         <div className="total-product-checkout-box">
-                            <p>Potongan Voucher:</p> <p>- Rp. {appliedVoucher ? `${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 0}</p>
+                            <p>Potongan Voucher:</p> <p>- Rp. {appliedVoucher ? `${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 0}</p>
                         </div>
                         <div className="total-product-checkout-box">
                             <h4>Total Pembayaran:</h4> <span>Rp. {totalPembayaran.toLocaleString()}</span>
@@ -907,7 +909,7 @@ export default function Transaksi(){
             </div>
             <div className="btn-checkout-pilihan">
                 <button className="voucher-checkout" onClick={handleOpenModalVoucher}>
-                    <BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.min_spend)}` : 'Gunakan Voucher'}
+                    <BiSolidDiscount /> {appliedVoucher ? `Voucher: ${appliedVoucher.code} - Diskon Rp. ${new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(appliedVoucher.value)}` : 'Gunakan Voucher'}
                 </button>
                 <button className="buy-now-checkout" onClick={checkoutButton}>Bayar Sekarang</button>
             </div>
@@ -1037,66 +1039,90 @@ export default function Transaksi(){
                 </div>
             )}
             {isModalVoucherOpen && (
-        <div className="modal-shipping-overlay">
-            <div className="modal-box-shipping">
-                <div className="menu-popup-mobile menu-popup-mobile-template">
-                    <span className="close">
-                        <HiOutlineArrowLeft onClick={handleCloseModalVoucher}/> Pilih Voucher
-                    </span>
-                </div>
-                <button className="close-button" onClick={handleCloseModalVoucher}>
-                    <IoClose />
-                </button>
-                <h1>Pilih Voucher dulu!</h1>
-                <div className="choose-shipping">
-                    <form onSubmit={handleApplyVoucher}>
-                        <div className="input-search-voucher">
-                            <input type="text" placeholder="Cari Voucher Disini..." value={search} onChange={handleSearchChange} />
-                            <span onClick={handleVoucherSelect}>PAKAI</span>
+                <div className="modal-shipping-overlay">
+                    <div className="modal-box-shipping">
+                        <div className="menu-popup-mobile menu-popup-mobile-template">
+                            <span className="close">
+                                <HiOutlineArrowLeft onClick={handleCloseModalVoucher}/> Pilih Voucher
+                            </span>
                         </div>
-                        <div className="shipping-radio-overflow">
-                            {vouchers.length === 0 ? (
-                                <p>Belum ada voucher</p>
-                            ) : (
-                                vouchers.map(voucher => {
-                                    const daysLeft = calculateDaysLeft(voucher.exp_date);
-                                    return (
-                                        <label className="shipping-radio-voucher" key={voucher.id} onClick={() => handleVoucherSelect(voucher)}>
-                                            <input type="radio" name="voucherOption" value={voucher.code} onClick={(e) => e.stopPropagation()} /> {/* Mencegah event bubbling ke label */}
+                        <button className="close-button" onClick={handleCloseModalVoucher}>
+                            <IoClose />
+                        </button>
+                        <h1>Pilih Voucher dulu!</h1>
+                        <div className="choose-shipping">
+                            <form onSubmit={handleApplyVoucher}>
+                                <div className="input-search-voucher">
+                                    <input type="text" placeholder="Cari Voucher Disini..." value={search} onChange={handleSearchChange} />
+                                    <span onClick={handleVoucherSelect}>PAKAI</span>
+                                </div>
+                                <div className="shipping-radio-overflow">
+                                    {vouchers.length === 0 ? (
+                                        <p>Belum ada voucher</p>
+                                    ) : (
+                                        vouchers.map(voucher => {
+                                        const daysLeft = calculateDaysLeft(voucher.exp_date);
+                                        const isVoucherApplicable = totalHarga >= voucher.min_spend;
+                                        const remainingAmount = voucher.min_spend - totalHarga;
+
+                                        return (
+                                            <label
+                                            className="shipping-radio-voucher"
+                                            key={voucher.id}
+                                            onClick={() => isVoucherApplicable && handleVoucherSelect(voucher)}
+                                            >
+                                            <input
+                                                type="radio"
+                                                name="voucherOption"
+                                                value={voucher.code}
+                                                disabled={!isVoucherApplicable}
+                                                onClick={(e) => e.stopPropagation()} // Mencegah event bubbling ke label
+                                            />
                                             <span>
                                                 <div className="voucher-box-layout">
-                                                    <div className="voucher-box-image">
-                                                        <img src={`https://prahwa.net/storage/${voucher.image}`} />
-                                                        <div className="circle-left"></div>
-                                                        <div className="circle-right"></div>
-                                                    </div>
-                                                    <div className="voucher-box-content">
-                                                        <h5>
-                                                            <BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.min_spend)},-
-                                                        </h5>
-                                                        {daysLeft >= 0 ? (
-                                                            <p>Berakhir dalam {daysLeft} hari</p>
-                                                        ) : (
-                                                            <p>Kedaluwarsa</p>
-                                                        )}
-                                                    </div>
+                                                <div className="voucher-box-image">
+                                                    <img src={`https://prahwa.net/storage/${voucher.image}`} alt="Voucher" />
+                                                    <div className="circle-left"></div>
+                                                    <div className="circle-right"></div>
+                                                    {!isVoucherApplicable && (
+                                                        <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(remainingAmount)} lagi untuk menggunakan voucher ini</span>
+                                                    )}
+                                                </div>
+                                                <div className="voucher-box-content">
+                                                    <h5>
+                                                    <BiSolidDiscount /> Diskon Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(voucher.value)},-
+                                                    </h5>
+                                                    {daysLeft >= 0 ? (
+                                                    <p>Berakhir dalam {daysLeft} hari</p>
+                                                    ) : (
+                                                    <p>Kedaluwarsa</p>
+                                                    )}
+                                                </div>
                                                 </div>
                                             </span>
-                                        </label>
-                                    );
-                                })
-                            )}
+                                            </label>
+                                        );
+                                        })
+                                    )}
+                                    </div>
+                                <button type="submit" className='form-button-style'>
+                                    Pakai Voucher<FaSave />
+                                </button>
+                            </form>
                         </div>
-                        <button type="submit" className='form-button-style'>
-                            Pakai Voucher<FaSave />
-                        </button>
-                    </form>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
-    )}
-
-        </div>
+        </>
+        ) : (
+            <>
+              <div className='login-first-layout'>
+              <img src="/images/login-first.png" alt="Masuk dulu H!b" className='login-first'/>
+              {/* <button onClick={clickLogin}>Masuk Sekarang</button> */}
+              </div>
+            </>
+        )}
         </>
     );
 }

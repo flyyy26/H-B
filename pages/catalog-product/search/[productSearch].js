@@ -44,14 +44,16 @@ const ProductSearch = () => {
   
 
   const handleBuyNowClick = (posVarianId) => {
-    router.push(`/catalog-product/${posVarianId}`);
+    router.push(`/catalog-product/produk-detail/${posVarianId}`);
   };
 
   return (
     <CatalogProductLayout>
       <h1 className='search-heading'>Hasil pencarian dari : <span>{productSearch}</span></h1>
       {isLoading ? (
-        <p>Tunggu Sebentar...</p>
+        <div className='login-first-layout'>
+          <img src="/images/tunggu-sebentar.png" alt='Loading' className='login-first'/>
+        </div>
       ) : products.length === 0 ? (
         <img className='kosong' src='/images/produk-kosong.png'/>
       ) : (
