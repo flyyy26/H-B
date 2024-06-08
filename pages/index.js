@@ -216,9 +216,9 @@ export default function HomePage({articles}) {
                     </div>
                   )}
                   <div className="image-product">
-                    <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
+                    <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} onClick={() => handleBuyNowClick(product.posVarianId)} alt={product.namaVarian}/>
                   </div>
-                  <h4 className="box-product-name">{product.namaVarian}</h4>
+                  <h4 className="box-product-name" onClick={() => handleBuyNowClick(product.posVarianId)}>{product.namaVarian}</h4>
                   <div className="box-product-price">
                     {product.harga_promo > 0 ? (
                       <>
@@ -258,9 +258,9 @@ export default function HomePage({articles}) {
               {randomProducts.map((product, index) => (
                   <div className="box-product box-product-scroll" key={index}>
                     <div className="image-product">
-                      <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
+                      <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} onClick={() => handleBuyNowClick(product.posVarianId)} alt={product.namaVarian}/>
                     </div>
-                    <h4 className="box-product-name">{product.namaVarian}</h4>
+                    <h4 className="box-product-name" onClick={() => handleBuyNowClick(product.posVarianId)}>{product.namaVarian}</h4>
                     <div className="box-product-price">
                       <h4>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(product.hargaJual)}</h4>
                     </div>

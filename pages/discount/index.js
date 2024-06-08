@@ -48,9 +48,9 @@ function Discount({ limit }) {
                 </div>
               )}
             <div className="image-product">
-                <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} alt={product.namaVarian}/>
+                <img src={`https://api.upos-conn.com/master/v1/${product.gambar}`} onClick={() => handleBuyNowClick(product.posVarianId)} alt={product.namaVarian}/>
             </div>
-            <h4 className="box-product-name">{product.namaVarian}</h4>
+            <h4 className="box-product-name" onClick={() => handleBuyNowClick(product.posVarianId)}>{product.namaVarian}</h4>
             <div className="box-product-price">
               {product.harga_promo > 0 ? (
                 <>
