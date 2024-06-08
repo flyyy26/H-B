@@ -421,7 +421,7 @@ const handleSubmitCheckout = async () => {
         const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.userId}`;
         const posTanggalTransaksi = `${getCurrentFormattedDateTime()}`;
         const formDataParamsTransaksi = new URLSearchParams({
-          posMerchantId: 1,
+          posMerchantId: 9,
           posKodeTransaksi: posKodeTransaksi,
           posCustomerId: user.userId,
           posTanggalTransaksi: posTanggalTransaksi,
