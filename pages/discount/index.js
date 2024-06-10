@@ -20,6 +20,7 @@ function Discount({ limit }) {
         const response = await fetch(`${baseUrl}/discount`);
         const data = await response.json();
         setDiscount(data.data);
+        console.log(data.data)
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -40,6 +41,9 @@ function Discount({ limit }) {
       <div className='catalog-layout mtop-2'>
         {discount.map(product => (
           <div key={product.posVarianId} className='box-product'>
+            <div className='discount-label'>
+              <span>{Math.round(product.persentase_potongan)}%</span>
+            </div>
             {product.jumlahStok === "0" && (
                 <div className='produk-habis'>
                   <div className='box-produk-habis'>

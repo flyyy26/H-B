@@ -1,15 +1,13 @@
+// components/LoginForm.js
 import { useState, useEffect } from 'react';
-import { IoClose, IoCheckmarkCircleOutline, IoAlertCircleOutline } from "react-icons/io5";
-import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from '@/contexts/AuthContext';
 import RegisterForm from '../register-form';
-import Link from 'next/link';
-import { HiEye, HiEyeOff } from "react-icons/hi";
-import { BsArrowLeft } from "react-icons/bs";
+import { HiEye, HiEyeOff } from 'react-icons/hi';
+import { BsArrowLeft } from 'react-icons/bs';
 
 const LoginForm = ({ onClose }) => {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     posEmail: '',
@@ -42,11 +40,10 @@ const LoginForm = ({ onClose }) => {
         login(data.data);
         setMessage(data.messages.success);
         setAlertType('success');
-        // Tunda eksekusi onClose dan refresh halaman
         setTimeout(() => {
           onClose();
           router.push('/');
-        }, 2500); // Tunda selama 2.5 detik
+        }, 2500);
       } else if (data.status === 400 && data.messages.success === "Password Salah.") {
         setMessage(data.messages.success);
         setAlertType('error');
@@ -65,7 +62,7 @@ const LoginForm = ({ onClose }) => {
       setMessage('Terjadi kesalahan. Silakan coba lagi.');
       setAlertType('error');
     } finally {
-      setButtonText('Masuk'); // Restore button text
+      setButtonText('Masuk');
     }
   };
 
@@ -75,13 +72,12 @@ const LoginForm = ({ onClose }) => {
       timer = setTimeout(() => {
         setMessage('');
         setAlertType(null);
-      }, 2500); // Pesan muncul selama 2.5 detik
+      }, 2500);
     }
     return () => clearTimeout(timer);
   }, [message]);
 
   const [showRegister, setShowRegister] = useState(false);
-
   const openRegister = () => {
     setShowRegister(true);
   };
@@ -95,11 +91,9 @@ const LoginForm = ({ onClose }) => {
   };
 
   const registerClick = (e) => {
-    // Pastikan event tidak membubbling
     e.preventDefault();
     window.location.href = '/daftar';
     onClose();
-    // Navigasi ke halaman daftar setelah onClose dijalankan
   };
 
   return (

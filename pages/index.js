@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Context } from "@/context";
-import { useContext } from "react";
-import { getListOfCategories } from "@/utils";
 import Post from '@/pages/posts/index';
 import gratisOngkir from "@/public/images/gratis-ongkir.png"
 import Image from "next/image";

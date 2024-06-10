@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { IoClose, IoCheckmarkCircleOutline, IoAlertCircleOutline } from "react-icons/io5";
-import Link from 'next/link';
 import LoginForm from '../login-form';
 import { HiEye,HiEyeOff } from "react-icons/hi";
 import { BsArrowLeft } from "react-icons/bs";

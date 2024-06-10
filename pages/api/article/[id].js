@@ -3,7 +3,7 @@ import axios from 'axios';
 export default async function handler(req, res) {
   try {
     const { id } = req.query; // Mengambil ID artikel dari parameter permintaan
-    const response = await axios.get(`https://roomcode.my.id/api/articles/${id}`, {
+    const response = await axios.get(`https://prahwa.net/api/articles/${id}`, {
       headers: {
         'api_key': 'aGVlYuXDRtCZOBcoK8xjpluX0jqqDxDBvso7RqUe' // Ganti dengan API key Anda
       }

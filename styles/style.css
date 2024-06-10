@@ -2099,7 +2099,39 @@ cursor: pointer;
     color: var(--sekunder);
     font-size: 1.3vw;
 }
+.discount-label{
+    position: absolute;
+    background-image: url(../public/images/label.svg);
+    background-size: cover;
+    background-position: center;
+    width: 3vw;
+    height: 1.7vw;
+    z-index: 3;
+    left: -.4vw;
+    top: .2vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.discount-label span{
+    font-size: .75vw;
+    margin-top: -.4vw;
+    font-weight: 600;
+    color: var(--sekunder);
+}
 @media (max-width:768px) {
+    .discount-label{
+        background-size: cover;
+        width: 12vw;
+        height: 7vw;
+        z-index: 3;
+        left: -1.2vw;
+        top: .5vw;
+    }
+    .discount-label span{
+        font-size: 3vw;
+        margin-top: -1.4vw;
+    }
     .box-product{
         position: relative;
     }

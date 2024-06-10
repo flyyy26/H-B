@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     cookie.remove('user', { path: '/' });
 
     await new Promise(resolve => setTimeout(resolve, 100));
-    router.push('/');
+    window.location.href = '/';
   };
 
   return (
