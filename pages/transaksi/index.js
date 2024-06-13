@@ -928,29 +928,29 @@ export default function Transaksi(){
                                 {shippingOptions.map(option => (
                                 <React.Fragment key={option.service}>
                                     <label className="shipping-radio">
-                                    <input
-                                        type="radio"
-                                        name="shippingOption"
-                                        value={option.service}
-                                        onChange={() => handleSelectOption(option)}
-                                        checked={selectedShipping && selectedShipping.service === option.service}
-                                    />
-                                    <span>
-                                        <div className="heading-shipping-method">
-                                        <h3 htmlFor={option.service}>{selectedCourier} {option.service} - {option.description}</h3>
-                                        <div>
-                                            {option.cost[0].etd === '1-1' ? (
-                                            <p>Estimasi tiba 1 hari</p>
-                                            ) : (
-                                            <p>Estimasi tiba {option.cost[0].etd} hari</p>
-                                            )}
-                                        </div>
-                                        </div>
-                                        <div className="price-shipping">
-                                        <h5>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(option.cost[0].value)}</h5>
-                                        <PiCheckCircleFill className='check-ekspedisi'/>
-                                        </div>
-                                    </span>
+                                        <input
+                                            type="radio"
+                                            name="shippingOption"
+                                            value={option.service}
+                                            onChange={() => handleSelectOption(option)}
+                                            checked={selectedShipping && selectedShipping.service === option.service}
+                                        />
+                                        <span>
+                                            <div className="heading-shipping-method">
+                                            <h3 htmlFor={option.service}>{selectedCourier} {option.service} - {option.description}</h3>
+                                            <div>
+                                                {option.cost[0].etd === '1-1' ? (
+                                                <p>Estimasi tiba 1 hari</p>
+                                                ) : (
+                                                <p>Estimasi tiba {option.cost[0].etd} hari</p>
+                                                )}
+                                            </div>
+                                            </div>
+                                            <div className="price-shipping">
+                                            <h5>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(option.cost[0].value)}</h5>
+                                            <PiCheckCircleFill className='check-ekspedisi'/>
+                                            </div>
+                                        </span>
                                     </label>
                                 </React.Fragment>
                                 ))}

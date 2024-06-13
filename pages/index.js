@@ -6,6 +6,7 @@ import Image from "next/image";
 import Merk from "@/components/merk";
 import discountPromo from "@/public/images/banner-promo-discount.png"
 import discountPromoMobile from "@/public/images/discount-mobile.png"
+import discountLihatMobile from "@/public/images/lihat-dulu-yuk.png"
 import Link from "next/link";
 import { BsCartPlusFill, BsFillCartCheckFill } from "react-icons/bs";
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
@@ -205,6 +206,9 @@ export default function HomePage({articles}) {
               <div className="list-product-home">
               {discount.map((product, index) => (
                 <div className="box-product box-product-scroll" key={index}>
+                  <div className='discount-label'>
+                    <span>{Math.round(product.persentase_potongan)}%</span>
+                  </div>
                   {product.jumlahStok === "0" && (
                     <div className='produk-habis'>
                       <div className='box-produk-habis'>
@@ -247,7 +251,7 @@ export default function HomePage({articles}) {
           <div className="display-flex mtop-1">
             <div className="banner-catalog-mobile">
               <Link href="/catalog-product">
-                <Image src={discountPromoMobile} alt="Diskon Produk Hallo Beauty"/>
+                <Image src={discountLihatMobile} alt="Diskon Produk Hallo Beauty"/>
               </Link>
             </div>
             <div className="layout-catalog-home">

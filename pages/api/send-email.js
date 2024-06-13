@@ -1,18 +1,18 @@
-// pages/api/daftar.js
+// pages/api/send-email.js
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method Not Allowed' });
     }
   
-    const { posEmail, posPassword, posPin } = req.body;
+    const { email } = req.body;
   
     try {
-      const response = await fetch('https://api.upos-conn.com/auth/v1/posAuth-login', { 
+      const response = await fetch('https://api.upos-conn.com/auth/v1/posAuth-forgotPassword', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams({ posEmail, posPassword, posPin })
+        body: new URLSearchParams({ email })
       });
       const responseData = await response.json();
         return res.status(response.status).json(responseData);

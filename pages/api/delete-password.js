@@ -1,18 +1,18 @@
-// pages/api/daftar.js
+// pages/api/delete-password.js
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method Not Allowed' });
     }
   
-    const { posEmail, posPassword, posPin } = req.body;
+    const { token, new_password, confirm_password } = req.body;
   
     try {
-      const response = await fetch('https://api.upos-conn.com/auth/v1/posAuth-login', { 
+      const response = await fetch('https://api.upos-conn.com/auth/v1/posAuth-resetPassword', { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: new URLSearchParams({ posEmail, posPassword, posPin })
+        body: new URLSearchParams({ token, new_password, confirm_password })
       });
       const responseData = await response.json();
         return res.status(response.status).json(responseData);

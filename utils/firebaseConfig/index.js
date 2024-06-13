@@ -1,6 +1,6 @@
 // utils/firebaseConfig/index.js
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,14 +11,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let firebaseApp;
 if (!getApps().length) {
-  firebaseApp = initializeApp(firebaseConfig);
-} else {
-  firebaseApp = getApps()[0]; // Jika sudah diinisialisasi, gunakan app yang ada
+  initializeApp(firebaseConfig);
 }
 
-const auth = getAuth(firebaseApp);
-const googleAuthProvider = new GoogleAuthProvider();
+const auth = getAuth();
+const googleProvider = new GoogleAuthProvider();
 
-export { firebaseApp, auth, googleAuthProvider, signInWithRedirect, getRedirectResult };
+export { auth, googleProvider };
