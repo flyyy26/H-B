@@ -1525,7 +1525,12 @@ a{
     justify-content: center;
     z-index: 15;
   }
-  
+@media (max-width:768px) {
+    .modal-overlay{
+        z-index: 51;
+    }
+}
+
   .modal-content {
     background: var(--primer);
     padding: 2.5vw;
@@ -2621,6 +2626,7 @@ cursor: pointer;
     gap: 1.4vw;
     z-index: 15;
     background-color: var(--tersier);
+    border: .2vw solid var(--primer);
     border-radius: 1.7vw;
     padding: 2vw 1vw;
     margin-top: 4vw;

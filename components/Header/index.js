@@ -51,6 +51,7 @@ export default function Header(){
 
     const openLogin = () => {
         setShowLogin(true);
+        toggleMenuMobile();
     };
 
     const closeLogin = () => {
@@ -59,6 +60,7 @@ export default function Header(){
 
     const openRegister = () => {
         setShowRegister(true);
+        toggleMenuMobile();
     };
 
     const closeRegister = () => {

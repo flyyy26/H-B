@@ -173,6 +173,11 @@ const LoginForm = ({ onClose }) => {
     }
   };
 
+  const handleForgotPassword = () => {
+    router.push('/forgot-password');
+    onClose()
+  };
+
   return (
     <div className="form-popup login-form">
       <img src='/images/bg-login.png' alt='Logo H!bi' className='logo-login-mobile'/>
@@ -201,7 +206,7 @@ const LoginForm = ({ onClose }) => {
                 onChange={handleChangeLogin} 
                 checked={formData.rememberMe}
               />
-              <label onClick={handlePulihkan}>Lupa Kata Sandi</label>
+              <label onClick={handleForgotPassword}>Lupa Kata Sandi</label>
             </div>
             <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>{buttonText}</button>
         </form>
