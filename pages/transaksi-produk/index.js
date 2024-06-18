@@ -420,6 +420,7 @@ const handleSubmitCheckout = async () => {
 
         const posKodeTransaksi = `INV - ${getRandomFourDigits()} - ${getCurrentFormattedDate()} - ${user.userId}`;
         const posTanggalTransaksi = `${getCurrentFormattedDateTime()}`;
+        const posDiskonVoucher = appliedVoucher ? appliedVoucher.value : 0;
         const formDataParamsTransaksi = new URLSearchParams({
           posMerchantId: 9,
           posKodeTransaksi: posKodeTransaksi,
@@ -432,7 +433,7 @@ const handleSubmitCheckout = async () => {
           posTotalBayar: transactionData.product.hargaJual * transactionData.quantity,
           posJenisPembayaranOnline: posJenisPembayaranOnline,
           posShipingId: posShippingId,
-          posDiskon_voucher: appliedVoucher.value
+          posDiskon_voucher: posDiskonVoucher
         });
 
         const transaksiResponse = await axios.post(`${baseUrl}/postTransaksi`, formDataParamsTransaksi, {

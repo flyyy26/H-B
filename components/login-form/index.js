@@ -49,9 +49,8 @@ const LoginForm = ({ onClose }) => {
         setMessage(data.messages.success);
         setAlertType('success');
         setShowPopup(true);
-        setTimeout(() => {
-          router.push('/');
-        }, 2500);
+        window.location.href='/'
+        onClose()
       } else if (data.status === 400 && data.messages.success === "Password Salah.") {
         setMessage(data.messages.success);
         setAlertType('errorPassword');
@@ -74,6 +73,7 @@ const LoginForm = ({ onClose }) => {
       setMessage('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setLoading(false);
+      
     }
   };
 

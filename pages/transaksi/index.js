@@ -480,6 +480,8 @@ export default function Transaksi(){
         
               const posKodeTransaksi = `INV-${getRandomFourDigits()}-${getCurrentFormattedDate()}-${user.userId}`;
               const posTanggalTransaksi = `${getCurrentFormattedDateTime()}`;
+              const posDiskonVoucher = appliedVoucher ? appliedVoucher.value : 0;
+              
               const formDataParamsTransaksi = new URLSearchParams({
                 posMerchantId: 9,
                 posKodeTransaksi: posKodeTransaksi,
@@ -492,8 +494,9 @@ export default function Transaksi(){
                 posTotalBayar: totalHarga,
                 posJenisPembayaranOnline: posJenisPembayaranOnline, // Determine payment type based on shipping service
                 posShipingId: posShippingId,
-                posDiskon_voucher: appliedVoucher.value
+                posDiskon_voucher: posDiskonVoucher
               });
+
       
               console.log('Data being sent:', Object.fromEntries(formDataParamsTransaksi.entries()));
         
@@ -698,6 +701,7 @@ export default function Transaksi(){
     
         fetchVoucher();
     }, []);
+
     
       
       const calculateDaysLeft = (expDateStr) => {
@@ -713,6 +717,8 @@ export default function Transaksi(){
       const [filteredVouchers, setFilteredVouchers] = useState([]);
       const [selectedVoucher, setSelectedVoucher] = useState(null);
       const [appliedVoucher, setAppliedVoucher] = useState(null);
+
+      
 
       const handleApplyVoucher = (e) => {
         e.preventDefault(); // Mencegah perilaku default form
