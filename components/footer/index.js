@@ -10,10 +10,9 @@ export default function Footer(){
             <div className="footer">
                 <div className="footer-menu">
                     <div className="logo-footer">
-                        <Image src={Logo} alt="Logo Hallo Beauty" width={150}/>
+                        <Image src={Logo} alt="Logo Hallo Beauty" width={80}/>
                     </div>
                     <div className="detail-company-footer">
-                        <h1>H!BI</h1>
                         <p>Singaparna, Cipakat, Kec. Singaparna, <br/>Kabupaten Tasikmalaya, Jawa Barat 46417</p>
                         <p>Telp: +62812 2387 4300</p>
                     </div>
@@ -30,10 +29,10 @@ export default function Footer(){
                 <div className="footer-menu footer-menu-mid-2">
                     <h2>Bantuan</h2>
                     <ul>
-                        <li><Link href="#">Kategori Produk</Link></li>
+                        <li><Link href="/catalog-product">Kategori Produk</Link></li>
                         <li><Link href="#">Kontak Kami</Link></li>
                         <li><Link href="/posts">Blog</Link></li>
-                        <li><Link href="#">Diskon Produk</Link></li>
+                        <li><Link href="/discount">Diskon Produk</Link></li>
                     </ul>
                 </div>
                 <div className="footer-menu">
@@ -61,6 +60,28 @@ export default function Footer(){
                         </Link>
                     </div>
                     <p>Email: <br/>hallobeautyy@gmail.com</p>
+                </div>
+                <div className='footer-menu'>
+                    <h2>Metode Pembayaran</h2>
+                    <div className="payment-method-layout">
+                        <img src="/images/visa_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/mastercard_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/qris_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/danamon_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/shopeepay_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/permata_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/ovo_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/bca_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/bri_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/bsi_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/cimb_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/indomaret_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/bni_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/alfamart_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/mandiri_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/kredivo_logo.png" alt='Hallo Beauty'/>
+                        <img src="/images/akulaku_logo.png" alt='Hallo Beauty'/>
+                    </div>
                 </div>
             </div>
             <div className="copyright">

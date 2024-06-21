@@ -211,7 +211,7 @@ const LoginForm = ({ onClose }) => {
             <button type="submit" disabled={buttonText === 'Tunggu sebentar...'}>{buttonText}</button>
         </form>
         <h4>Atau</h4>
-        <button onClick={handleGoogleSignIn} className="google-sign-in-button"><IoLogoGoogle />Daftar dengan Akun Google</button>
+        <button onClick={handleGoogleSignIn} className="google-sign-in-button"><IoLogoGoogle />Masuk dengan Akun Google</button>
         <span><p>Belum punya akun?</p> <p onClick={registerClick} className='btn-popup-mobile-other'>Daftar</p></span>
         <button onClick={onClose} className='back-from-login-mobile'><BsArrowLeft/>Mau lihat-lihat dulu</button>
       </div>

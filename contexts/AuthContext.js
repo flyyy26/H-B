@@ -6,6 +6,8 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); 
+  const [showAdminPopup, setShowAdminPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -15,6 +17,19 @@ export const AuthProvider = ({ children }) => {
       try {
         const userData = JSON.parse(userCookie);
         setUser(userData);
+
+        // Check user role and show popup if role is not "60"
+        if (userData.role !== "60") {
+          setErrorMessage('Kamu adalah admin, tidak bisa masuk, tolong akses dengan email lain');
+          setShowAdminPopup(true);
+
+          // Automatically logout after 3 seconds
+          setTimeout(async () => {
+            setShowAdminPopup(false);
+            await logout(); // Call logout function to clear user session
+          }, 3000);
+        }
+
       } catch (error) {
         console.error('Error parsing user data from cookie:', error);
       }
@@ -24,6 +39,18 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     setUser(userData);
     cookie.set('user', JSON.stringify(userData), { path: '/', expires: 1 }); // Set expires to 1 day for example
+
+    // Check user role and show popup if role is not "60"
+    if (userData.role !== "60") {
+      setErrorMessage('Kamu adalah admin, tidak bisa masuk, tolong akses dengan email lain');
+      setShowAdminPopup(true);
+
+      // Automatically logout after 3 seconds
+      setTimeout(async () => {
+        setShowAdminPopup(false);
+        await logout(); // Call logout function to clear user session
+      }, 3000);
+    }
   };
 
   const logout = async () => {
@@ -37,6 +64,11 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
+      {showAdminPopup && (
+        <div className="admin-popup">
+          <p>{errorMessage}</p>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };
