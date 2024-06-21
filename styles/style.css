@@ -1682,7 +1682,102 @@ a{
     top: 50%;
     transform: translate(-50%, -50%);
 }
+.download-page{
+    width: 100%;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 3vw;
+}
+.download-page-layouting{
+    padding: 3vw 4vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: .2vw solid var(--tersier);
+    margin: 3vw 0;
+    box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+-webkit-box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+-moz-box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+}
+.download-page-layouting span{
+    font-size: 1vw;
+    margin: 1.7vw 0;
+    color: var(--tersier);
+}
+.download-page-layouting button{
+    font-size: 1.1vw;
+    background-color: var(--primer);
+    border: none;
+    outline: none;
+    padding: .8vw 1.5vw;
+    color: var(--sekunder);
+    border-radius: 100vw;
+    cursor: pointer;
+}
+.download-page h1{
+    font-size: 2vw;
+    color: var(--primer);
+    margin-bottom: 2vw;
+}
+.download-page-qris{
+    width: 18vw;
+    position: relative;
+    border: .12vw solid var(--tersier);
+    padding: 2vw;
+    border-radius: 1vw;
+}
+.download-page-qris img{
+    width: 100%;
+}
 @media (max-width:768px) {
+    .download-page{
+        padding: 0 4vw;
+    }
+    .download-page-layouting{
+        padding: 6.5vw 4vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: .2vw solid var(--tersier);
+        margin: 4vw 0;
+        box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+    -webkit-box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+    -moz-box-shadow: 8px 8px 0px 0px rgba(70,67,91,1);
+    text-align: center;
+    }
+    .download-page-layouting span{
+        font-size: 3.5vw;
+        margin: 4.5vw 0;
+        color: var(--tersier);
+    }
+    .download-page-layouting button{
+        font-size: 4.5vw;
+        background-color: var(--primer);
+        border: none;
+        outline: none;
+        padding: 2.1vw 4.8vw;
+        color: var(--sekunder);
+        border-radius: 100vw;
+        cursor: pointer;
+    }
+    .download-page h1{
+        font-size: 4.7vw;
+        color: var(--primer);
+        margin-bottom: 4.7vw;
+        padding: 0 7vw;
+    }
+    .download-page-qris{
+        width: 60vw;
+        position: relative;
+        border: .12vw solid var(--tersier);
+        padding: 2vw;
+        border-radius: 1vw;
+    }
     .amount{
         width: 3.3vw;
         z-index: 10;
