@@ -11,7 +11,7 @@ const Download = () => {
                         <img src="/images/unduh-qr.png" alt="Hallo Beauty" />
                     </div>
                     <span>Atau</span>
-                    <a hreflang="/download-file"><button>Download disini</button></a>
+                    <a href="/download-file"><button>Download disini</button></a>
                 </div>
                 <RandomProduct/>
             </div>
