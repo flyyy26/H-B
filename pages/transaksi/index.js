@@ -375,11 +375,15 @@ export default function Transaksi(){
                 ...product,
                 varian_id: parseInt(product.varian_id),
                 qty: parseInt(product.qty),
+                posSatuanId: parseInt(product.satuanId),
+                harga_dasar: parseInt(product.harga_dasar.replace(',', '')),
+                harga_jual_asli: parseInt(product.harga_jual_asli.replace(',', '')),
                 subtotal_diskon: parseInt(product.subtotal_diskon.replace(',', '')), // Menghapus koma sebelum mengonversi
                 subtotal_asli: parseInt(product.subtotal_asli.replace(',', '')), // Menghapus koma sebelum mengonversi
             }));
     
             setSelectedProducts(selectedProducts);
+            console.log(selectedProducts)
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
@@ -522,8 +526,11 @@ export default function Transaksi(){
                     posQty: parseInt(product.qty, 10),
                     posTotal: typeof product.subtotal_diskon === 'string' ? parseInt(product.subtotal_diskon.replace(',', ''), 10) : product.subtotal_diskon,
                     posDiskonId: 0,
-                    posDiskonRp: 0,
-                    posDiskonPersen: 0
+                    posDiskonRp: parseInt(product.potongan_rupiah),
+                    posDiskonPersen: parseInt(product.persentase_potongan),
+                    posHarga_dasarProduk:parseInt(product.harga_dasar),
+                    posHarga_jualProduk:parseInt(product.harga_jual_asli),
+                    posSatuanId: parseInt(product.posSatuanId)
                   });
         
                   const detailTransaksiResponse = await axios.post(`${baseUrl}/detailTransaksi`, detailTransaksiData, {

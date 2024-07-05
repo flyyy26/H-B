@@ -429,8 +429,8 @@ const handleSubmitCheckout = async () => {
           posTipeTransaksi: 3,
           posKasirId: 0,
           posStatus: posStatus,
-          posTotalPembayaran: transactionData.product.hargaJual * transactionData.quantity,
-          posTotalBayar: transactionData.product.hargaJual * transactionData.quantity,
+          posTotalPembayaran: transactionData.product.harga_jual * transactionData.quantity,
+          posTotalBayar: transactionData.product.harga_jual * transactionData.quantity,
           posJenisPembayaranOnline: posJenisPembayaranOnline,
           posShipingId: posShippingId,
           posDiskon_voucher: posDiskonVoucher
@@ -449,10 +449,13 @@ const handleSubmitCheckout = async () => {
             posTransaksiId: transaksiResponse.data.lastTransaksiId,
             posVarianId: parseInt(transactionData.product.posVarianId, 10),
             posQty: parseInt(transactionData.quantity, 10),
-            posTotal: transactionData.product.hargaJual * transactionData.quantity, 
+            posTotal: transactionData.product.harga_jual * transactionData.quantity, 
             posDiskonId: 0,
-            posDiskonRp: 0,
-            posDiskonPersen: 0
+            posDiskonRp: transactionData.product.potongan_rupiah.replace(',', ''),
+            posDiskonPersen: transactionData.product.persentase_potongan.replace(',', ''),
+            posSatuanId: parseInt(transactionData.product.satuanId),
+            harga_dasar: parseInt(transactionData.product.harga_dasar.replace(',', '')),
+            harga_jual_asli: parseInt(transactionData.product.harga_jual.replace(',', '')),
           });
 
           const detailTransaksiResponse = await axios.post(`${baseUrl}/detailTransaksi`, detailTransaksiData, {
@@ -466,7 +469,7 @@ const handleSubmitCheckout = async () => {
           if (selectedVoucher && selectedVoucher.code) {
             const formDataVoucher = {
               member_id: user.userId,
-              price_total: transactionData.product.hargaJual * transactionData.quantity,
+              price_total: transactionData.product.harga_jual * transactionData.quantity,
               code: selectedVoucher.code,
               order_id: transaksiResponse.data.lastTransaksiId
             };
@@ -548,6 +551,7 @@ const handleSubmitCheckout = async () => {
   }
 };
   
+console.log(transactionData)
 
 useEffect(() => {
   const script = document.createElement('script');
@@ -674,7 +678,7 @@ useEffect(() => {
 
       useEffect(() => {
         if (transactionData) {
-          const totalProduk = transactionData.product.hargaJual * transactionData.quantity;
+          const totalProduk = transactionData.product.harga_jual * transactionData.quantity;
           const ongkosKirim = (selectedShipping && selectedShipping.value) || 0;
           const diskonVoucher = (appliedVoucher && appliedVoucher.value) || 0;
           const totalPembayaran = (totalProduk - diskonVoucher) + ongkosKirim;
@@ -793,20 +797,20 @@ useEffect(() => {
                                         <h4>{transactionData.product.namaProduk.replace(/&amp;/g, '&')}</h4>
                                         <p>{transactionData.product.namaVarian.replace(/&amp;/g, '&')}</p>
                                         <div className="price-quantity-mobile">
-                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.hargaJual)}</span>
+                                            <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.harga_jual)}</span>
                                             <span>{transactionData.quantity}x</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="product-info-checkout product-info-checkout-body">
-                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.hargaJual)}</span>
+                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.harga_jual)}</span>
                             </div>
                             <div className="product-info-checkout product-info-checkout-body">
                                 <span>{transactionData.quantity}</span>
                             </div>
                             <div className="product-info-checkout product-info-checkout-body">
-                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.hargaJual * transactionData.quantity)}</span>
+                                <span>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.harga_jual * transactionData.quantity)}</span>
                             </div>
                         </div>
                 </div>
@@ -835,7 +839,7 @@ useEffect(() => {
                 <div className="total-product-checkout">
                     <div className="total-product-checkout-layout">
                         <div className="total-product-checkout-box">
-                            <p>Subtotal harga produk:</p> <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.hargaJual * transactionData.quantity)}</p>
+                            <p>Subtotal harga produk:</p> <p>Rp. {new Intl.NumberFormat('id-ID', { style: 'decimal' }).format(transactionData.product.harga_jual * transactionData.quantity)}</p>
                         </div>
                         <div className="total-product-checkout-box">
                             <p>Total Ongkos Kirim:</p> <p>Rp. {selectedShipping ? selectedShipping.value.toLocaleString() : '0'}</p>

@@ -2058,9 +2058,8 @@ p{
         padding: 3vw 3vw;
         padding-bottom: 2vw;
     }
-    .merk-box img{
-        width: 90%;
-        height: 90%;
+    .merk-box a img{
+        width: 10.5vw;
     }
 }
 
@@ -6888,6 +6887,10 @@ input[type=number] {
         margin-bottom: 4vw;
         padding-bottom: 4vw;
         border-bottom: .3vw solid var(--primer);
+    }
+    .shipping-radio-overflow p{
+        font-size: 4vw;
+        text-align: center;
     }
     .circle-left{
         position: absolute;

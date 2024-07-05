@@ -284,9 +284,9 @@ const Pesanan = () => {
                             )}
                             {transaction.status === 'COD' && (
                                 <div key={transaction.posTransaksiId} className='wait-pay'>
-                                    {/* <div className='wait-pay-header wait-pay-header-brown'>
-                                        <span>COD</span>
-                                    </div> */}
+                                    <div className='wait-pay-header wait-pay-header-brown'>
+                                        <span>Menunggu Konfirmasi</span>
+                                    </div>
                                     <div className='wait-pay-box-layout'>
                                         {transactionDetails[transaction.posTransaksiId] && transactionDetails[transaction.posTransaksiId].map(detail => (
                                             <div className='wait-pay-box' key={detail.posTransaksiDetailId}>

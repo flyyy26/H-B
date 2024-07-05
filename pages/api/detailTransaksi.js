@@ -11,7 +11,10 @@ export default async function handler(req, res) {
         posTotal,
         posDiskonId,
         posDiskonRp,
-        posDiskonPersen } = req.body;
+        posDiskonPersen,
+        posHarga_dasarProduk,
+        posHarga_jualProduk,
+        posSatuanId } = req.body;
   
     try {
       const response = await fetch('https://api.upos-conn.com/master/v1.3/api/PosTransaksiDetail', { 
@@ -27,7 +30,10 @@ export default async function handler(req, res) {
             posTotal,
             posDiskonId,
             posDiskonRp,
-            posDiskonPersen })
+            posDiskonPersen,
+            posHarga_dasarProduk,
+            posHarga_jualProduk,
+            posSatuanId })
       });
       const responseData = await response.json();
         return res.status(response.status).json(responseData);
