@@ -6794,7 +6794,53 @@ input[type=number] {
     border: .12vw solid var(--primer);
     cursor: pointer;
 }
+.maintenance-dekstop{
+    display: block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: 1000;
+}
+.maintenance-dekstop img{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    object-fit: cover;
+    object-position: center;
+}
+.maintenance-mobile{
+    display: none;
+}
 @media (max-width:768px) {
+    .maintenance-dekstop{
+        display: none;
+    }
+    .maintenance-mobile{
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: fixed;
+        z-index: 1000;
+    }
+    .maintenance-mobile img{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        object-fit: cover;
+        object-position: center;
+    }
     .voucher-box-image span{
         position: absolute;
         left: 2vw;

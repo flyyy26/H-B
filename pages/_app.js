@@ -47,6 +47,14 @@ function MyAppContent({ Component, pageProps }) {
       <LoadingBar />
       {!shouldHideHeader && <Header />}
       {showPopup && <PopupWelcome onClose={handleClosePopup} />}
+      <>
+        <div className="maintenance-dekstop">
+          <img src="/images/maintenance-dekstop.png" alt="Maintenance H!b"/>
+        </div>
+        <div className="maintenance-mobile">
+          <img src="/images/maintenance-mobile.png" alt="Maintenance H!b"/>
+        </div>
+      </>
       <Component {...pageProps} />
       <Footer />
     </>
