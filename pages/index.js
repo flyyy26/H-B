@@ -19,18 +19,51 @@ import axios from 'axios';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorit } from "@/contexts/FavoritContext";
 
-export { getStaticProps } from '@/pages/posts/index';
 
-export default function HomePage({articles}) {
+export default function HomePage() {
 
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [discount, setDiscount] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [posQty, setPosQty] = useState(1);
+  const [articleList, setArticleList] = useState([]);
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   
   const router = useRouter() 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/article`);
+        const data = await response.json();
+        if (data && data.data) {
+          // Limit the number of articles to 3
+          setArticleList(data.data.slice(0, 3));
+        } else {
+          console.error('Invalid response data format:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        setError('Failed to load articles.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [baseUrl]);
+
+  const navigateToDetail = (id) => {
+    router.push(`/posts/${id}`);
+  };
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const locale = 'id-ID'; // Atur ke bahasa Indonesia
+    return date.toLocaleDateString(locale, options);
+  };
 
   useEffect(() => {
     const fetchDiscount = async () => {
@@ -285,6 +318,7 @@ export default function HomePage({articles}) {
           <div className="list-category mtop-2">
             <div className="heading-small">
                 <h1>Kategori untuk <span>beauty bestie</span></h1>
+                <Link href="/posts">Lihat Semua</Link>
             </div>
             <div className="flex-category">
               <div className="flex-category-layout">
@@ -330,7 +364,38 @@ export default function HomePage({articles}) {
                 </div>
             </div>
           </div>
-          <Post articles={articles} limit={3} />
+          {/* <Post articles={articles} limit={3} /> */}
+          <div className="mtop-3 post-layouting">
+            <div className="heading-small padding-mobile justify-content-between">
+              <h1>Trik Cantik yang Harus Diketahui oleh Para <span>beauty bestie</span></h1>
+              <Link href="/posts">Lihat Semua</Link>
+            </div>
+            <div className="heading-mobile">
+              <h1>Artikel dari Hib!</h1>
+              <Link href="/posts">
+                <span>Lihat Semua</span>
+              </Link>
+            </div>
+            <div className="post-layouting-scroll">
+              <div className="post-layout-grid">
+                {articleList.length > 0 ? (
+                  articleList.map(item => (
+                    <div className="post-card" key={item.id}>
+                      <div className="post-card-img">
+                        <img src={`https://prahwa.net/storage/${item.image}`} alt={item.title}/>
+                      </div>
+                      <span>{formatDate(item.date)}</span>
+                      <h1 onClick={() => navigateToDetail(item.id)}>{item.title}</h1>
+                      <p>{item.text}</p>
+                      <button onClick={() => navigateToDetail(item.id)}>Baca Selengkapnya</button>
+                    </div>
+                  ))
+                ) : (
+                  <div>No articles found</div>
+                )}
+              </div>
+            </div>
+          </div>
           <Keunggulan/>
       </div>
     </>

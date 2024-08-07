@@ -2592,7 +2592,23 @@ cursor: pointer;
     color: var(--primer);
     font-weight: 600;
 }
+.justify-content-between{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.justify-content-between a{
+    font-size: 1.2vw;
+    text-decoration: underline;
+    color: var(--primer);
+}
+.post-page{
+    padding: 0 5vw;
+}
 @media (max-width:768px) {
+    .post-page{
+        padding: 0 0;
+    }
     .heading-small{
         margin-bottom: 2vw;
         display: none;
@@ -3067,6 +3083,13 @@ cursor: pointer;
     width: 100%;
     padding: 2vw 5vw;
 }
+.post-layout-grid-page{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 0;
+    grid-gap: 2vw;
+    padding-bottom: 3vw;
+}
 @media (max-width:768px) {
     .post-layouting{
         width: 100%;
@@ -3093,6 +3116,13 @@ cursor: pointer;
         display: flex;
         gap: 4.5vw;
     }
+    .post-layout-grid-page{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 3vw;
+        grid-gap: 3vw;
+    }
+    
     .artikel-layout-grid{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -3100,6 +3130,9 @@ cursor: pointer;
     }
     .post-card{
         width: 60vw;
+    }
+    .post-layout-grid-page .post-card{
+        width: 100%;
     }
     .artikel-layout-grid .post-card{
         width: 100%;
