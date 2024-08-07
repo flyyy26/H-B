@@ -4,33 +4,33 @@ import { useState, useEffect } from "react";
 import router from "next/router";
 import Link from "next/link";
 
-export default function Post({ limit }) {
-  const [articles, setArticles] = useState([]);
+export default function Post({ articles, limit }) {
+  const [articleList, setArticleList] = useState(articles);
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/article`);
-        const data = await response.json();
-        if (data && data.data) { // Pastikan data dan data.data ada
-          setArticles(data.data); // Setel data objek banner
-        } else {
-          console.error('Invalid response data format:', data);
+    // Only fetch data on client-side if articles are not provided
+    if (!articles) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`${baseUrl}/article`);
+          const data = await response.json();
+          if (data && data.data) {
+            setArticleList(data.data);
+          } else {
+            console.error('Invalid response data format:', data);
+          }
+        } catch (error) {
+          console.error('Error fetching articles:', error);
         }
-      } catch (error) {
-        console.error('Error fetching banners:', error);
-      }
-    };
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }
+  }, [articles, baseUrl]);
 
-  console.log(articles)
+  const limitedArticles = limit ? articleList.slice(0, limit) : articleList;
 
-  const limitedArticles = limit ? articles.slice(0, limit) : articles;
-
-  // Fungsi untuk menavigasi ke halaman detail postingan
   const navigateToDetail = (id) => {
     router.push(`/posts/${id}`);
   };
@@ -50,7 +50,7 @@ export default function Post({ limit }) {
       <div className="heading-mobile">
         <h1>Artikel dari Hib!</h1>
         <Link href="/artikel">
-        <span>Lihat Semua</span>
+          <span>Lihat Semua</span>
         </Link>
       </div>
       <div className="post-layouting-scroll">
@@ -74,11 +74,13 @@ export default function Post({ limit }) {
 
 // Export getStaticProps here
 export async function getStaticProps() {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL; // Define baseUrl here
+
   // Fetch data for the component
   try {
     const response = await fetch(`${baseUrl}/article`);
     const data = await response.json();
-    if (data && data.data) { // Pastikan data dan data.data ada
+    if (data && data.data) {
       return {
         props: {
           articles: data.data
