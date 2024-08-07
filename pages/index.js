@@ -318,7 +318,6 @@ export default function HomePage() {
           <div className="list-category mtop-2">
             <div className="heading-small">
                 <h1>Kategori untuk <span>beauty bestie</span></h1>
-                <Link href="/posts">Lihat Semua</Link>
             </div>
             <div className="flex-category">
               <div className="flex-category-layout">
